@@ -40,18 +40,25 @@ Copy the relevant `SKILL.md` into your coding agent context.
 
 ## Skill Map
 
-| Skill               | Input                          | Output                            | Next                                    |
-| ------------------- | ------------------------------ | --------------------------------- | --------------------------------------- |
-| `ui-brief`          | vague UI idea                  | product/design brief              | `ui-flow`, `ui-blueprint`               |
-| `ui-flow`           | brief for multi-screen feature | journey graph                     | `ui-blueprint`                          |
-| `ui-blueprint`      | approved brief                 | layout/wireframe spec             | `ui-screen-spec`, `ui-system`           |
-| `ui-system`         | brand/visual direction         | tokens and design rules           | `ui-component-spec`, `ui-generate-code` |
-| `ui-screen-spec`    | blueprint + system             | screen contract                   | `ui-component-spec`                     |
-| `ui-component-spec` | screen/component context       | anatomy/state/a11y spec           | `ui-acceptance`, `ui-generate-code`     |
-| `ui-microcopy`      | brief/spec                     | approved copy                     | `ui-acceptance`, `ui-generate-code`     |
-| `ui-acceptance`     | approved specs                 | testable checklist                | `ui-redline`                            |
-| `ui-generate-code`  | approved specs                 | implementation                    | `ui-redline`                            |
-| `ui-redline`        | spec + implementation          | mismatch report + refactor prompt | code refactor                           |
+| Skill                     | Input                          | Output                            | Next                                    |
+| ------------------------- | ------------------------------ | --------------------------------- | --------------------------------------- |
+| `ui-brief`                | vague UI idea                  | product/design brief              | `ui-flow`, `ui-blueprint`               |
+| `ui-visual-calibration` ⚠️ | vague visual taste             | density/layout/shape decisions    | `ui-blueprint`, `ui-system`             |
+| `ui-flow`                 | brief for multi-screen feature | journey graph                     | `ui-blueprint`                          |
+| `ui-blueprint`            | approved brief                 | layout/wireframe spec             | `ui-screen-spec`, `ui-system`           |
+| `ui-system`               | brand/visual direction         | tokens and design rules           | `ui-component-spec`, `ui-generate-code` |
+| `ui-screen-spec`          | blueprint + system             | screen contract                   | `ui-component-spec`                     |
+| `ui-component-spec`       | screen/component context       | anatomy/state/a11y spec           | `ui-acceptance`, `ui-generate-code`     |
+| `ui-microcopy`            | brief/spec                     | approved copy                     | `ui-acceptance`, `ui-generate-code`     |
+| `ui-acceptance`           | approved specs                 | testable checklist                | `ui-redline`                            |
+| `ui-spec-linter` ⚠️        | full spec package              | completeness + consistency report | `ui-generate-code`                      |
+| `ui-generate-code`        | approved specs                 | implementation                    | `ui-inspector`, `ui-redline`            |
+| `ui-inspector` ⚠️          | live implementation            | DOM/a11y evidence report          | `ui-redline`                            |
+| `ui-redline`              | spec + implementation          | mismatch report + refactor prompt | code refactor                           |
+| `ui-storybook-docs` ⚠️     | component spec                 | MDX docs, stories, prop tables    | —                                       |
+| `ui-orchestrator` ⚠️       | current project state          | recommended next skill to run     | any skill                               |
+
+> ⚠️ = currently a **draft** skill — the core behaviour is defined but some implementation details are still being validated.
 
 ## Contributing
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for how to add or improve skills.
