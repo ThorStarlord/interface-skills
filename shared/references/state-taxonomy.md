@@ -18,5 +18,13 @@ This taxonomy standardizes the way we talk about state in both components and sc
 - Offline State
 - Permission Denied
 
-## TODO (Human Review Required)
-- [ ] Define what a complete matrix representation looks like in Markdown.
+## State Matrix Representation
+When documenting a component's states, use a matrix format to clearly show how interactive states overlap with application states (if applicable) or variations:
+
+| State | Background | Border | Text/Icon | Shadow | Notes |
+|-------|------------|--------|-----------|--------|-------|
+| Default | `bg-surface` | `border-default` | `text-primary` | `shadow-sm` | Base state |
+| Hover | `bg-surface-hover`| `border-hover` | `text-primary` | `shadow-md` | Cursor pointer |
+| Active | `bg-surface-active`| `border-active` | `text-primary` | `none` | Scale down 98% |
+| Focus | `bg-surface` | `ring-2 ring-brand`| `text-primary` | `shadow-sm` | Keyboard focus |
+| Disabled | `bg-surface-disabled`| `border-disabled`| `text-disabled` | `none` | `cursor-not-allowed` |

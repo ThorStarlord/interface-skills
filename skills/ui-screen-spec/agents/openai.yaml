@@ -1,0 +1,2 @@
+name: ui-screen-spec
+description: Missing bridge between blueprint and components (turns layout into implementation-ready screen contracts)

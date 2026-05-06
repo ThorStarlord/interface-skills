@@ -2,7 +2,8 @@ import os
 import re
 
 def validate_skills():
-    skills_dir = os.path.join(os.path.dirname(__file__), '..', 'skills')
+    repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    skills_dir = os.path.join(repo_root, 'skills')
     
     if not os.path.exists(skills_dir):
         print("Error: skills/ directory not found.")
@@ -16,6 +17,7 @@ def validate_skills():
         if not os.path.isdir(skill_path):
             continue
             
+        skill_passed = True
         skill_md_path = os.path.join(skill_path, 'SKILL.md')
         
         if not os.path.exists(skill_md_path):
@@ -26,6 +28,12 @@ def validate_skills():
         with open(skill_md_path, 'r', encoding='utf-8') as f:
             content = f.read()
             
+        # Check agents/openai.yaml exists
+        openai_yaml_path = os.path.join(skill_path, 'agents', 'openai.yaml')
+        if not os.path.exists(openai_yaml_path):
+            print(f"[{skill_folder}] [FAIL] Missing agents/openai.yaml")
+            skill_passed = False
+            
         # Check frontmatter
         frontmatter_match = re.search(r'^---\n(.*?)\n---', content, re.DOTALL)
         if not frontmatter_match:
@@ -35,25 +43,62 @@ def validate_skills():
             
         frontmatter = frontmatter_match.group(1)
         
+        # Check allowed frontmatter keys
+        allowed_keys = {'name', 'description', 'status'}
+        lines = frontmatter.strip().split('\n')
+        for line in lines:
+            if ':' in line:
+                key = line.split(':', 1)[0].strip()
+                if key not in allowed_keys:
+                    print(f"[{skill_folder}] [FAIL] Unexpected frontmatter key '{key}'")
+                    skill_passed = False
+        
         # Check name
         name_match = re.search(r'name:\s*(.+)', frontmatter)
         if not name_match:
             print(f"[{skill_folder}] [FAIL] Missing 'name' in frontmatter")
-            all_passed = False
+            skill_passed = False
         else:
             name = name_match.group(1).strip()
             if not re.match(r'^[a-z0-9\-]+$', name):
                 print(f"[{skill_folder}] [FAIL] Name '{name}' is not lowercase hyphenated")
-                all_passed = False
+                skill_passed = False
+            if name != skill_folder:
+                print(f"[{skill_folder}] [FAIL] Frontmatter name '{name}' does not match folder name '{skill_folder}'")
+                skill_passed = False
+                
+        # Check status
+        status_match = re.search(r'status:\s*(.+)', frontmatter)
+        status = status_match.group(1).strip() if status_match else "stable"
                 
         # Check description
         desc_match = re.search(r'description:\s*(.+)', frontmatter)
         if not desc_match or not desc_match.group(1).strip():
             print(f"[{skill_folder}] [FAIL] Missing or empty 'description' in frontmatter")
-            all_passed = False
+            skill_passed = False
+        else:
+            desc = desc_match.group(1).strip()
+            if len(desc) < 20:
+                print(f"[{skill_folder}] [FAIL] Description is too short (< 20 chars)")
+                skill_passed = False
+                
+        # Check TODOs in stable skills
+        if status == 'stable' and re.search(r'(## TODO|- \[ \] TODO|TODO \(Human Review Required\))', content):
+            print(f"[{skill_folder}] [FAIL] 'TODO' section found in stable skill. Resolve it or mark as draft.")
+            skill_passed = False
+
+        # Check referenced shared files explicitly
+        shared_refs = re.findall(r'shared/references/([\w-]+\.md)', content)
+        for filename in shared_refs:
+            ref_path = os.path.join(repo_root, 'shared', 'references', filename)
+            if not os.path.exists(ref_path):
+                print(f"[{skill_folder}] [FAIL] Explicitly referenced shared file '{filename}' does not exist")
+                skill_passed = False
             
-        if all_passed:
+        if skill_passed:
             print(f"[{skill_folder}] [OK] Valid")
+        else:
+            all_passed = False
 
     return all_passed
 

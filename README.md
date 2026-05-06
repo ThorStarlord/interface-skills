@@ -23,7 +23,35 @@ This repository is organized into a cohesive toolkit:
 - **`templates/`**: Boilerplates for new projects.
 
 ## Installation & Use
-*(TODO: Add detailed usage instructions for running these skills with Claude Code or similar agentic tools.)*
+
+### Option A: As ChatGPT Skills
+Each folder under `skills/` is intended to be packaged as an individual Skill. They include `agents/openai.yaml` metadata for easy import.
+
+### Option B: As agent instructions
+Copy the relevant `SKILL.md` into your coding agent context.
+
+### Recommended First Workflow
+1. Run `ui-brief`
+2. Run `ui-blueprint`
+3. Run `ui-component-spec`
+4. Run `ui-acceptance`
+5. Run `ui-generate-code`
+6. Run `ui-redline`
+
+## Skill Map
+
+| Skill               | Input                          | Output                            | Next                                    |
+| ------------------- | ------------------------------ | --------------------------------- | --------------------------------------- |
+| `ui-brief`          | vague UI idea                  | product/design brief              | `ui-flow`, `ui-blueprint`               |
+| `ui-flow`           | brief for multi-screen feature | journey graph                     | `ui-blueprint`                          |
+| `ui-blueprint`      | approved brief                 | layout/wireframe spec             | `ui-screen-spec`, `ui-system`           |
+| `ui-system`         | brand/visual direction         | tokens and design rules           | `ui-component-spec`, `ui-generate-code` |
+| `ui-screen-spec`    | blueprint + system             | screen contract                   | `ui-component-spec`                     |
+| `ui-component-spec` | screen/component context       | anatomy/state/a11y spec           | `ui-acceptance`, `ui-generate-code`     |
+| `ui-microcopy`      | brief/spec                     | approved copy                     | `ui-acceptance`, `ui-generate-code`     |
+| `ui-acceptance`     | approved specs                 | testable checklist                | `ui-redline`                            |
+| `ui-generate-code`  | approved specs                 | implementation                    | `ui-redline`                            |
+| `ui-redline`        | spec + implementation          | mismatch report + refactor prompt | code refactor                           |
 
 ## Contributing
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for how to add or improve skills.

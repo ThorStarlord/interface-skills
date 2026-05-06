@@ -1,16 +1,15 @@
 # Blueprint: Settings Page
 
-This is a placeholder for the `ui-blueprint` output.
-
 ## Layout Hierarchy
-- Sidebar (Left Navigation)
-  - Account Profile
-  - Notification Preferences
-  - Billing
-- Main Content Panel (Right)
-  - Header (Page Title)
-  - Content Sections based on Sidebar selection
-  - Form Actions (Save / Cancel)
+- **App Shell**
+  - **Sidebar (Left Navigation - 250px fixed width)**
+    - User Profile Badge (Avatar, Name, Email)
+    - Navigation Menu (Profile, Notifications, Billing)
+  - **Main Content Panel (Right - fluid width, max 800px)**
+    - Header (Page Title: e.g., "Profile Settings")
+    - Content Area (Form fields or billing details depending on active route)
+    - Form Actions Footer (Sticky to bottom if scrolling: Save / Cancel)
 
-## TODO (Human Review Required)
-- [ ] Detail specific breakpoints based on `responsive-patterns.md`.
+## Breakpoints
+- **Mobile (< 768px):** Sidebar becomes a top horizontal scrollable tab menu.
+- **Desktop (>= 768px):** Split panel layout as described above.

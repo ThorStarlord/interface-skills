@@ -1,6 +1,7 @@
 ---
 name: ui-spec-linter
 description: Prevents bad specs from reaching code by validating completeness and internal consistency.
+status: draft
 ---
 
 # UI Spec Linter

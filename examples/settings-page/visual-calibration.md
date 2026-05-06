@@ -1,11 +1,12 @@
 # Visual Calibration: Settings Page
 
-This is a placeholder for the `ui-visual-calibration` output.
+## Translation Log
+- **User intent:** "Make it look clean and modern"
+- **Translation:** Minimalist (Max whitespace, monochrome), Modern (Flat surfaces, large radius)
 
-## Visual Rules
-- **Density**: Medium-dense (optimized for reading forms).
-- **Layout Archetype**: Split panel (sidebar navigation + main content).
-- **Surfaces**: Flat main area with subtle outlined cards for distinct sections.
-
-## TODO (Human Review Required)
-- [ ] Add more properties based on the standard `visual-vocabulary.md`.
+## Concrete Visual Decisions
+- **Layout Archetype:** Split Panel (Sidebar navigation + Main content)
+- **Density:** Medium-dense (`gap-4`, `p-6`) for form readability
+- **Shape Language:** Mildly Rounded (`rounded-md` to `rounded-lg`)
+- **Surface Style:** Flat main area with subtle outlined cards for distinct sections (`border border-gray-200`)
+- **Palette Guidance:** Monochrome with a single primary accent color (`blue-600`) for actions

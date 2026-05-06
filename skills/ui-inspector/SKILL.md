@@ -1,6 +1,7 @@
 ---
 name: ui-inspector
 description: Turns diagnosis into evidence by gathering DOM/screenshot facts before redlining
+status: draft
 ---
 
 # UI Inspector

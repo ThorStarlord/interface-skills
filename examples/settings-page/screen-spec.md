@@ -1,16 +1,18 @@
 # Screen Spec: Settings Page
 
-This is a placeholder for the `ui-screen-spec` output.
+## Component Instantiation and Region Mapping
 
-## Component Instances
-- Sidebar Component (`SettingsSidebar`)
-- Main Settings Form (`ProfileSettingsForm`, `NotificationSettingsForm`, etc.)
-- Save Button Component (`PrimaryActionButton`)
+### Region: Sidebar (`<aside>`)
+- **`NavigationMenu`**: Receives `activeItem` from page context.
+- **`UserProfileBadge`**: Requires user object (avatar, name).
 
-## Data Dependencies
-- User Profile Object
-- Preferences Object
-- Subscription Object
+### Region: Main Content (`<main>`)
+- **`DashboardHeader`**: Contains page title.
+- **`ProfileSettingsForm`**: Renders inputs for Name and Avatar.
+- **`FormActions`**: Contains Save and Cancel buttons.
 
-## TODO (Human Review Required)
-- [ ] Connect with `ui-component-spec` implementations for the mentioned instances.
+## State Ownership and Taxonomy
+- **Ideal State:** Form fields populated with current user data.
+- **Loading State:** Skeleton loaders for input fields while fetching user profile.
+- **Error State:** Global error banner if fetching fails ("Could not load settings"). Inline validation errors for form fields.
+- **Pending State:** Save button shows spinner and is disabled while submitting.
