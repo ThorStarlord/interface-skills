@@ -1,6 +1,7 @@
 ---
 name: ui-acceptance
 description: Convert an approved UI spec (brief, blueprint, component spec, or any combination) into a testable implementation checklist — concrete, machine-checkable-where-possible criteria for layout, responsiveness, every state, accessibility, visual polish, and microcopy. Use this skill whenever the user has approved a spec and is about to start building, or has just finished building and wants to verify the result. Always use it before shipping any UI feature, because without explicit acceptance criteria the only judge of "done" is vibes — and vibes drift between sessions.
+status: stable
 ---
 
 # UI Acceptance

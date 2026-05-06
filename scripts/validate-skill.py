@@ -1,16 +1,43 @@
 import os
 import re
 
+TODO_PATTERN = re.compile(r'(## TODO|- \[ \] TODO|TODO \(Human Review Required\))')
+
+
+def validate_shared_references(repo_root):
+    """Check that no shared/references file contains an unresolved TODO marker.
+
+    Shared references ship as part of the public toolkit — a TODO here is a
+    promise that wasn't kept, not an internal note.
+    """
+    refs_dir = os.path.join(repo_root, 'shared', 'references')
+    if not os.path.isdir(refs_dir):
+        return True
+
+    passed = True
+    for filename in sorted(os.listdir(refs_dir)):
+        if not filename.endswith('.md'):
+            continue
+        path = os.path.join(refs_dir, filename)
+        with open(path, 'r', encoding='utf-8') as f:
+            if TODO_PATTERN.search(f.read()):
+                print(f"[shared/references/{filename}] [FAIL] Unresolved 'TODO (Human Review Required)' marker. Resolve it before release.")
+                passed = False
+            else:
+                print(f"[shared/references/{filename}] [OK] Valid")
+    return passed
+
+
 def validate_skills():
     repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     skills_dir = os.path.join(repo_root, 'skills')
-    
+
     if not os.path.exists(skills_dir):
         print("Error: skills/ directory not found.")
         return False
-        
-    all_passed = True
-    
+
+    all_passed = validate_shared_references(repo_root)
+
     for skill_folder in os.listdir(skills_dir):
         skill_path = os.path.join(skills_dir, skill_folder)
         
@@ -83,7 +110,7 @@ def validate_skills():
                 skill_passed = False
                 
         # Check TODOs in stable skills
-        if status == 'stable' and re.search(r'(## TODO|- \[ \] TODO|TODO \(Human Review Required\))', content):
+        if status == 'stable' and TODO_PATTERN.search(content):
             print(f"[{skill_folder}] [FAIL] 'TODO' section found in stable skill. Resolve it or mark as draft.")
             skill_passed = False
 

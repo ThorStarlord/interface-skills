@@ -1,6 +1,7 @@
 ---
 name: ui-redline
 description: Diagnose an existing UI implementation (screenshot, code, or live URL) against an approved spec, identify mismatches, rank them by severity, prescribe exact fixes, and produce a copy-paste-ready refactor prompt that can be sent back to a code-generation step. Use this skill whenever the user has a built UI that doesn't match what they expected, says "this doesn't look right", "fix the layout", "review what was generated", or pastes a screenshot of an implementation. Always use it as the closing step of any build cycle when the result feels off — even if the user can't articulate exactly what's wrong, this skill names the mismatches and produces the fix.
+status: stable
 ---
 
 # UI Redline

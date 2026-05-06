@@ -19,24 +19,24 @@ Initial public release of the Interface Skills toolkit.
 
 **Skills (15 total)**
 
-Ten stable skills covering the full UI specification workflow:
+Nine stable skills covering the core UI specification workflow:
 - `ui-brief` — converts a vague UI idea into a structured, constraint-based product and design brief.
-- `ui-visual-calibration` — translates vague visual taste words ("clean", "modern") into concrete layout, density, and shape decisions. _(draft)_
 - `ui-flow` — produces a user journey graph for multi-screen features from an approved brief.
 - `ui-blueprint` — generates a layout and wireframe spec from an approved brief.
 - `ui-system` — defines a design token set (colors, spacing, typography) from brand and visual direction.
-- `ui-screen-spec` — produces a screen-level contract from a blueprint and system spec.
 - `ui-component-spec` — documents component anatomy, state matrix, keyboard map, and accessibility spec.
 - `ui-microcopy` — produces approved copy for all UI text (labels, errors, empty states, toasts).
 - `ui-acceptance` — converts an approved spec into a testable implementation checklist with severity levels and A/M tags.
 - `ui-redline` — audits an implementation against its spec and produces a mismatch report with refactor prompts.
-
-Five additional skills in draft:
-- `ui-spec-linter` — checks a full spec package for completeness and cross-spec consistency. _(draft)_
 - `ui-generate-code` — produces implementation code from an approved spec package.
-- `ui-inspector` — generates a DOM and accessibility evidence report from a live implementation. _(draft)_
-- `ui-storybook-docs` — generates MDX documentation, stories, and prop tables from a component spec. _(draft)_
-- `ui-orchestrator` — recommends the next skill to run given the current state of a spec package. _(draft)_
+
+Six additional skills in draft (output format may change between versions):
+- `ui-visual-calibration` — translates vague visual taste words ("clean", "modern") into concrete layout, density, and shape decisions.
+- `ui-screen-spec` — produces a screen-level contract from a blueprint and system spec.
+- `ui-spec-linter` — checks a full spec package for completeness and cross-spec consistency.
+- `ui-inspector` — generates a DOM and accessibility evidence report from a live implementation.
+- `ui-storybook-docs` — generates MDX documentation, stories, and prop tables from a component spec.
+- `ui-orchestrator` — recommends the next skill to run given the current state of a spec package.
 
 **Shared references (8 files)**
 
@@ -45,7 +45,7 @@ Cross-cutting reference documents used by multiple skills:
 - `shared/references/state-taxonomy.md` — standardised names for UI states (default, hover, focus, error, disabled, loading, empty, success).
 - `shared/references/vague-language-translator.md` — banned vague adjectives and their concrete translation questions.
 - `shared/references/token-schema.md` — the token naming schema (`color.*`, `space.*`, `type.*`) that all skills and system specs must follow.
-- `shared/references/severity-scale.md` — definitions for the four acceptance severity levels: blocker, major, minor, polish.
+- `shared/references/severity-scale.md` — definitions for the four acceptance severity levels (blocker, major, minor, polish) and their mapping to common bug-tracker priorities.
 - `shared/references/accessibility-baseline.md` — WCAG AA requirements and keyboard interaction defaults applied across all component specs.
 - `shared/references/responsive-patterns.md` — standard breakpoint names and reflow verb vocabulary (stack, collapse, hide, move, resize, swap).
 - `shared/references/spec-package-format.md` — the canonical definition of a spec package: which files are required, their names, and their order of creation.
@@ -60,7 +60,7 @@ Cross-cutting reference documents used by multiple skills:
 
 **CI / validation**
 
-- `scripts/validate-skill.py` — validates every skill in `skills/` for: presence of `SKILL.md`, valid YAML frontmatter, `name` matching the folder name, non-empty `description` ≥20 characters, presence of `agents/openai.yaml`, absence of unresolved `TODO` markers in stable skills, and existence of any `shared/references/` files explicitly cited in the skill.
+- `scripts/validate-skill.py` — validates every skill in `skills/` for: presence of `SKILL.md`, valid YAML frontmatter, `name` matching the folder name, non-empty `description` ≥20 characters, presence of `agents/openai.yaml`, absence of unresolved `TODO` markers in stable skills, and existence of any `shared/references/` files explicitly cited in the skill. Also validates that no file in `shared/references/` contains an unresolved `TODO (Human Review Required)` marker.
 - `.github/workflows/validate.yml` — GitHub Actions workflow that runs `validate-skill.py` on every push and pull request to `main`.
 
 **Documentation**

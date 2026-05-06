@@ -1,6 +1,7 @@
 ---
 name: ui-microcopy
 description: Write or refine UX copy — button labels, error messages, empty-state text, tooltips, helper text, loading messages, confirmation dialogs — to be specific, action-oriented, and consistent in voice. Use this skill whenever the user wants to review or improve the wording in a UI, when generated copy sounds robotic or generic (e.g. plain "Submit" buttons, "Invalid input" errors, "No data" empty states), when a brief has been written but the implementation language hasn't been decided, or as a step before ui-generate-code so the copy in the generated UI is intentional rather than default. Always use it on any UI where the user describes the audience as non-technical, because default AI copy is heavily skewed toward developer voice.
+status: stable
 ---
 
 # UI Microcopy

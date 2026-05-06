@@ -19,5 +19,21 @@ All `ui-system` definitions must follow this token schema structure.
 - `typography.*`
 - `shadow.*`
 
-## TODO (Human Review Required)
-- [ ] Align the required semantic categories with the user's preferred styling framework (e.g., Tailwind CSS, styled-components).
+## Mapping to common frameworks
+
+The schema above is framework-agnostic. When `ui-generate-code` emits implementation code, semantic tokens map onto the following targets:
+
+| Schema name              | Tailwind config key             | CSS variable form                |
+|--------------------------|----------------------------------|----------------------------------|
+| `color.background.*`     | `theme.colors.background`        | `--color-background-*`           |
+| `color.surface.*`        | `theme.colors.surface`           | `--color-surface-*`              |
+| `color.text.*`           | `theme.colors.text`              | `--color-text-*`                 |
+| `color.border.*`         | `theme.colors.border`            | `--color-border-*`               |
+| `color.action.*`         | `theme.colors.action`            | `--color-action-*`               |
+| `color.status.*`         | `theme.colors.status`            | `--color-status-*`               |
+| `space.*`                | `theme.spacing`                  | `--space-*`                      |
+| `radius.*`               | `theme.borderRadius`             | `--radius-*`                     |
+| `typography.*`           | `theme.fontFamily` / `fontSize`  | `--type-*`                       |
+| `shadow.*`               | `theme.boxShadow`                | `--shadow-*`                     |
+
+Component tokens (`button.background.default`) do not need to be exposed as CSS variables — they should resolve to a semantic token at build time. Only primitive and semantic tokens are part of the public theme API.

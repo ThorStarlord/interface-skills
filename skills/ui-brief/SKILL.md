@@ -1,6 +1,7 @@
 ---
 name: ui-brief
 description: Turn a vague UI idea into a structured product and design brief before any layout, component, or code work begins. Use this skill whenever a user describes a feature, screen, or product idea in loose terms ("I want to build a dashboard for...", "we need a login flow", "make a settings page") and wants to start designing or building. Always use it as the first step of any new UI work — even if the user seems eager to skip ahead to wireframes or code, because skipping the brief is the single most common cause of mismatched expectations between user and model.
+status: stable
 ---
 
 # UI Brief

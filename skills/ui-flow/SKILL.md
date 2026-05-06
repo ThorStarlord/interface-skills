@@ -1,6 +1,7 @@
 ---
 name: ui-flow
 description: Specify a multi-screen user journey or flow — the screens the user moves through, the decision points, the success and failure paths, and the state that carries between them — before any individual screen is blueprinted or built. Use this skill whenever the user is building something that spans more than one screen (signup flow, checkout, onboarding, multi-step form, wizard, settings drill-down) and is about to design or build any individual screen, because designing screens in isolation is the fastest way to ship a UI where the screens don't actually connect into a coherent journey.
+status: stable
 ---
 
 # UI Flow

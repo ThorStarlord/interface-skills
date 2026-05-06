@@ -47,7 +47,7 @@ Copy the relevant `SKILL.md` into your coding agent context.
 | `ui-flow`                 | brief for multi-screen feature | journey graph                     | `ui-blueprint`                          |
 | `ui-blueprint`            | approved brief                 | layout/wireframe spec             | `ui-screen-spec`, `ui-system`           |
 | `ui-system`               | brand/visual direction         | tokens and design rules           | `ui-component-spec`, `ui-generate-code` |
-| `ui-screen-spec`          | blueprint + system             | screen contract                   | `ui-component-spec`                     |
+| `ui-screen-spec` ⚠️        | blueprint + system             | screen contract                   | `ui-component-spec`                     |
 | `ui-component-spec`       | screen/component context       | anatomy/state/a11y spec           | `ui-acceptance`, `ui-generate-code`     |
 | `ui-microcopy`            | brief/spec                     | approved copy                     | `ui-acceptance`, `ui-generate-code`     |
 | `ui-acceptance`           | approved specs                 | testable checklist                | `ui-redline`                            |
