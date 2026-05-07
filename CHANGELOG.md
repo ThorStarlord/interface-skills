@@ -19,9 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `openai.yaml` — propagated richer `interface` metadata (display name, short description) to all skills.
 
 ### Added
-- `scripts/package-skill.py` — utility script to package skills for distribution; now bundles shared references, uses local paths in `SKILL.md`, and returns proper exit codes.
+- `scripts/package-skill.py` — utility script to package skills for distribution; now bundles shared references, uses local paths in `SKILL.md`, returns proper exit codes, and future-proofs by preserving all skill-local resources.
 - `SECURITY.md` — added public safety and privacy guidelines; updated contact info to GitHub Security Advisories.
 - `README.md` — added "Packaging a skill" usage instructions.
+- `.github/workflows/validate.yml` — added packaging smoke test to CI.
 
 ---
 

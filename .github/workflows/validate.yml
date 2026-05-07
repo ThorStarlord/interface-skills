@@ -22,3 +22,8 @@ jobs:
 
       - name: Run skill validator
         run: python scripts/validate-skill.py
+
+      - name: Smoke test packaging
+        run: |
+          python scripts/package-skill.py skills/ui-visual-calibration --output-dir dist
+          ls -R dist

@@ -29,11 +29,10 @@ def strip_frontmatter_metadata(content):
     # Reconstruct the file
     return f"---\n{new_frontmatter}\n---\n{parts[2]}"
 
-def package_skill(skill_dir, output_dir):
+def package_skill(skill_dir, output_dir, filename=None):
     skill_dir = os.path.normpath(skill_dir)
     skill_name = os.path.basename(skill_dir)
     skill_md_path = os.path.join(skill_dir, 'SKILL.md')
-    openai_yaml_path = os.path.join(skill_dir, 'agents', 'openai.yaml')
 
     if not os.path.exists(skill_md_path):
         print(f"Error: {skill_md_path} not found.")
@@ -43,13 +42,27 @@ def package_skill(skill_dir, output_dir):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    # Determine repo root (assuming script is in scripts/ and skills are in skills/)
-    # A more reliable way is to look for the .git or README.md in parent dirs
-    repo_root = os.getcwd() # Simple assumption: run from repo root
+    # Derive repo root from the script's location
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    repo_root = os.path.abspath(os.path.join(script_dir, ".."))
     
     with tempfile.TemporaryDirectory() as temp_dir:
-        # 1. Process SKILL.md
-        with open(skill_md_path, 'r', encoding='utf-8') as f:
+        # 1. Copy all skill-local content first (future-proofing)
+        # Exclude common temp/cache folders if they exist
+        def ignore_patterns(path, names):
+            ignored = []
+            for name in names:
+                if name in ['.git', '__pycache__', '.DS_Store', 'node_modules', 'dist']:
+                    ignored.append(name)
+            return ignored
+
+        # Copy everything from skill_dir to temp_dir
+        # We use dirs_exist_ok=True if needed, but temp_dir is fresh
+        shutil.copytree(skill_dir, temp_dir, ignore=ignore_patterns, dirs_exist_ok=True)
+
+        # 2. Process SKILL.md in temp_dir
+        temp_skill_md_path = os.path.join(temp_dir, 'SKILL.md')
+        with open(temp_skill_md_path, 'r', encoding='utf-8') as f:
             content = f.read()
         
         # Detect and bundle shared references
@@ -65,20 +78,18 @@ def package_skill(skill_dir, output_dir):
                     # Update content to point to local references/ directory
                     content = content.replace(f'shared/references/{ref_file}', f'references/{ref_file}')
                 else:
-                    print(f"Warning: Referenced file {src_ref_path} not found.")
+                    print(f"Error: Referenced shared file {src_ref_path} not found.")
+                    sys.exit(1)
         
         processed_content = strip_frontmatter_metadata(content)
         
-        with open(os.path.join(temp_dir, 'SKILL.md'), 'w', encoding='utf-8') as f:
+        with open(temp_skill_md_path, 'w', encoding='utf-8') as f:
             f.write(processed_content)
         
-        # 2. Process agents/openai.yaml if it exists
-        if os.path.exists(openai_yaml_path):
-            os.makedirs(os.path.join(temp_dir, 'agents'))
-            shutil.copy2(openai_yaml_path, os.path.join(temp_dir, 'agents', 'openai.yaml'))
-        
         # 3. Zip it
-        zip_path = os.path.join(output_dir, f"{skill_name}.zip")
+        out_filename = filename if filename else f"{skill_name}.zip"
+        zip_path = os.path.join(output_dir, out_filename)
+        
         with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zip_file:
             for root, dirs, files in os.walk(temp_dir):
                 for file in files:
@@ -92,6 +103,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Package a skill for distribution.')
     parser.add_argument('skill_dir', help='Path to the skill directory')
     parser.add_argument('--output-dir', default='dist', help='Output directory for the package (default: dist)')
+    parser.add_argument('--filename', help='Optional custom filename for the ZIP (default: <skill-name>.zip)')
     
     args = parser.parse_args()
-    package_skill(args.skill_dir, args.output_dir)
+    package_skill(args.skill_dir, args.output_dir, args.filename)
