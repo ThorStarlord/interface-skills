@@ -27,3 +27,6 @@ jobs:
         run: |
           python scripts/package-skill.py skills/ui-visual-calibration --output-dir dist
           ls -R dist
+          # Verify references are bundled and status is stripped
+          unzip -p dist/ui-visual-calibration.zip SKILL.md | grep "references/vague-language-translator.md"
+          ! unzip -p dist/ui-visual-calibration.zip SKILL.md | grep "^status:"

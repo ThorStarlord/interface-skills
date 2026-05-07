@@ -25,12 +25,19 @@ Do **not** use this skill when:
 
 **The orchestrator never does design work. Its only job is to read what exists and recommend the next logical step.** It is a router, not a builder. If it finds itself drafting a layout or writing copy, it has crossed a line. Hand off to the appropriate skill and stop.
 
+## Retrospective / spec-recovery mode
+
+If an implementation exists and no spec package exists, and the user wants to document or recover the specification, recommend `ui-inspector` first — not `ui-brief`.
+
+**Reason:** the existing UI is evidence. Capture it before reconstructing intent or proposing improvements.
+
 ## Routing logic
 
 The orchestrator checks for spec package files in pipeline order. The first missing or unapproved file determines the recommendation. Files are checked in the order below — do not skip ahead, even if the user asks.
 
 | If this file is missing or not approved | Recommend this skill |
 |---|---|
+| Implementation exists + no spec package + user wants spec recovery | `ui-inspector` |
 | `brief.md` | `ui-brief` |
 | `visual-calibration.md` | `ui-visual-calibration` |
 | `flow.md` (required for multi-screen features only) | `ui-flow` |
@@ -47,7 +54,7 @@ The orchestrator checks for spec package files in pipeline order. The first miss
 
 **Status values:** A file's frontmatter `status` field determines whether it counts as present. Accepted values in ascending order of completeness: `draft` → `approved` → `complete`. A file with `status: draft` is **not** approved — it counts as a gap. Only `approved` or `complete` clears a step.
 
-**Multi-screen vs single-screen:** `flow.md` is only required when the feature spans more than one screen. If the brief describes a single screen, skip the flow check and proceed to `blueprint-*.md`.
+**Multi-screen vs single-screen:** `flow.md` is only required when the feature spans more than one screen. If the brief describes a single screen, skip the flow check and proceed to `blueprint.md`.
 
 ## Workflow
 
@@ -81,7 +88,7 @@ The orchestrator does not produce a file. It produces a short conversational rec
 ## Orchestrator recommendation
 
 **Current state:**
-- `brief-<slug>.md` — approved
+- `brief.md` — approved
 - `visual-calibration.md` — missing
 - (remaining pipeline not yet evaluated)
 
@@ -105,7 +112,7 @@ The current state list should show only the files that have been scanned up to a
 ## Orchestrator recommendation
 
 **Current state:**
-- `brief-*.md` — missing
+- `brief.md` — missing
 
 **Gap identified:** No brief exists.
 
