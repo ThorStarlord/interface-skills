@@ -31,17 +31,18 @@ The orchestrator checks for spec package files in pipeline order. The first miss
 
 | If this file is missing or not approved | Recommend this skill |
 |---|---|
-| `brief-*.md` | `ui-brief` |
+| `brief.md` | `ui-brief` |
 | `visual-calibration.md` | `ui-visual-calibration` |
 | `flow.md` (required for multi-screen features only) | `ui-flow` |
-| `blueprint-*.md` | `ui-blueprint` |
+| `blueprint.md` | `ui-blueprint` |
 | `system.md` | `ui-system` |
-| `screen-spec-*.md` | `ui-screen-spec` |
+| `screen-spec.md` | `ui-screen-spec` |
 | `component-specs/*.md` | `ui-component-spec` |
 | `microcopy.md` | `ui-microcopy` |
-| `acceptance-*.md` | `ui-acceptance` |
+| `acceptance.md` | `ui-acceptance` |
 | All of the above exist and are approved; no implementation yet | `ui-spec-linter` |
-| Implementation exists but has not been reviewed | `ui-inspector` → `ui-redline` |
+| Implementation exists but `redlines/inspector-report.md` is absent | `ui-inspector` |
+| Inspector report exists but no redline audit exists | `ui-redline` |
 | Storybook or documentation output is needed | `ui-storybook-docs` |
 
 **Status values:** A file's frontmatter `status` field determines whether it counts as present. Accepted values in ascending order of completeness: `draft` → `approved` → `complete`. A file with `status: draft` is **not** approved — it counts as a gap. Only `approved` or `complete` clears a step.
@@ -52,7 +53,7 @@ The orchestrator checks for spec package files in pipeline order. The first miss
 
 ### Step 1 — Scan the working directory
 
-Look for spec package files using the naming conventions defined in the routing table above. List every file found with its `status` value from frontmatter. If a file has no frontmatter or no `status` field, treat it as `draft`.
+Look for spec package files using the canonical names defined in the routing table above (`brief.md`, `blueprint.md`, `screen-spec.md`, etc.) within the feature's spec package folder. List every file found with its `status` value from frontmatter. If a file has no frontmatter or no `status` field, treat it as `draft`.
 
 ### Step 2 — Check each file's status
 
@@ -62,7 +63,7 @@ For every file found, read its frontmatter `status` field. A file is only "done"
 
 Walk the routing table from top to bottom. Find the first row where the file is either missing entirely or has `status: draft`. That is the gap.
 
-If no gap is found in the spec pipeline (all files approved), check whether an implementation exists. If implementation exists but has not been reviewed, the gap is at `ui-inspector`. If storybook docs are needed and don't exist, the gap is at `ui-storybook-docs`.
+If no gap is found in the spec pipeline (all files approved), check whether an implementation exists. If implementation exists but `redlines/inspector-report.md` is absent, the gap is at `ui-inspector`. If an inspector report exists but no redline audit exists, the gap is at `ui-redline`. If storybook docs are needed and don't exist, the gap is at `ui-storybook-docs`.
 
 ### Step 4 — Recommend the skill that fills the gap
 
@@ -118,14 +119,14 @@ The current state list should show only the files that have been scanned up to a
 ### Example 2 — brief approved, calibration missing
 
 **Working directory contents:**
-- `brief-settings-page.md` — `status: approved`
+- `settings-page/brief.md` — `status: approved`
 
 **Orchestrator output:**
 ```
 ## Orchestrator recommendation
 
 **Current state:**
-- `brief-settings-page.md` — approved
+- `brief.md` — approved
 - `visual-calibration.md` — missing
 
 **Gap identified:** No visual calibration sheet exists.
@@ -140,20 +141,20 @@ The current state list should show only the files that have been scanned up to a
 ### Example 3 — most of the pipeline done, one file still draft
 
 **Working directory contents:**
-- `brief-checkout.md` — `status: approved`
-- `visual-calibration.md` — `status: approved`
-- `blueprint-checkout.md` — `status: draft`
+- `checkout/brief.md` — `status: approved`
+- `checkout/visual-calibration.md` — `status: approved`
+- `checkout/blueprint.md` — `status: draft`
 
 **Orchestrator output:**
 ```
 ## Orchestrator recommendation
 
 **Current state:**
-- `brief-checkout.md` — approved
+- `brief.md` — approved
 - `visual-calibration.md` — approved
-- `blueprint-checkout.md` — draft (not yet approved)
+- `blueprint.md` — draft (not yet approved)
 
-**Gap identified:** `blueprint-checkout.md` exists but is still in draft status.
+**Gap identified:** `blueprint.md` exists but is still in draft status.
 
 **Recommended next skill:** `ui-blueprint`
 

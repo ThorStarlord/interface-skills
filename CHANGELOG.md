@@ -7,7 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_(No unreleased changes at this time.)_
+### Changed
+- `ui-brief` — output save instruction updated to canonical spec-package filename (`brief.md` inside feature folder) instead of `brief-<slug>.md`.
+- `ui-inspector` — output save path updated to `redlines/inspector-report.md` to match canonical spec-package layout.
+- `ui-orchestrator` — routing table updated to canonical filenames; split the two-skill `ui-inspector → ui-redline` row into two separate rows, preserving the one-gap-one-skill rule.
+- `ui-screen-spec` — rewritten from a 33-line stub to a full first-class skill with when-to-use, pre-flight check, workflow, output template, examples, anti-patterns, and acceptance criteria.
+- `README.md` — "Recommended First Workflow" renamed to "Minimum viable workflow"; added "Full documentation-first workflow" showing all 13 steps.
+- `CONTRIBUTING.md` — added "Frontmatter compatibility" note explaining that `status` is a repo-internal key.
+- `skills/ui-brief/agents/openai.yaml` — added `interface` block with `display_name` and `short_description` as a packaging pattern example.
 
 ---
 

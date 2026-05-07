@@ -32,6 +32,8 @@ The validation script (`scripts/validate-skill.py`) will fail if a `TODO (Human 
    ```
    New skills always start as `draft`. Do not set `status: stable` until the acceptance criteria section passes and a reviewer has confirmed the output format.
 
+   > **Frontmatter compatibility note.** The `status` key is a repo-internal field used by `scripts/validate-skill.py` and the README skill map. It is not part of the ChatGPT Skill specification. If you intend to upload a skill directly to a platform that only accepts `name` and `description` in frontmatter, strip the `status` key before packaging. The easiest approach is to copy the `name` and `description` values from `SKILL.md` into the platform's upload form rather than uploading the file directly.
+
 3. **Write the `## When to use this skill` section.** Include both a "Use when" list and a "Do not use when" list. Be specific about what upstream artifacts the skill requires (e.g. "requires an approved brief") and what it produces.
 
 4. **Write the `## Workflow` section.** Number the steps. Each step should describe what the model does, what it checks, and what it produces. If a step depends on user input or confirmation, say so explicitly.

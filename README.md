@@ -30,13 +30,30 @@ Each folder under `skills/` is intended to be packaged as an individual Skill. T
 ### Option B: As agent instructions
 Copy the relevant `SKILL.md` into your coding agent context.
 
-### Recommended First Workflow
+### Minimum viable workflow
+For small, well-scoped features where visual tone is already agreed:
 1. Run `ui-brief`
 2. Run `ui-blueprint`
 3. Run `ui-component-spec`
 4. Run `ui-acceptance`
 5. Run `ui-generate-code`
 6. Run `ui-redline`
+
+### Full documentation-first workflow
+For new products, unfamiliar domains, or any work where misalignment is expensive:
+1. Run `ui-brief`
+2. Run `ui-visual-calibration`
+3. Run `ui-flow` *(multi-screen features only)*
+4. Run `ui-blueprint`
+5. Run `ui-system`
+6. Run `ui-screen-spec`
+7. Run `ui-component-spec`
+8. Run `ui-microcopy`
+9. Run `ui-acceptance`
+10. Run `ui-spec-linter`
+11. Run `ui-generate-code`
+12. Run `ui-inspector`
+13. Run `ui-redline`
 
 ## Skill Map
 

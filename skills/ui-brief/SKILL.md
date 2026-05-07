@@ -68,7 +68,7 @@ End with a numbered list of every assumption made and every open question. Ask t
 
 ## Output template
 
-Always produce output in this exact structure. Save it as `brief-<slug>.md` if the environment supports files.
+Always produce output in this exact structure. Save it as `brief.md` inside a `<feature-name>/` spec package folder. The folder name carries the feature slug — the file name is always `brief.md`. Do not rename it to `brief-<slug>.md`; downstream skills look for the canonical name.
 
 ```markdown
 ---

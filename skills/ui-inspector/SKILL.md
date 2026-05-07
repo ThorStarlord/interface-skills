@@ -133,7 +133,7 @@ Both paths produce the same evidence report schema. Note which path was used in 
 
 ## Evidence report schema
 
-Produce the evidence report in this exact structure. Save it as `inspector-<slug>-<YYYY-MM-DD>.md` in the `redlines/` directory of the spec package.
+Produce the evidence report in this exact structure. Save it as `inspector-report.md` in the `redlines/` directory of the spec package. If multiple inspection runs exist, add a date suffix: `inspector-report-<YYYY-MM-DD>.md`.
 
 ```markdown
 ---
