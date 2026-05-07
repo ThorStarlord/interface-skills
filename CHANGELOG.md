@@ -25,7 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `.github/workflows/validate.yml` — added packaging smoke test to CI; enhanced to verify reference bundling and frontmatter stripping.
 - `CONTRIBUTING.md` — added guidelines for Spec Recovery and the "Observed vs Target" protocol.
 - `ui-brief`, `ui-blueprint`, `ui-screen-spec` — updated to explicitly support Spec Recovery with the Observed vs Target pattern.
-- `ui-orchestrator` — updated to support "Spec Recovery" mode, recommending `ui-inspector` first when implementation exists but no spec package exists.
+- `ui-orchestrator` — updated with Spec Recovery priority routing; fixed last remaining canonical filename references.
+- `ui-spec-linter` — standardized directory references to `component-specs/`.
+- `ui-visual-calibration` — added Spec Recovery support (Observed vs Target visual language).
 
 ---
 

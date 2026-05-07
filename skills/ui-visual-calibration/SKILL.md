@@ -14,6 +14,7 @@ Use this skill when:
 - The user provides vague aesthetic words: "clean", "modern", "minimal", "professional", "sleek".
 - The user references a product they like: "make it feel like Notion", "I want it to look like Linear", "something like Stripe's dashboard".
 - The user is starting blueprint work and no visual-calibration.md exists yet.
+- **Spec Recovery:** An implementation exists but no visual calibration sheet was created. Use this to document the as-built visual language and define the target visual language.
 - A visual-calibration.md exists but is out of date after a brand change, a pivot, or a design direction reset.
 
 Do **not** use this skill when:
@@ -23,6 +24,16 @@ Do **not** use this skill when:
 ## Core principle
 
 **Every vague word is a liability.** When the model encounters "clean" without translation, it makes a silent decision — likely the wrong one. This skill forces every vague aesthetic signal to become an explicit, user-confirmed choice before layout work begins. Unresolved vagueness at this stage multiplies into mismatched blueprints, mismatched components, and wasted revision cycles downstream.
+
+## Observed vs. Target (Spec Recovery protocol)
+
+When using this skill for **Spec Recovery**, distinguish between the current aesthetics and the intended style:
+
+- **Observed Visual Language:** The density, shape language, and surface styles as they exist in the current implementation.
+- **Target Visual Language:** The desired aesthetic direction (e.g., if the user wants to keep the sidebar but make the palette "cleaner").
+- **Gap:** Inconsistencies or accidental aesthetic choices in the current UI.
+
+Use this to ensure the calibration sheet serves as a ground truth for intent, not just a description of implementation artifacts.
 
 ## Workflow
 

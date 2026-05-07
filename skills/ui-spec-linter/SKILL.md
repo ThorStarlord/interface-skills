@@ -41,7 +41,7 @@ Check that the minimum required files are present and that each file is fully po
 | `brief.md` | Required |
 | `blueprint.md` | Required |
 | `system.md` | Required |
-| At least one file under `components/` | Required |
+| At least one file under `component-specs/` | Required |
 | `acceptance.md` | Required before code generation |
 | `microcopy.md` | Required if any user-visible copy exists |
 
@@ -98,7 +98,7 @@ Check that claims made in one file do not contradict claims made in another.
 
 ### Category 4 — State coverage
 
-For every interactive component in the `components/` directory, check that the states matrix covers the required states.
+For every interactive component in the `component-specs/` directory, check that the states matrix covers the required states.
 
 **Required states per component type:**
 
@@ -143,9 +143,9 @@ status: draft
 | Severity | Category | File | Issue | Suggested Fix |
 |---|---|---|---|---|
 | blocker | Completeness | brief.md | Section §8 Non-goals is empty | Add at least one explicit non-goal |
-| blocker | State Coverage | components/button.md | Loading state missing; button triggers async submit | Add loading state to states matrix with spinner and disabled-during-load behavior |
+| blocker | State Coverage | component-specs/button.md | Loading state missing; button triggers async submit | Add loading state to states matrix with spinner and disabled-during-load behavior |
 | major | Vocabulary | blueprint.md | "generous spacing" used without a token value | Replace with `space.8` (32px) or the relevant token name |
-| major | Consistency | components/form.md | Breakpoints defined for mobile/desktop only; brief §7 states "cross-platform including tablet" | Add tablet breakpoint (768px) to component spec |
+| major | Consistency | component-specs/form.md | Breakpoints defined for mobile/desktop only; brief §7 states "cross-platform including tablet" | Add tablet breakpoint (768px) to component spec |
 | minor | Vocabulary | system.md | Token `color.border.subtle` defined but not referenced in any component spec | Remove token or add a reference note explaining its intended use |
 
 ## Summary
@@ -189,7 +189,7 @@ Execute each check in the consistency table above in order. For each check, quot
 
 ### Step 5 — Run state coverage checks
 
-For each component spec in `components/`, identify the component's type (button, input, list, etc.) and check the states matrix against the required state list for that type. Record any missing states with the component file name.
+For each component spec in `component-specs/`, identify the component's type (button, input, list, etc.) and check the states matrix against the required state list for that type. Record any missing states with the component file name.
 
 ---
 

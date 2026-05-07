@@ -35,10 +35,10 @@ If an implementation exists and no spec package exists, and the user wants to do
 
 The orchestrator checks for spec package files in pipeline order. The first missing or unapproved file determines the recommendation. Files are checked in the order below — do not skip ahead, even if the user asks.
 
-| If this file is missing or not approved | Recommend this skill |
+| If this condition is met | Recommend this skill |
 |---|---|
-| Implementation exists + no spec package + user wants spec recovery | `ui-inspector` |
-| `brief.md` | `ui-brief` |
+| Implementation exists + no spec package + user wants Spec Recovery | `ui-inspector` |
+| `brief.md` is missing or not approved | `ui-brief` |
 | `visual-calibration.md` | `ui-visual-calibration` |
 | `flow.md` (required for multi-screen features only) | `ui-flow` |
 | `blueprint.md` | `ui-blueprint` |
