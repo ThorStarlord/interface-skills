@@ -20,8 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - `scripts/package-skill.py` — utility script to package skills for distribution; now bundles shared references, uses local paths in `SKILL.md`, returns proper exit codes, and future-proofs by preserving all skill-local resources.
+- `scripts/install-claude-code-skill.py` — [NEW] installer for Claude Code (global and project scopes).
 - `SECURITY.md` — added public safety and privacy guidelines; updated contact info to GitHub Security Advisories.
-- `README.md` — added "Packaging a skill" usage instructions; added "Retrospective specification" (Spec Recovery) workflow.
+- `README.md` — added "Packaging a skill" usage instructions; added "Retrospective specification" (Spec Recovery) workflow; added Claude Code installation options.
+- `docs/claude-code-installation.md` — [NEW] guide for installing and using skills with Claude Code.
 - `.github/workflows/validate.yml` — added packaging smoke test to CI; enhanced to verify reference bundling and frontmatter stripping.
 - `CONTRIBUTING.md` — added guidelines for Spec Recovery and the "Observed vs Target" protocol.
 - `ui-brief`, `ui-blueprint`, `ui-screen-spec` — updated to explicitly support Spec Recovery with the Observed vs Target pattern.

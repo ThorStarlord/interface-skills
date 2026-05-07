@@ -31,18 +31,20 @@ Each folder under `skills/` is intended to be packaged as an individual Skill. T
 Copy the relevant `SKILL.md` into your coding agent context.
 
 ### Option C: Individual Skill ZIPs
+For platforms that require single skills (e.g. ChatGPT builder), you can package any folder as a self-contained ZIP using `scripts/package-skill.py`.
 
-For platforms or workflows that require single skills (e.g. uploading to a specific agent's skill library), you can package any folder as a self-contained ZIP.
-
-#### Packaging a skill
-
-Use the provided utility script to bundle a skill and its required shared references:
+### Option D: Claude Code (Recommended)
+Claude Code can use these skills globally or per-project. Use the installer script to ensure all shared references are bundled correctly:
 
 ```bash
-python scripts/package-skill.py skills/ui-brief --output-dir dist
+# Install globally for all projects
+python scripts/install-claude-code-skill.py skills/ui-brief --scope global
+
+# Install for the current project only
+python scripts/install-claude-code-skill.py skills/ui-brief --scope project
 ```
 
-This creates `dist/ui-brief.zip`, stripping repo-internal metadata and bundling any cited `shared/references/*.md` files into a local `references/` folder inside the ZIP.
+See [Claude Code Installation Guide](./docs/claude-code-installation.md) for full details.
 
 ### Minimum viable workflow
 For small, well-scoped features where visual tone is already agreed:
