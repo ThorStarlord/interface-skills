@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keep a changelog.com/en/1.0.0/),
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
@@ -19,8 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `openai.yaml` — propagated richer `interface` metadata (display name, short description) to all skills.
 
 ### Added
-- `scripts/package-skill.py` — utility script to strip repo-internal frontmatter and package skills for distribution.
-- `SECURITY.md` — added public safety and privacy guidelines for examples and test data.
+- `scripts/package-skill.py` — utility script to package skills for distribution; now bundles shared references, uses local paths in `SKILL.md`, and returns proper exit codes.
+- `SECURITY.md` — added public safety and privacy guidelines; updated contact info to GitHub Security Advisories.
+- `README.md` — added "Packaging a skill" usage instructions.
 
 ---
 

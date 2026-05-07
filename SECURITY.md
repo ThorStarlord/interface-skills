@@ -12,7 +12,7 @@ The Interface Skills toolkit is an open-source project. To protect the privacy a
 
 If you discover sensitive data in the repository, its history, or a security vulnerability, please do not open a public issue. Instead, report it through the following channels:
 
-- **Email:** security@example.com (Placeholder: Replace with real security contact if available)
-- **Private Message:** Reach out to the maintainers directly.
+- **Security Advisories:** Report vulnerabilities through GitHub Security Advisories if available for this repository.
+- **Maintainer Contact:** Reach out to the maintainers directly through their GitHub profiles.
 
 We will work to scrub the history or patch the vulnerability as quickly as possible.

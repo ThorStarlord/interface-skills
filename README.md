@@ -30,6 +30,20 @@ Each folder under `skills/` is intended to be packaged as an individual Skill. T
 ### Option B: As agent instructions
 Copy the relevant `SKILL.md` into your coding agent context.
 
+### Option C: Individual Skill ZIPs
+
+For platforms or workflows that require single skills (e.g. uploading to a specific agent's skill library), you can package any folder as a self-contained ZIP.
+
+#### Packaging a skill
+
+Use the provided utility script to bundle a skill and its required shared references:
+
+```bash
+python scripts/package-skill.py skills/ui-brief --output-dir dist
+```
+
+This creates `dist/ui-brief.zip`, stripping repo-internal metadata and bundling any cited `shared/references/*.md` files into a local `references/` folder inside the ZIP.
+
 ### Minimum viable workflow
 For small, well-scoped features where visual tone is already agreed:
 1. Run `ui-brief`
