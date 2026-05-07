@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+The format is based on [Keep a Changelog](https://keep a changelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
@@ -12,9 +12,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ui-inspector` — output save path updated to `redlines/inspector-report.md` to match canonical spec-package layout.
 - `ui-orchestrator` — routing table updated to canonical filenames; split the two-skill `ui-inspector → ui-redline` row into two separate rows, preserving the one-gap-one-skill rule.
 - `ui-screen-spec` — rewritten from a 33-line stub to a full first-class skill with when-to-use, pre-flight check, workflow, output template, examples, anti-patterns, and acceptance criteria.
+- `ui-redline` — updated to explicitly consume `redlines/inspector-report.md` as primary evidence.
+- `ui-generate-code` — updated to recommend `ui-spec-linter` as a preferred gate before code generation.
 - `README.md` — "Recommended First Workflow" renamed to "Minimum viable workflow"; added "Full documentation-first workflow" showing all 13 steps.
-- `CONTRIBUTING.md` — added "Frontmatter compatibility" note explaining that `status` is a repo-internal key.
-- `skills/ui-brief/agents/openai.yaml` — added `interface` block with `display_name` and `short_description` as a packaging pattern example.
+- `CONTRIBUTING.md` — added "Frontmatter compatibility" note explaining that `status` is a repo-internal key; added a "Public Safety & Privacy" note.
+- `openai.yaml` — propagated richer `interface` metadata (display name, short description) to all skills.
+
+### Added
+- `scripts/package-skill.py` — utility script to strip repo-internal frontmatter and package skills for distribution.
+- `SECURITY.md` — added public safety and privacy guidelines for examples and test data.
 
 ---
 

@@ -28,7 +28,8 @@ Do **not** use this skill when:
 Before drafting, confirm:
 
 1. **A spec exists.** Brief, blueprint, component spec, system spec, or acceptance checklist. At least one. Without a spec, the redline has nothing to compare to.
-2. **The implementation is available** — as a screenshot, a code snippet, a live URL, or all three. The richer the input, the better the diagnosis.
+2. **The implementation evidence is available.** This can be a screenshot, code snippet, or live URL.
+   **Preferred input:** Use the evidence report produced by `ui-inspector` (found at `redlines/inspector-report.md`) as the primary data source, supplemented by screenshots or code where helpful.
 3. **The user knows what they're complaining about, or is genuinely unsure.** If they can articulate it ("the button is the wrong color, the spacing is too tight"), capture those as starting points. If they can't ("just looks weird"), proceed systematically through the spec.
 
 If no spec exists, refuse and propose: "Let's recover a brief and blueprint quickly first — otherwise I'm just guessing what you wanted."
@@ -56,11 +57,14 @@ List the spec sections that apply to this implementation. For example, for a bui
 
 These become the audit frame.
 
-### Step 2 — Walk the spec, check the implementation
+### Step 2 — Walk the spec, check the implementation evidence
 
-For each section, compare what the spec says against what the implementation does.
+For each section, compare what the spec says against what the implementation evidence shows. Use `redlines/inspector-report.md` as your source of truth for computed values.
 
-For screenshots:
+For the inspector report:
+- Compare computed values (colors, spacing, font sizes) against the design tokens in the spec.
+- Check the DOM inventory for semantic completeness.
+- Review accessibility findings for violations.
 - Eyeball layout, hierarchy, color, spacing.
 - Look for missing visual indicators (focus rings, hover states often invisible in static screenshots — note "cannot verify from screenshot" for those).
 

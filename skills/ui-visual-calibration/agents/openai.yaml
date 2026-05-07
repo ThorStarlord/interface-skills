@@ -1,2 +1,8 @@
 name: ui-visual-calibration
 description: Directly solves the “mental picture mismatch” problem by defining density, layout archetypes, etc.
+
+# Optional display metadata — strip before uploading to platforms that only accept name + description.
+# See CONTRIBUTING.md "Frontmatter compatibility note" for guidance.
+interface:
+  display_name: UI Visual Calibration
+  short_description: Establish the visual mood and aesthetic direction via reference analysis.

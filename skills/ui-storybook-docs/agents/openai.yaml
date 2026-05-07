@@ -1,2 +1,8 @@
 name: ui-storybook-docs
 description: For reusable component documentation
+
+# Optional display metadata — strip before uploading to platforms that only accept name + description.
+# See CONTRIBUTING.md "Frontmatter compatibility note" for guidance.
+interface:
+  display_name: UI Storybook Docs
+  short_description: Generate Storybook documentation and usage guidelines for components.

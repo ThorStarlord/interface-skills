@@ -1,2 +1,8 @@
 name: ui-orchestrator
 description: Chooses the right workflow and prevents skill overlap
+
+# Optional display metadata — strip before uploading to platforms that only accept name + description.
+# See CONTRIBUTING.md "Frontmatter compatibility note" for guidance.
+interface:
+  display_name: UI Orchestrator
+  short_description: Guide the UI development process by identifying the next required skill.

@@ -1,2 +1,8 @@
 name: ui-spec-linter
 description: Prevents bad specs from reaching code by validating completeness and internal consistency.
+
+# Optional display metadata — strip before uploading to platforms that only accept name + description.
+# See CONTRIBUTING.md "Frontmatter compatibility note" for guidance.
+interface:
+  display_name: UI Spec Linter
+  short_description: Audit a spec package for completeness, consistency, and design gaps.

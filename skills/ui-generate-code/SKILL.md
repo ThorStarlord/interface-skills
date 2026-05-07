@@ -11,7 +11,7 @@ Generates frontend code from an existing spec. The job of this skill is **not** 
 ## When to use this skill
 
 Use this skill when:
-- A spec (`ui-component-spec` minimum, ideally with `ui-system`) has been approved and the user wants the implementation.
+- A spec (`ui-component-spec` minimum, ideally with `ui-system`) has been approved and validated (ideally via `ui-spec-linter`) and the user wants the implementation.
 - The user says "implement", "code this up", "build the component", "generate the React/Vue/HTML/etc. for this".
 
 Do **not** use this skill when:
@@ -37,7 +37,7 @@ These are non-negotiable. Violating them defeats the purpose of the kit.
 
 Before writing any code, confirm:
 
-1. **A component spec exists.** Read it. If it doesn't exist, refuse and ask the user to run `ui-component-spec`.
+1. **A component spec exists and is validated.** Read it. If it hasn't been run through `ui-spec-linter` yet, recommend doing so to catch gaps early. If no spec exists, refuse and ask the user to run `ui-component-spec`.
 2. **A system spec exists** (or the user has confirmed it's not needed). If components reference tokens that aren't defined, the code will hardcode values — which violates rule 2.
 3. **Framework / language target is known.** "React", "Vue", "vanilla HTML+CSS", "React with Tailwind", "Svelte" — the user must specify. Do not pick a default.
 4. **Styling approach is known.** Tailwind utility classes? CSS modules? Styled-components? Inline styles? Plain CSS file? The user must specify.

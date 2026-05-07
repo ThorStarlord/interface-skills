@@ -1,2 +1,8 @@
 name: ui-screen-spec
 description: Missing bridge between blueprint and components (turns layout into implementation-ready screen contracts)
+
+# Optional display metadata — strip before uploading to platforms that only accept name + description.
+# See CONTRIBUTING.md "Frontmatter compatibility note" for guidance.
+interface:
+  display_name: UI Screen Spec
+  short_description: Define screen-level components, data requirements, and responsive behavior.

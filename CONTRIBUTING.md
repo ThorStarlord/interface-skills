@@ -121,3 +121,11 @@ Add to this file when you identify a new banned vague word and its concrete tran
 
 **Creating a new reference file**
 Only create a new file under `shared/references/` if the content is genuinely cross-cutting — referenced by three or more skills or examples. Single-skill reference material belongs in the skill's own `SKILL.md`. When you create a new reference file, update `README.md` to mention it under the relevant section, and check whether the validation script's shared-reference checker needs to be updated to recognise the new filename.
+
+---
+
+## Public Safety & Privacy
+
+Do not commit private screenshots, customer data, API keys, proprietary brand assets, or internal company docs to this repository. All examples and test data should be fictional or thoroughly sanitized.
+
+If you discover sensitive data in the repository or its history, please report it immediately as a security concern so we can scrub the history.

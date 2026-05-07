@@ -1,2 +1,8 @@
 name: ui-inspector
 description: Turns diagnosis into evidence by gathering DOM/screenshot facts before redlining
+
+# Optional display metadata — strip before uploading to platforms that only accept name + description.
+# See CONTRIBUTING.md "Frontmatter compatibility note" for guidance.
+interface:
+  display_name: UI Inspector
+  short_description: Gather DOM, style, and accessibility evidence from a live UI.
