@@ -14,6 +14,7 @@ Use this skill when:
 - A brief exists (preferably from `ui-brief`) and the user is ready to think about layout.
 - The user asks "what should this screen look like" or "wireframe this for me".
 - A previous attempt at building this UI produced something the user didn't envision — re-blueprinting can recover.
+- **Spec Recovery:** An implementation exists but no blueprint was created. Use this skill to document the as-built layout and hierarchy before improvements.
 
 Do **not** use this skill when:
 - No brief exists. Run `ui-brief` first. If the user refuses, document the brief inline at the top of the blueprint as a compressed `## Implied brief` block — but tell the user this is a substitute, not a replacement.
@@ -33,6 +34,16 @@ Before drafting, confirm:
 4. **Information density preference is known.** Dense (B2B data tables, dashboards) vs. sparse (consumer onboarding, marketing). If the brief did not specify, ask before drafting.
 
 If any of the four is missing, ask the user. Do not pick a default silently.
+
+## Observed vs. Target (Spec Recovery protocol)
+
+When using this skill for **Spec Recovery**, distinguish between the current implementation and the desired layout:
+
+- **Observed:** The layout, hierarchy, and responsive behavior as they exist in the current UI (the "as-built").
+- **Target:** The intended or improved layout and hierarchy.
+- **Gap:** Any mismatch or unintentional layout decision in the current UI.
+
+Use this pattern to ensure the recovered blueprint is a faithful document of intent, not just a description of accidental code.
 
 ## Workflow
 

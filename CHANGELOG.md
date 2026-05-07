@@ -21,8 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `scripts/package-skill.py` — utility script to package skills for distribution; now bundles shared references, uses local paths in `SKILL.md`, returns proper exit codes, and future-proofs by preserving all skill-local resources.
 - `SECURITY.md` — added public safety and privacy guidelines; updated contact info to GitHub Security Advisories.
-- `README.md` — added "Packaging a skill" usage instructions.
+- `README.md` — added "Packaging a skill" usage instructions; added "Retrospective specification" (Spec Recovery) workflow.
 - `.github/workflows/validate.yml` — added packaging smoke test to CI.
+- `CONTRIBUTING.md` — added guidelines for Spec Recovery and the "Observed vs Target" protocol.
+- `ui-brief`, `ui-blueprint`, `ui-screen-spec` — updated to explicitly support Spec Recovery with the Observed vs Target pattern.
 
 ---
 

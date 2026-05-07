@@ -14,6 +14,7 @@ Use this skill when:
 - The user describes a feature in loose terms and wants to start building.
 - The user says things like "I want a screen that...", "we need a flow for...", "build me a UI for...".
 - Earlier conversation has produced design or code without a brief and the result missed the user's intent — a brief should be reconstructed before continuing.
+- **Spec Recovery:** A UI implementation already exists but no specification was created. In this case, use the brief to recover the missing product and design intent.
 
 Do **not** use this skill when:
 - A brief already exists and is current. Read it instead.
@@ -38,6 +39,16 @@ These words are banned from briefs unless translated into concrete choices:
 | professional | What signals professionalism in this context? Muted palette? Serif type? Dense data tables? |
 
 When the user uses one of these words, ask them to translate it before proceeding. If they can't, mark it as an assumption (see Assumptions protocol below).
+
+## Observed vs. Target (Spec Recovery protocol)
+
+When using this skill to recover a brief from an existing UI (Retrospective Specification), every section must distinguish between what is **Observed** (the current code/UI) and what is the **Target** (the recovered intent).
+
+- **Observed:** What the current implementation actually does.
+- **Target:** What the user intended or what the spec says it *should* do.
+- **Issue/Gap:** Any mismatch between Observed and Target.
+
+Use this pattern in your reasoning and, where appropriate, in the brief's sections to prevent accidental implementation choices from being silently promoted to "official" design decisions.
 
 ## Workflow
 

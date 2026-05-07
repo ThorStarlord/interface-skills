@@ -106,6 +106,19 @@ Every pull request must include a description that covers:
 
 ---
 
+## Retrospective Specification (Spec Recovery)
+
+When contributing to or using skills for **Spec Recovery** (reconstructing a spec from an existing UI), follow these rules:
+
+1. **Explicit Workflow:** If a skill supports recovery mode, ensure its `## When to use` section mentions it explicitly (e.g., using the `**Spec Recovery:**` label).
+2. **Observed vs. Target Pattern:** Every recovered spec must distinguish between what is currently implemented and what is actually intended. Use this pattern to prevent accidental implementation choices from becoming "official" design decisions:
+   - **Observed:** What the current implementation actually does (as seen in screenshots, code, or `ui-inspector` reports).
+   - **Target:** What the recovered intent or desired behavior is.
+   - **Gap/Issue:** The difference between Observed and Target.
+3. **Evidence-First:** Recovery work should always start with `ui-inspector` to gather evidence before intent is reconstructed with `ui-brief`.
+
+---
+
 ## Updating shared references
 
 The files under `shared/references/` are referenced by multiple skills. Changes to them can affect many skills at once.

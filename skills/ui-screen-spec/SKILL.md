@@ -15,6 +15,7 @@ This is the document that prevents the most common handoff failure: a developer 
 Use this skill when:
 - A blueprint exists and has `status: approved`.
 - The user is ready to think about component placement, data flow, and state ownership before writing any component specs or code.
+- **Spec Recovery:** An implementation exists but no screen spec was created. Use this skill retrospectively to bridge layout and implementation decisions.
 - A previous implementation had the right layout but wrong state handling, empty states, or loading behavior — a screen spec should be produced retrospectively before reworking it.
 - The feature involves more than two interactive regions — this is where the coordination cost justifies a screen spec.
 
@@ -38,6 +39,16 @@ Before drafting, confirm you have:
 4. **A clear list of regions from the blueprint.** Every region in the screen spec must correspond to a named region in the blueprint's wireframe. Do not invent regions not shown in the wireframe.
 
 If any of the four is missing, ask the user or read the upstream document before proceeding.
+
+## Observed vs. Target (Spec Recovery protocol)
+
+When using this skill for **Spec Recovery**, distinguish between the current implementation and the desired contract:
+
+- **Observed:** How the current implementation handles component boundaries, data flow, and state ownership.
+- **Target:** The intended or improved contract (what an implementer *should* follow).
+- **Gap:** Any missing states, data flow errors, or architectural mismatches in the current implementation.
+
+Use this pattern to ensure the recovered screen spec is a coordination document of intent, not just a description of the current (potentially accidental) architecture.
 
 ## Workflow
 

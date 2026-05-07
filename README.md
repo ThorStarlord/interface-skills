@@ -69,6 +69,20 @@ For new products, unfamiliar domains, or any work where misalignment is expensiv
 12. Run `ui-inspector`
 13. Run `ui-redline`
 
+### Retrospective specification workflow
+Use this when a UI already exists but no specification was created first ("Spec Recovery").
+
+1. Run `ui-inspector` on the existing UI implementation.
+2. Run `ui-brief` to reconstruct the missing product and design intent.
+3. Run `ui-visual-calibration` to name the existing visual language.
+4. Run `ui-blueprint` to document the as-built layout.
+5. Run `ui-screen-spec` to map regions, components, data, and states.
+6. Run `ui-component-spec` for each non-trivial component.
+7. Run `ui-microcopy` to extract and approve existing UI text.
+8. Run `ui-acceptance` to create the target checklist.
+9. Run `ui-spec-linter` to check the recovered spec package.
+10. Optionally run `ui-redline` to compare the existing UI against the recovered target spec.
+
 ## Skill Map
 
 | Skill                     | Input                          | Output                            | Next                                    |
