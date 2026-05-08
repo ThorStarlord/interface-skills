@@ -25,8 +25,14 @@ jobs:
 
       - name: Smoke test packaging
         run: |
-          python scripts/package-skill.py skills/ui-visual-calibration --output-dir dist
-          ls -R dist
-          # Verify references are bundled and status is stripped
+          # Package every skill and verify each ZIP is valid
+          for skill_dir in skills/*/; do
+            skill_name=$(basename "$skill_dir")
+            python scripts/package-skill.py "$skill_dir" --output-dir dist --skip-validation
+            echo "Checking $skill_name.zip..."
+            # Verify status is stripped from every packaged SKILL.md
+            ! unzip -p "dist/${skill_name}.zip" SKILL.md | grep "^status:"
+          done
+          # Spot-check that shared references are bundled for a skill that uses them
           unzip -p dist/ui-visual-calibration.zip SKILL.md | grep "references/vague-language-translator.md"
-          ! unzip -p dist/ui-visual-calibration.zip SKILL.md | grep "^status:"
+          ls -R dist

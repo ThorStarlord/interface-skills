@@ -54,7 +54,7 @@ The orchestrator checks for spec package files in pipeline order. The first miss
 | Inspector report exists but no redline audit exists | `ui-redline` |
 | Storybook or documentation output is needed | `ui-storybook-docs` |
 
-**Status values:** A file's frontmatter `status` field determines whether it counts as present. Accepted values in ascending order of completeness: `draft` → `approved` → `complete`. A file with `status: draft` is **not** approved — it counts as a gap. Only `approved` or `complete` clears a step.
+**Status values:** A file's frontmatter `status` field determines whether it counts as present. Accepted values in ascending order of completeness: `draft` → `current` → `approved` → `complete`. A file with `status: draft` is **not** approved — it counts as a gap. Only `current`, `approved`, or `complete` clears a step.
 
 **Multi-screen vs single-screen:** `flow.md` is only required when the feature spans more than one screen. If the brief describes a single screen, skip the flow check and proceed to `blueprint.md`.
 

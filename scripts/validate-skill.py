@@ -3,6 +3,15 @@ import re
 
 TODO_PATTERN = re.compile(r'(## TODO|- \[ \] TODO|TODO \(Human Review Required\))')
 
+VALID_STATUSES = {'draft', 'stable'}
+
+REQUIRED_SECTIONS_STABLE = [
+    '## When to use this skill',
+    '## Workflow',
+    '## Output template',
+    '## Acceptance criteria',
+]
+
 
 def validate_shared_references(repo_root):
     """Check that no shared/references file contains an unresolved TODO marker.
@@ -28,6 +37,25 @@ def validate_shared_references(repo_root):
     return passed
 
 
+def validate_readme_skill_map(repo_root, skill_folders):
+    """Check that every skill folder has a row in the README Skill Map table."""
+    readme_path = os.path.join(repo_root, 'README.md')
+    if not os.path.exists(readme_path):
+        print("[README] [FAIL] README.md not found")
+        return False
+
+    with open(readme_path, 'r', encoding='utf-8') as f:
+        readme_content = f.read()
+
+    passed = True
+    for skill_folder in skill_folders:
+        # A skill appears in the table if its backtick-quoted name is present
+        if f'`{skill_folder}`' not in readme_content:
+            print(f"[{skill_folder}] [FAIL] Not found in README Skill Map table")
+            passed = False
+    return passed
+
+
 def validate_skills():
     repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     skills_dir = os.path.join(repo_root, 'skills')
@@ -38,12 +66,17 @@ def validate_skills():
 
     all_passed = validate_shared_references(repo_root)
 
-    for skill_folder in os.listdir(skills_dir):
+    skill_folders = sorted(
+        f for f in os.listdir(skills_dir)
+        if os.path.isdir(os.path.join(skills_dir, f))
+    )
+
+    # Check README skill map coverage for all skill folders up front
+    if not validate_readme_skill_map(repo_root, skill_folders):
+        all_passed = False
+
+    for skill_folder in skill_folders:
         skill_path = os.path.join(skills_dir, skill_folder)
-        
-        if not os.path.isdir(skill_path):
-            continue
-            
         skill_passed = True
         skill_md_path = os.path.join(skill_path, 'SKILL.md')
         
@@ -94,9 +127,17 @@ def validate_skills():
                 print(f"[{skill_folder}] [FAIL] Frontmatter name '{name}' does not match folder name '{skill_folder}'")
                 skill_passed = False
                 
-        # Check status
+        # Check status — missing or invalid now fails
         status_match = re.search(r'status:\s*(.+)', frontmatter)
-        status = status_match.group(1).strip() if status_match else "stable"
+        if not status_match:
+            print(f"[{skill_folder}] [FAIL] Missing 'status' in frontmatter")
+            skill_passed = False
+            status = None
+        else:
+            status = status_match.group(1).strip()
+            if status not in VALID_STATUSES:
+                print(f"[{skill_folder}] [FAIL] Invalid status '{status}'. Must be one of: {sorted(VALID_STATUSES)}")
+                skill_passed = False
                 
         # Check description
         desc_match = re.search(r'description:\s*(.+)', frontmatter)
@@ -113,6 +154,13 @@ def validate_skills():
         if status == 'stable' and TODO_PATTERN.search(content):
             print(f"[{skill_folder}] [FAIL] 'TODO' section found in stable skill. Resolve it or mark as draft.")
             skill_passed = False
+
+        # Check required sections in stable skills
+        if status == 'stable':
+            for section in REQUIRED_SECTIONS_STABLE:
+                if section not in content:
+                    print(f"[{skill_folder}] [FAIL] Missing required section '{section}' in stable skill")
+                    skill_passed = False
 
         # Check referenced shared files explicitly
         shared_refs = re.findall(r'shared/references/([\w-]+\.md)', content)

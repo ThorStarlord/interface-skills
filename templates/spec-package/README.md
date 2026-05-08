@@ -20,7 +20,7 @@ Use this directory as a starting point for a new Interface Skills spec package.
    ui-microcopy       → microcopy.md
    ui-acceptance      → acceptance.md
    ```
-3. Use `manifest.md` to record which skills have been run and sign off each deliverable.
+3. Use `00-index.md` to record which skills have been run and sign off each deliverable.
 
 ## Canonical example
 
@@ -30,7 +30,7 @@ See [`examples/settings-page/`](../../examples/settings-page/) for a complete, f
 
 ```
 my-feature/
-├── manifest.md          # Spec package index and sign-off sheet
+├── 00-index.md          # Spec package index and sign-off sheet
 ├── brief.md             # Product/design brief (ui-brief)
 ├── visual-calibration.md # Visual taste → concrete decisions (ui-visual-calibration)
 ├── flow.md              # User journey graph (ui-flow)

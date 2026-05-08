@@ -11,8 +11,10 @@ The goal is simple: reduce the gap between the interface you imagine and the int
 ## Core workflow
 
 ```text
-brief → visual calibration → flow → blueprint → system → screen spec → component spec → microcopy → acceptance → code generation → inspection → redline
+surface inventory → brief → visual calibration → flow → blueprint → system → screen spec → component spec → microcopy → acceptance → lint → code → inspection → redline → docs sync
 ```
+
+> `surface inventory` is only needed when the scope is ambiguous or an existing app is being documented. For brand-new, well-scoped features start at `brief`.
 
 ## Structure
 
@@ -75,22 +77,26 @@ For new products, unfamiliar domains, or any work where misalignment is expensiv
 ### Retrospective specification workflow
 Use this when a UI already exists but no specification was created first ("Spec Recovery").
 
-1. Run `ui-inspector` on the existing UI implementation.
-2. Run `ui-brief` to reconstruct the missing product and design intent.
-3. Run `ui-visual-calibration` to name the existing visual language.
-4. Run `ui-blueprint` to document the as-built layout.
-5. Run `ui-screen-spec` to map regions, components, data, and states.
-6. Run `ui-component-spec` for each non-trivial component.
-7. Run `ui-microcopy` to extract and approve existing UI text.
-8. Run `ui-acceptance` to create the target checklist.
-9. Run `ui-spec-linter` to check the recovered spec package.
-10. Optionally run `ui-redline` to compare the existing UI against the recovered target spec.
-11. Run `ui-docs-sync` to confirm repository docs reference and agree with the recovered spec package.
+1. Run `ui-surface-inventory` to map the existing UI into coherent, recoverable scopes.
+2. Run `ui-inspector` on each scope's existing implementation.
+3. Run `ui-brief` to reconstruct the missing product and design intent.
+4. Run `ui-visual-calibration` to name the existing visual language.
+5. Run `ui-blueprint` to document the as-built layout.
+6. Run `ui-screen-spec` to map regions, components, data, and states.
+7. Run `ui-component-spec` for each non-trivial component.
+8. Run `ui-microcopy` to extract and approve existing UI text.
+9. Run `ui-acceptance` to create the target checklist.
+10. Run `ui-spec-linter` to check the recovered spec package.
+11. Optionally run `ui-redline` to compare the existing UI against the recovered target spec.
+12. Run `ui-docs-sync` to confirm repository docs reference and agree with the recovered spec package.
+
+> Steps 3–12 are repeated for each scope identified in step 1.
 
 ## Skill Map
 
 | Skill                     | Input                          | Output                            | Next                                    |
 | ------------------------- | ------------------------------ | --------------------------------- | --------------------------------------- |
+| `ui-surface-inventory` ⚠️ | existing app or ambiguous scope | UI scope map + recovery order    | `ui-brief`, `ui-inspector`              |
 | `ui-brief`                | vague UI idea                  | product/design brief              | `ui-flow`, `ui-blueprint`               |
 | `ui-visual-calibration` ⚠️ | vague visual taste             | density/layout/shape decisions    | `ui-blueprint`, `ui-system`             |
 | `ui-flow`                 | brief for multi-screen feature | journey graph                     | `ui-blueprint`                          |

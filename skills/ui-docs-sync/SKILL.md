@@ -65,8 +65,14 @@ Find all UI spec packages in the repository. For each package found, record:
 | Primary component | `00-index.md` or `brief.md` §1 |
 | Primary user | `00-index.md` or `brief.md` §2 |
 | Primary action | `00-index.md` or `brief.md` §3 |
-| Package status | Highest `status` value found across spec files |
+| Package status | **Lowest** maturity `status` found across required spec files (see rule below) |
 | Index present | Yes / No — whether `00-index.md` exists |
+
+**Package status rule:** Use the *lowest* maturity value among the required spec files, not the highest. A package with one `complete` file and five `draft` files is still `draft`.
+
+Status values in ascending maturity order: `draft` → `current` → `approved` → `complete`. If any required file has no `status` field, treat it as `draft`.
+
+Required files for status calculation: `brief.md` (or numbered equivalent), `blueprint.md`, `screen-spec.md`, `acceptance.md`. Optional files (`flow.md`, `system.md`, `microcopy.md`, `component-specs/*`) are included if present.
 
 ---
 

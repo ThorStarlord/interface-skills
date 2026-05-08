@@ -7,7 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `ui-surface-inventory` — maps an existing UI into coherent, recoverable scopes before deep specification or Spec Recovery. Identifies App Shell, Journeys, Routes, Sub-surfaces, and Component candidates.
+- `ui-docs-sync` — verifies that repository documentation and UI spec packages are linked and consistent. Distinct from `ui-spec-linter` (internal spec consistency) and `ui-redline` (code vs spec) — its job is the bridge between the two: do repo docs say the same thing the UI specs say?
+
 ### Changed
+- `ui-inspector` — added static source-code inspection as a first-class path with confidence labels (`confirmed`, `inferred`, `assumed`). Previously only supported live DOM inspection.
+- `ui-redline` — added explicit redline modes: live authenticated, live unauthenticated, and static partial. Consumers now declare which mode applies before running the audit.
+- `ui-orchestrator` — now routes ambiguous or large-scale Spec Recovery to `ui-surface-inventory` first; added `current` as a recognised status value alongside `draft`, `approved`, and `complete`.
+- `shared/references/spec-package-format.md` — `00-index.md` is now the canonical package index; `manifest.md` is legacy-compatible (read if no `00-index.md` exists).
+- `templates/spec-package/README.md` — updated to use `00-index.md` as the package index file.
+- `examples/settings-page/` — `manifest.md` renamed to `00-index.md` to match canonical naming.
+- `README.md` — core workflow updated to include `surface inventory` at the start and `docs sync` at the end; `ui-surface-inventory` added to skill map; retrospective workflow now starts with `ui-surface-inventory`.
 - `ui-brief` — output save instruction updated to canonical spec-package filename (`brief.md` inside feature folder) instead of `brief-<slug>.md`.
 - `ui-inspector` — output save path updated to `redlines/inspector-report.md` to match canonical spec-package layout.
 - `ui-orchestrator` — routing table updated to canonical filenames; split the two-skill `ui-inspector → ui-redline` row into two separate rows, preserving the one-gap-one-skill rule.
@@ -17,19 +28,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `README.md` — "Recommended First Workflow" renamed to "Minimum viable workflow"; added "Full documentation-first workflow" showing all 13 steps.
 - `CONTRIBUTING.md` — added "Frontmatter compatibility" note explaining that `status` is a repo-internal key; added a "Public Safety & Privacy" note.
 - `openai.yaml` — propagated richer `interface` metadata (display name, short description) to all skills.
+- `scripts/package-skill.py` — now validates the skill before packaging; use `--skip-validation` to bypass.
+- `.github/workflows/validate.yml` — packaging smoke test now covers every skill in `skills/`, not just `ui-visual-calibration`.
+- `scripts/validate-skill.py` — missing or invalid `status` now fails validation; added README skill map coverage check; added required-sections check for stable skills.
 
-### Added
-- `scripts/package-skill.py` — utility script to package skills for distribution; now bundles shared references, uses local paths in `SKILL.md`, returns proper exit codes, and future-proofs by preserving all skill-local resources.
-- `scripts/install-claude-code-skill.py` — [NEW] installer for Claude Code (global and project scopes).
-- `SECURITY.md` — added public safety and privacy guidelines; updated contact info to GitHub Security Advisories.
-- `README.md` — added "Packaging a skill" usage instructions; added "Retrospective specification" (Spec Recovery) workflow; added Claude Code installation options.
-- `docs/claude-code-installation.md` — [NEW] guide for installing and using skills with Claude Code.
-- `.github/workflows/validate.yml` — added packaging smoke test to CI; enhanced to verify reference bundling and frontmatter stripping.
-- `CONTRIBUTING.md` — added guidelines for Spec Recovery and the "Observed vs Target" protocol.
-- `ui-brief`, `ui-blueprint`, `ui-screen-spec` — updated to explicitly support Spec Recovery with the Observed vs Target pattern.
-- `ui-orchestrator` — updated with Spec Recovery priority routing; fixed last remaining canonical filename references.
-- `ui-spec-linter` — standardized directory references to `component-specs/`.
-- `ui-visual-calibration` — added Spec Recovery support (Observed vs Target visual language).
+### Added (earlier — not in previous changelog entry)
+- `scripts/package-skill.py` — utility script to package skills for distribution; bundles shared references, uses local paths in `SKILL.md`, returns proper exit codes.
+- `scripts/install-claude-code-skill.py` — installer for Claude Code (global and project scopes).
+- `SECURITY.md` — public safety and privacy guidelines.
+- `README.md` — packaging usage instructions; Spec Recovery workflow; Claude Code installation options.
+- `docs/claude-code-installation.md` — guide for installing and using skills with Claude Code.
+- `.github/workflows/validate.yml` — packaging smoke test; reference bundling and frontmatter stripping verification.
+- `CONTRIBUTING.md` — Spec Recovery guidelines and the "Observed vs Target" protocol.
+- `ui-brief`, `ui-blueprint`, `ui-screen-spec` — Spec Recovery support with Observed vs Target pattern.
+- `ui-orchestrator` — Spec Recovery priority routing.
+- `ui-spec-linter` — standardised directory references to `component-specs/`.
+- `ui-visual-calibration` — Spec Recovery support (Observed vs Target visual language).
 
 ---
 
@@ -74,7 +88,7 @@ Cross-cutting reference documents used by multiple skills:
 
 **Examples**
 
-- `examples/settings-page/` — a complete spec package demonstrating every skill output for a settings page. Includes: `brief.md`, `visual-calibration.md`, `flow.md`, `blueprint.md`, `system.md`, `screen-spec.md`, `microcopy.md`, `acceptance.md`, `manifest.md`, and `component-specs/profile-form.md`.
+- `examples/settings-page/` — a complete spec package demonstrating every skill output for a settings page. Includes: `brief.md`, `visual-calibration.md`, `flow.md`, `blueprint.md`, `system.md`, `screen-spec.md`, `microcopy.md`, `acceptance.md`, `00-index.md` (formerly `manifest.md`), and `component-specs/profile-form.md`.
 
 **Templates**
 

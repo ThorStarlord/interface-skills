@@ -1,5 +1,5 @@
 ---
-spec_type: manifest
+spec_type: index
 spec_id: settings-account
 created: 2026-05-06
 status: draft

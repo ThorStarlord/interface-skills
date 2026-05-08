@@ -2,6 +2,7 @@ import os
 import re
 import argparse
 import shutil
+import subprocess
 import tempfile
 import zipfile
 import sys
@@ -29,7 +30,32 @@ def strip_frontmatter_metadata(content):
     # Reconstruct the file
     return f"---\n{new_frontmatter}\n---\n{parts[2]}"
 
-def package_skill(skill_dir, output_dir, filename=None):
+def validate_skill_before_packaging(skill_dir):
+    """Run validate-skill.py scoped to the single skill being packaged.
+    Returns True if validation passes, False otherwise.
+    """
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    validator_path = os.path.join(script_dir, 'validate-skill.py')
+    result = subprocess.run(
+        [sys.executable, validator_path],
+        capture_output=True, text=True
+    )
+    skill_name = os.path.basename(os.path.normpath(skill_dir))
+    # Filter output to lines relevant to this skill (or shared references)
+    relevant = [
+        line for line in result.stdout.splitlines()
+        if skill_name in line or 'shared/references' in line or 'ERROR' in line or 'SUCCESS' in line
+    ]
+    if relevant:
+        print('\n'.join(relevant))
+    if result.returncode != 0:
+        # Only fail if this specific skill has a FAIL line
+        if any(f"[{skill_name}] [FAIL]" in line for line in result.stdout.splitlines()):
+            return False
+    return True
+
+
+def package_skill(skill_dir, output_dir, filename=None, skip_validation=False):
     skill_dir = os.path.normpath(skill_dir)
     skill_name = os.path.basename(skill_dir)
     skill_md_path = os.path.join(skill_dir, 'SKILL.md')
@@ -37,6 +63,12 @@ def package_skill(skill_dir, output_dir, filename=None):
     if not os.path.exists(skill_md_path):
         print(f"Error: {skill_md_path} not found.")
         sys.exit(1)
+
+    if not skip_validation:
+        print(f"Validating {skill_name} before packaging...")
+        if not validate_skill_before_packaging(skill_dir):
+            print(f"Error: {skill_name} failed validation. Fix the errors above or use --skip-validation to bypass.")
+            sys.exit(1)
 
     # Create output dir if it doesn't exist
     if not os.path.exists(output_dir):
@@ -104,6 +136,7 @@ if __name__ == '__main__':
     parser.add_argument('skill_dir', help='Path to the skill directory')
     parser.add_argument('--output-dir', default='dist', help='Output directory for the package (default: dist)')
     parser.add_argument('--filename', help='Optional custom filename for the ZIP (default: <skill-name>.zip)')
+    parser.add_argument('--skip-validation', action='store_true', help='Skip pre-packaging validation (not recommended)')
     
     args = parser.parse_args()
-    package_skill(args.skill_dir, args.output_dir, args.filename)
+    package_skill(args.skill_dir, args.output_dir, args.filename, skip_validation=args.skip_validation)
