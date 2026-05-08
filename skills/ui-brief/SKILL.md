@@ -30,7 +30,7 @@ These words are banned from briefs unless translated into concrete choices:
 
 | Banned word | Ask instead |
 |---|---|
-| modern | What concrete properties? Sans-serif type? Generous whitespace? Flat surface styles? Name 1–2 reference products. |
+| modern | What concrete properties? Sans-serif type? Generous whitespace? Flat surface style? Name 1–2 reference products. |
 | clean | Same as above. "Clean" usually means low information density and minimal chrome — say so. |
 | intuitive | Intuitive for whom? Someone who has used what other tool before? |
 | user-friendly | Friendly for which user? In what context? On what device? |
