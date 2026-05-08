@@ -27,9 +27,9 @@ Do **not** use this skill when:
 
 ## Retrospective / spec-recovery mode
 
-If an implementation exists and no spec package exists, and the user wants to document or recover the specification, recommend `ui-inspector` first — not `ui-brief`.
+If an implementation exists and no spec package exists, and the user wants to document or recover the specification, recommend `ui-surface-inventory` first.
 
-**Reason:** the existing UI is evidence. Capture it before reconstructing intent or proposing improvements.
+**Reason:** You must identify coherent scopes before running deep recovery. A giant recovery on the whole app is hard to act on.
 
 ## Routing logic
 
@@ -37,7 +37,9 @@ The orchestrator checks for spec package files in pipeline order. The first miss
 
 | If this condition is met | Recommend this skill |
 |---|---|
-| Implementation exists + no spec package + user wants Spec Recovery | `ui-inspector` |
+| Implementation exists + no spec package + user wants Spec Recovery | `ui-surface-inventory` |
+| Large project / ambiguous scope | `ui-surface-inventory` |
+| `inventory.md` is missing or not approved (for multi-scope projects) | `ui-surface-inventory` |
 | `brief.md` is missing or not approved | `ui-brief` |
 | `visual-calibration.md` | `ui-visual-calibration` |
 | `flow.md` (required for multi-screen features only) | `ui-flow` |

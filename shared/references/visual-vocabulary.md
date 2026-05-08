@@ -2,6 +2,15 @@
 
 This document establishes the canonical vocabulary for describing visual UI decisions across all skills.
 
+## Core Concepts
+
+### UI Scope
+A **UI Scope** is a meaningful, inspectable UI area or product flow chosen for specification. It is the "unit of work" for a spec package.
+- **Smallest Coherent Scope:** The smallest UI area that has its own user job, boundary, states, and acceptance criteria (e.g., "Left sidebar navigation", "/create page", "Approval detail modal").
+
+### Surface Style
+**Surface Style** refers specifically to the visual treatment of UI panels, cards, and backgrounds (e.g., Flat, Outlined, Elevated). It describes the "look and feel" of the physical layers in the interface.
+
 ## Layout Archetypes
 - Sidebar App
 - Centered Card

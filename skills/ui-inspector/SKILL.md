@@ -28,7 +28,7 @@ Do **not** use this skill when:
 
 ### 1. DOM inventory
 
-List every interactive element on the inspected surface by type. The goal is a census, not a summary — every element that a user can act on must appear in the table.
+List every interactive element on the inspected UI Scope by type. The goal is a census, not a summary — every element that a user can act on must appear in the table.
 
 For each element, record:
 - Element type (button, input, select, link, checkbox, radio, ARIA role widget, etc.)
@@ -40,7 +40,7 @@ Flag any interactive element that lacks semantic markup (e.g., a `<div>` with an
 
 ### 2. Computed styles sample
 
-For the 5–10 most visually significant elements (primary CTA, main heading, body text, card surface, input field, navigation item — whichever apply), record the browser-computed values at the primary breakpoint.
+For the 5–10 most visually significant elements (primary CTA, main heading, body text, card surface style, input field, navigation item — whichever apply), record the browser-computed values at the primary breakpoint.
 
 Collect for each element:
 - Computed text color (hex or `rgb()`)
@@ -240,7 +240,7 @@ An evidence report produced by this skill is acceptable only if every one of the
 - [ ] All five sections (DOM Inventory, Computed Styles, Token Usage, Accessibility Findings, Responsiveness) are present, even if some contain "None found" or empty tables.
 - [ ] The inspection method (automated or manual, and which tool) is declared in both the frontmatter and the report header.
 - [ ] Every computed style value is the exact browser-computed value — no approximations, no rounding, no prose descriptions substituted for numeric values.
-- [ ] The DOM inventory accounts for every interactive element on the inspected surface — not just a representative sample.
+- [ ] The DOM inventory accounts for every interactive element on the inspected UI Scope — not just a representative sample.
 - [ ] The Token Usage section lists every literal color and spacing value found, not just a count. A count alone is not actionable.
 - [ ] The report contains zero judgment statements. Every sentence describes a measurement or observation. Evaluations ("this is wrong", "this is correct") are absent.
 - [ ] If a section could not be completed (e.g., loading state was not triggerable), the reason is recorded in §6 Inspector notes rather than the section being silently omitted.

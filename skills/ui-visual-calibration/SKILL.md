@@ -29,7 +29,7 @@ Do **not** use this skill when:
 
 When using this skill for **Spec Recovery**, distinguish between the current aesthetics and the intended style:
 
-- **Observed Visual Language:** The density, shape language, and surface styles as they exist in the current implementation.
+- **Observed Visual Language:** The density, shape language, and Surface Style as they exist in the current implementation.
 - **Target Visual Language:** The desired aesthetic direction (e.g., if the user wants to keep the sidebar but make the palette "cleaner").
 - **Gap:** Inconsistencies or accidental aesthetic choices in the current UI.
 
@@ -48,7 +48,7 @@ List each word. Do not translate yet — just collect them. If the user also nam
 For each extracted word, look it up in `shared/references/vague-language-translator.md` and list its translation options. The translator gives a set of concrete properties — do not pick one arbitrarily.
 
 Example:
-- "Modern" → Flat surfaces, large radius, muted palette, contemporary type, generous spacing
+- "Modern" → Flat surface styles, large radius, muted palette, contemporary type, generous spacing
 - "Clean" → More whitespace, fewer borders, lower color variety, simpler hierarchy
 
 Where a word is not in the translator, break it down to its most plausible concrete properties and mark it as an assumption.
@@ -101,7 +101,7 @@ status: draft
 | User's word / phrase | Translator match | Concrete properties used | Confirmed or assumed |
 |---|---|---|---|
 | "clean" | Clean → More whitespace, fewer borders, lower color variety | Gap-8, p-8 spacing; no decorative borders | ✅ Confirmed by user |
-| "modern" | Modern → Flat surfaces, large radius, muted palette | Flat surface style; rounded-lg corners | ✅ Confirmed by user |
+| "modern" | Modern → Flat Surface Style, large radius, muted palette | Flat surface style; rounded-lg corners | ✅ Confirmed by user |
 | "like Notion" | Not in translator — assumed sidebar nav, medium density, muted neutrals | Sidebar App archetype; Medium density | ⚠️ Assumed — user did not specify what they like about Notion |
 
 ## Concrete Visual Decisions
@@ -146,7 +146,7 @@ status: draft
 
 ### Step 2 output (mapped):
 - "Clean" → More whitespace, fewer borders, lower color variety, simpler hierarchy
-- "Modern" → Flat surfaces, large radius, muted palette, contemporary type, generous spacing
+- "Modern" → Flat surface styles, large radius, muted palette, contemporary type, generous spacing
 - "Notion" → Not in translator. Common Notion associations: sidebar app layout, medium-to-dense text content, muted neutral palette (gray/beige), minimal chrome, card surfaces.
 
 ### Step 3 output (confirmed):
@@ -172,7 +172,7 @@ status: draft
 | User's word / phrase | Translator match | Concrete properties used | Confirmed or assumed |
 |---|---|---|---|
 | "clean" | Clean → More whitespace, fewer borders, lower color variety | Generous padding (p-8), no decorative borders, two-color palette | ✅ Confirmed |
-| "modern" | Modern → Flat surfaces, large radius, muted palette, generous spacing | Flat surfaces; rounded-lg corners; muted gray base | ✅ Confirmed |
+| "modern" | Modern → Flat surface styles, large radius, muted palette, generous spacing | Flat surface style; rounded-lg corners; muted gray base | ✅ Confirmed |
 | "like Notion — sidebar and calm palette" | Not in translator — extracted: sidebar nav, muted neutrals, minimal chrome | Sidebar App archetype; gray-50 to gray-900 palette | ✅ Confirmed (block-layout excluded) |
 
 ## Concrete Visual Decisions
