@@ -217,3 +217,39 @@ A lint report produced by this skill is acceptable only if every one of these is
 - [ ] The Next step section gives a concrete instruction matching the PASS or FAIL result.
 
 If any check fails, revise before delivering.
+
+---
+
+## Promotion checklist
+
+Complete every item before changing `status: draft` to `status: stable`.
+
+### Evidence on the failing-spec-package fixture
+
+- [ ] Running this skill against `examples/failing-spec-package/` produces a FAIL report that catches all 9 known defects listed in `examples/failing-spec-package/00-index.md`.
+- [ ] FD-01 (missing §8 Non-goals) is reported as Blocker.
+- [ ] FD-05 (missing `space.*` tokens) is reported as Blocker.
+- [ ] FD-06 (missing `loading` state on async button) is reported as Blocker.
+- [ ] FD-03 and FD-04 ("clean layout", "modern feel") are reported as Warnings.
+- [ ] FD-09 (success criterion with no corresponding acceptance test) is reported as Blocker.
+- [ ] No issues beyond the known 9 are invented (false positives count against promotion).
+
+### Evidence on the settings-page fixture
+
+- [ ] Running this skill against `examples/settings-page/` produces a PASS report (the settings-page package is a correct, complete example).
+- [ ] The PASS report correctly shows zero blockers and zero major issues.
+
+### Evidence on the spec-recovery-create fixture
+
+- [ ] Running this skill against `examples/spec-recovery-create/` produces output consistent with `examples/spec-recovery-create/spec-linter-report.md`.
+- [ ] The output is FAIL. B-01, B-02, and B-03 blockers are all reported.
+
+### Regression: no style opinions
+
+- [ ] Given a spec with non-standard but internally consistent vocabulary (e.g., custom state names), the linter does not flag it as an issue — only structural and completeness rules apply.
+
+### Skill integration
+
+- [ ] `validate-skill.py` passes for this skill with `status: stable` (no missing sections).
+- [ ] `skills.json` entry for `ui-spec-linter` has been updated to `"status": "stable"`.
+- [ ] README Skill Map table has been updated to show `stable`.

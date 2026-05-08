@@ -274,3 +274,37 @@ An evidence report produced by this skill is acceptable only if every one of the
 - [ ] If a section could not be completed (e.g., loading state was not triggerable), the reason is recorded in §6 Inspector notes rather than the section being silently omitted.
 
 If any check fails, revise before delivering.
+
+---
+
+## Promotion checklist
+
+Complete every item before changing `status: draft` to `status: stable`.
+
+### Evidence on the spec-recovery-create fixture
+
+- [ ] Running this skill in Path C (static source-code) mode against a React/TypeScript component reproduces findings consistent with `examples/spec-recovery-create/redlines/inspector-report.md`.
+- [ ] All three caption input implementations are identified and documented in the DOM Inventory.
+- [ ] The hard-coded `setTimeout(3000)` AI timeout is identified in the Computed Styles / notable values section.
+- [ ] The `<MobileCreateRedirect />` separate component is identified in the Responsiveness section.
+
+### Evidence on the settings-page fixture
+
+- [ ] Running this skill against `examples/settings-page/` (or equivalent) produces a report that passes every Acceptance criteria item above.
+- [ ] At least one `deferred — needs live DOM` confidence label appears (since settings-page is a static spec, not live).
+
+### Regression: zero judgment statements
+
+- [ ] Reviewing the output with a fresh reader: every sentence is a measurement or observation. No "this is broken", "this is correct", or evaluative language appears.
+
+### Path A / Path B evidence (live DOM)
+
+- [ ] When run against a live URL with DevTools, the Token Usage section lists every literal hex value found (not just a count).
+- [ ] The Accessibility Findings table uses the standard severity scale from `shared/references/severity-scale.md`.
+
+### Skill integration
+
+- [ ] `validate-skill.py` passes for this skill with `status: stable` (no missing sections).
+- [ ] `skills.json` entry for `ui-inspector` has been updated to `"status": "stable"`.
+- [ ] README minimum viable workflow step 6 (`ui-inspector`) and the clarifying note are both present.
+- [ ] README Skill Map table has been updated to show `stable`.

@@ -112,3 +112,32 @@ status: draft
 - [ ] A prioritized specification order is provided with reasoning.
 - [ ] Output follows the template structure exactly.
 - [ ] Uses the term "UI Scope" consistently.
+
+---
+
+## Promotion checklist
+
+Complete every item before changing `status: draft` to `status: stable`.
+
+### Evidence on the spec-recovery-create fixture
+
+- [ ] Running this skill against the Pulse app description produces output consistent with `examples/spec-recovery-create/inventory.md`.
+- [ ] The four-layer structure (App Shell, Journey, Route, Sub-surface) is fully populated — no layer is blank or marked TBD.
+- [ ] The recovery order matches the one in `inventory.md` (`/create` → AI Draft Panel → Channel Selector).
+
+### Evidence on the settings-page fixture
+
+- [ ] Running this skill against `examples/settings-page/brief.md` produces a scope map that identifies the settings page as a Route-level scope.
+- [ ] The profile-form is identified as a Sub-surface with `Component candidates` including the profile-form component.
+
+### Regression: smallest coherent scope
+
+- [ ] Given a vague description like "the whole dashboard", the output breaks it into multiple named scopes rather than treating the whole dashboard as one scope.
+- [ ] Each resulting scope passes the "Could someone spec and build this independently?" test — the skill is not complete until it does.
+
+### Skill integration
+
+- [ ] `validate-skill.py` passes for this skill with `status: stable` (no missing sections).
+- [ ] `skills.json` entry for `ui-surface-inventory` has been updated to `"status": "stable"`.
+- [ ] README core workflow starts with `ui-surface-inventory` (already true — verify).
+- [ ] README Skill Map table has been updated to show `stable`.

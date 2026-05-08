@@ -218,3 +218,42 @@ A recommendation produced by this skill is acceptable only if every one of these
 - [ ] If all spec files are approved, the recommendation correctly moves to the post-spec phase (ui-spec-linter, ui-inspector, or ui-storybook-docs as appropriate).
 
 If any check fails, revise before delivering.
+
+---
+
+## Promotion checklist
+
+Complete every item before changing `status: draft` to `status: stable`.
+
+### Evidence on the orchestrator-states fixtures
+
+Run this skill against each of the seven state fixtures in `examples/orchestrator-states/` and verify:
+
+- [ ] **01-empty:** Recommends `ui-brief`. Does not hallucinate any existing files.
+- [ ] **02-brief-draft:** Recommends continuing with `ui-brief` (not starting a new one). Correctly identifies `status: draft` as a gap — not a completed step.
+- [ ] **03-brief-approved:** Recommends `ui-visual-calibration`. Does not skip to `ui-blueprint`.
+- [ ] **04-through-blueprint:** Recommends `ui-system`. Correctly identifies that blueprint is approved but system is missing.
+- [ ] **05-all-specs-approved:** Recommends `ui-spec-linter`. Does not recommend jumping straight to `ui-generate-code`.
+- [ ] **06-inspector-present:** Recommends `ui-redline`. Does not recommend re-running `ui-inspector`.
+- [ ] **07-redline-pending:** Recommends `ui-redline`. Correctly distinguishes "inspector done, no redline" from "redline in progress".
+
+### Evidence on the spec-recovery-create fixture
+
+- [ ] Running this skill against `examples/spec-recovery-create/` at the point where `brief.md` is approved but `visual-calibration.md` is draft recommends `ui-visual-calibration` (not `ui-inspector`, which is also present).
+- [ ] The recommendation correctly accounts for the `recovery: true` frontmatter flag — it does not flag the absence of `flow.md` as a gap.
+
+### Regression: exactly one recommendation
+
+- [ ] In no tested case does the output contain two skill names in the Recommended next skill field.
+- [ ] In no tested case does the output say "either X or Y" — it always chooses one.
+
+### Routing vocabulary
+
+- [ ] `current`, `approved`, and `complete` are all treated as "gap cleared" for a step — none of these should trigger a "not yet approved" recommendation.
+- [ ] Only `draft` triggers the "not yet approved" recommendation.
+
+### Skill integration
+
+- [ ] `validate-skill.py` passes for this skill with `status: stable` (no missing sections).
+- [ ] `skills.json` entry for `ui-orchestrator` has been updated to `"status": "stable"`.
+- [ ] README Skill Map table has been updated to show `stable`.

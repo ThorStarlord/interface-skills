@@ -55,7 +55,10 @@ For small, well-scoped features where visual tone is already agreed:
 3. Run `ui-component-spec`
 4. Run `ui-acceptance`
 5. Run `ui-generate-code`
-6. Run `ui-redline`
+6. Run `ui-inspector`
+7. Run `ui-redline`
+
+> For very small one-off changes, `ui-redline` can accept a screenshot or code snippet directly without a full inspector run. For any audit you intend to act on, run `ui-inspector` first — it replaces opinion with measured evidence.
 
 ### Full documentation-first workflow
 For new products, unfamiliar domains, or any work where misalignment is expensive:

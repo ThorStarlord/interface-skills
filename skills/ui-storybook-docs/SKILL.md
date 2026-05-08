@@ -305,3 +305,36 @@ A documentation package produced by this skill is acceptable only if every one o
 - [ ] The prop table `Default` column states the actual default value (or `—` for undefined); it never uses the word "optional" as a value.
 
 If any check fails, revise before delivering.
+
+---
+
+## Promotion checklist
+
+Complete every item before changing `status: draft` to `status: stable`.
+
+### Evidence on the settings-page fixture
+
+- [ ] Running this skill against `examples/settings-page/component-specs/profile-form.md` produces a documentation package (MDX + stories) that passes every Acceptance criteria item above.
+- [ ] Every state in the profile-form component spec's state matrix has exactly one corresponding story — no state is omitted, no story is invented.
+- [ ] The MDX When-to-use section is written for a consumer audience and does not copy prose from the spec verbatim.
+
+### Evidence on the spec-recovery-create fixture
+
+- [ ] Running this skill against the `ChannelPicker` component spec (once written, see `screen-spec.md §6`) produces a complete documentation package.
+- [ ] The stories file includes at least a `Default`, `Loading`, and `Empty` story matching the component spec states.
+
+### Regression: no invented props
+
+- [ ] Given a component spec with exactly 3 props, the `argTypes` object contains exactly 3 entries — no convenience props are invented.
+- [ ] No Canvas block in the MDX references a story that is not a named export in the stories file.
+
+### State parity
+
+- [ ] Running this skill on a component with an `error` state: the error story is present in both the MDX Canvas and the stories file.
+- [ ] Running this skill on a component with a `loading` state: the loading story correctly renders an in-progress state (not an empty state labelled "loading").
+
+### Skill integration
+
+- [ ] `validate-skill.py` passes for this skill with `status: stable` (no missing sections).
+- [ ] `skills.json` entry for `ui-storybook-docs` has been updated to `"status": "stable"`.
+- [ ] README Skill Map table has been updated to show `stable`.

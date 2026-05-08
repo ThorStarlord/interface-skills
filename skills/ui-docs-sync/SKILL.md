@@ -282,3 +282,32 @@ A sync report produced by this skill is acceptable only if every one of these is
 - [ ] Section 6 ("What was not checked") is present and honest about scope limits.
 
 If any check fails, revise before delivering.
+
+---
+
+## Promotion checklist
+
+Complete every item before changing `status: draft` to `status: stable`.
+
+### Evidence on the settings-page fixture
+
+- [ ] Running this skill against `examples/settings-page/` against the repository's own README and docs produces a sync report that passes every Acceptance criteria item above.
+- [ ] The report identifies at least one link that should exist between the spec package and a repo doc (even if the settings-page example is well-maintained).
+- [ ] Section 6 correctly lists which doc types were not in scope for the settings-page (e.g., architecture docs, route maps).
+
+### Evidence on the spec-recovery-create fixture
+
+- [ ] Running this skill after the recovery package reaches `approved` status identifies any gaps between the recovery findings and the repository's external docs.
+- [ ] If there are no gaps, the report correctly returns PASS with a "What was not checked" section explaining what was excluded.
+
+### Package status rule
+
+- [ ] The sync report's frontmatter `status` is computed as the LOWEST maturity among the four required files (`brief.md`, `blueprint.md`, `screen-spec.md`, `acceptance.md`) — not the highest.
+- [ ] A package where `acceptance.md` is `draft` and `brief.md` is `approved` results in a sync report with `status: draft`.
+
+### Skill integration
+
+- [ ] `validate-skill.py` passes for this skill with `status: stable` (no missing sections).
+- [ ] `skills.json` entry for `ui-docs-sync` has been updated to `"status": "stable"`.
+- [ ] README core workflow ends with `ui-docs-sync` (already true — verify).
+- [ ] README Skill Map table has been updated to show `stable`.

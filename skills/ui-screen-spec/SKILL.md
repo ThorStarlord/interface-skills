@@ -236,3 +236,32 @@ A screen spec produced by this skill is acceptable only if every one of these is
 - [ ] The frontmatter `based_on` field names `blueprint.md` and the `spec_id` matches the upstream brief slug.
 
 If any check fails, revise before delivering.
+
+---
+
+## Promotion checklist
+
+Complete every item before changing `status: draft` to `status: stable`.
+
+### Evidence on the settings-page fixture
+
+- [ ] Running this skill against `examples/settings-page/` (brief + blueprint + system) produces a `screen-spec.md` that passes every item in the Acceptance criteria above.
+- [ ] All regions visible in `examples/settings-page/blueprint.md` appear as sections in the output — no region is missing or renamed without justification.
+- [ ] The component-spec checklist in the output flags at least the profile-form component (present in `examples/settings-page/component-specs/`).
+
+### Evidence on the spec-recovery-create fixture
+
+- [ ] Running this skill against `examples/spec-recovery-create/` produces output consistent with `examples/spec-recovery-create/screen-spec.md`.
+- [ ] The output correctly notes the three open items that block approval (AI timeout, channel ordering, mobile layout).
+- [ ] Each open item references its corresponding entry in `brief.md §9` by number.
+
+### Regression: all four states per region
+
+- [ ] Given a screen spec with a data-fetching region, the output includes Ideal, Loading, Error, and Empty states for that region. None is silently omitted.
+- [ ] A region with no async data (e.g., a static heading) has Loading/Empty marked as N/A with a one-sentence justification.
+
+### Skill integration
+
+- [ ] `validate-skill.py` passes for this skill with `status: stable` (no missing sections).
+- [ ] `skills.json` entry for `ui-screen-spec` has been updated to `"status": "stable"`.
+- [ ] README Skill Map table has been updated to show `stable`.

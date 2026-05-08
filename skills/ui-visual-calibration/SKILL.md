@@ -225,3 +225,31 @@ A visual-calibration.md produced by this skill is acceptable only if every one o
 - [ ] No vague words (clean, modern, minimal, professional, sleek, premium, etc.) appear in the Concrete Visual Decisions section without being translated into a structural property.
 
 If any check fails, revise before delivering.
+
+---
+
+## Promotion checklist
+
+Complete every item before changing `status: draft` to `status: stable`.
+
+### Evidence on the settings-page fixture
+
+- [ ] Running this skill against `examples/settings-page/brief.md` produces a `visual-calibration.md` that passes every item in the Acceptance criteria above.
+- [ ] The output's Translation Log is non-empty — the settings-page brief contains at least one vague or implicit design preference that is translated.
+- [ ] All five Concrete Visual Decisions are present in the output and none conflict with the settings-page brief constraints.
+
+### Evidence on the spec-recovery-create fixture
+
+- [ ] Running this skill against `examples/spec-recovery-create/brief.md` produces output consistent with `examples/spec-recovery-create/visual-calibration.md`.
+- [ ] The Observed vs Target distinction from the recovery brief is reflected in the output (e.g., inconsistent border radii documented in Observed; single radius value specified in Target).
+
+### Regression: does not invent decisions
+
+- [ ] Given a brief with no visual preferences at all (only goal and user), the output marks every Concrete Visual Decision as ⚠️ assumed and lists all five in the Assumptions section.
+- [ ] The skill does not silently default to any visual language — every default is explicit.
+
+### Skill integration
+
+- [ ] `validate-skill.py` passes for this skill with `status: stable` (no missing sections).
+- [ ] `skills.json` entry for `ui-visual-calibration` has been updated to `"status": "stable"`.
+- [ ] README Skill Map table has been updated to show `stable`.
