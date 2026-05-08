@@ -101,7 +101,7 @@ status: draft
 | User's word / phrase | Translator match | Concrete properties used | Confirmed or assumed |
 |---|---|---|---|
 | "clean" | Clean → More whitespace, fewer borders, lower color variety | Gap-8, p-8 spacing; no decorative borders | ✅ Confirmed by user |
-| "modern" | Modern → Flat surface styles, large radius, muted palette | Flat surface style; rounded-lg corners | ✅ Confirmed by user |
+| "modern" | Modern → Flat Surface Style, large radius, muted palette | Flat surface style; rounded-lg corners | ✅ Confirmed by user |
 | "like Notion" | Not in translator — assumed sidebar nav, medium density, muted neutrals | Sidebar App archetype; Medium density | ⚠️ Assumed — user did not specify what they like about Notion |
 
 ## Concrete Visual Decisions
