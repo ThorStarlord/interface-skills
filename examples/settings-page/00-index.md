@@ -2,7 +2,7 @@
 spec_type: index
 spec_id: settings-account
 created: 2026-05-06
-status: draft
+status: approved
 ---
 
 # Spec Package Manifest: Prosper Settings Page

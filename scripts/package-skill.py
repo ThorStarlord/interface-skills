@@ -49,9 +49,9 @@ def validate_skill_before_packaging(skill_dir):
     if relevant:
         print('\n'.join(relevant))
     if result.returncode != 0:
-        # Only fail if this specific skill has a FAIL line
-        if any(f"[{skill_name}] [FAIL]" in line for line in result.stdout.splitlines()):
-            return False
+        # Any validation failure should block packaging. Print validator output for context.
+        print(result.stdout)
+        return False
     return True
 
 

@@ -1,9 +1,10 @@
 import os
 import re
+import json
 
 TODO_PATTERN = re.compile(r'(## TODO|- \[ \] TODO|TODO \(Human Review Required\))')
 
-VALID_STATUSES = {'draft', 'stable'}
+VALID_STATUSES = {'draft', 'current', 'approved', 'complete', 'superseded', 'stable'}
 
 REQUIRED_SECTIONS_STABLE = [
     '## When to use this skill',
@@ -47,9 +48,48 @@ def validate_readme_skill_map(repo_root, skill_folders):
     with open(readme_path, 'r', encoding='utf-8') as f:
         readme_content = f.read()
 
+    # Prefer validating against a machine-readable registry if present
+    registry_path = os.path.join(repo_root, 'skills.json')
+    if os.path.exists(registry_path):
+        try:
+            with open(registry_path, 'r', encoding='utf-8') as rf:
+                registry = json.load(rf)
+        except Exception as exc:
+            print(f"[README] [FAIL] Could not parse skills.json: {exc}")
+            return False
+
+        passed = True
+        skills = registry.get('skills', [])
+        for entry in skills:
+            name = entry.get('name')
+            status = entry.get('status', '').lower()
+            if not name:
+                print("[skills.json] [WARN] Skill entry without a name")
+                continue
+            if f'`{name}`' not in readme_content:
+                print(f"[{name}] [FAIL] Not found in README Skill Map table (registry expects this skill)")
+                passed = False
+                continue
+
+            # Find the line in README containing the skill name to inspect any draft marker
+            row_line = ''
+            for line in readme_content.splitlines():
+                if f'`{name}`' in line:
+                    row_line = line
+                    break
+
+            # README uses a ⚠️ marker to indicate draft items in the human-readable map.
+            has_draft_marker = '⚠️' in row_line
+            if status == 'draft' and not has_draft_marker:
+                print(f"[{name}] [WARN] Registry status=draft but README row lacks '⚠️' draft marker")
+            if status != 'draft' and has_draft_marker:
+                print(f"[{name}] [WARN] Registry status={status} but README row has '⚠️' draft marker")
+
+        return passed
+
+    # Fallback: simple presence check (legacy behavior)
     passed = True
     for skill_folder in skill_folders:
-        # A skill appears in the table if its backtick-quoted name is present
         if f'`{skill_folder}`' not in readme_content:
             print(f"[{skill_folder}] [FAIL] Not found in README Skill Map table")
             passed = False
@@ -71,7 +111,7 @@ def validate_skills():
         if os.path.isdir(os.path.join(skills_dir, f))
     )
 
-    # Check README skill map coverage for all skill folders up front
+    # Check README skill map coverage (prefer registry-driven validation)
     if not validate_readme_skill_map(repo_root, skill_folders):
         all_passed = False
 
@@ -103,8 +143,8 @@ def validate_skills():
             
         frontmatter = frontmatter_match.group(1)
         
-        # Check allowed frontmatter keys
-        allowed_keys = {'name', 'description', 'status'}
+        # Check allowed frontmatter keys (allow optional promotion_candidate flag)
+        allowed_keys = {'name', 'description', 'status', 'promotion_candidate'}
         lines = frontmatter.strip().split('\n')
         for line in lines:
             if ':' in line:
@@ -127,6 +167,12 @@ def validate_skills():
                 print(f"[{skill_folder}] [FAIL] Frontmatter name '{name}' does not match folder name '{skill_folder}'")
                 skill_passed = False
                 
+        # Parse promotion candidate flag (optional)
+        promotion_match = re.search(r'promotion_candidate:\s*(true|false)', frontmatter, re.I)
+        promotion_candidate = False
+        if promotion_match:
+            promotion_candidate = promotion_match.group(1).strip().lower() == 'true'
+
         # Check status — missing or invalid now fails
         status_match = re.search(r'status:\s*(.+)', frontmatter)
         if not status_match:
@@ -150,17 +196,22 @@ def validate_skills():
                 print(f"[{skill_folder}] [FAIL] Description is too short (< 20 chars)")
                 skill_passed = False
                 
-        # Check TODOs in stable skills
-        if status == 'stable' and TODO_PATTERN.search(content):
-            print(f"[{skill_folder}] [FAIL] 'TODO' section found in stable skill. Resolve it or mark as draft.")
+        # If this skill is being promoted or is non-draft, enforce strict checks.
+        strict_mode = promotion_candidate or (status is not None and status != 'draft')
+
+        # Check TODOs for strict-mode skills (non-draft or promotion candidates)
+        if strict_mode and TODO_PATTERN.search(content):
+            print(f"[{skill_folder}] [FAIL] 'TODO' section found in non-draft skill. Resolve it or mark as draft.")
             skill_passed = False
 
-        # Check required sections in stable skills
-        if status == 'stable':
-            for section in REQUIRED_SECTIONS_STABLE:
-                if section not in content:
-                    print(f"[{skill_folder}] [FAIL] Missing required section '{section}' in stable skill")
+        # Check required sections: fail in strict mode, warn in draft mode
+        for section in REQUIRED_SECTIONS_STABLE:
+            if section not in content:
+                if strict_mode:
+                    print(f"[{skill_folder}] [FAIL] Missing required section '{section}' in non-draft skill")
                     skill_passed = False
+                else:
+                    print(f"[{skill_folder}] [WARN] Missing recommended section '{section}' in draft skill")
 
         # Check referenced shared files explicitly
         shared_refs = re.findall(r'shared/references/([\w-]+\.md)', content)

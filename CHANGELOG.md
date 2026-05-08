@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ui-docs-sync` — verifies that repository documentation and UI spec packages are linked and consistent. Distinct from `ui-spec-linter` (internal spec consistency) and `ui-redline` (code vs spec) — its job is the bridge between the two: do repo docs say the same thing the UI specs say?
 
 ### Changed
-- `ui-inspector` — added static source-code inspection as a first-class path with confidence labels (`confirmed`, `inferred`, `assumed`). Previously only supported live DOM inspection.
+	- `ui-inspector` — added static source-code inspection as a first-class path with confidence labels (`exact — source`, `inferred — source`, `deferred — needs live DOM`). Previously only supported live DOM inspection.
 - `ui-redline` — added explicit redline modes: live authenticated, live unauthenticated, and static partial. Consumers now declare which mode applies before running the audit.
 - `ui-orchestrator` — now routes ambiguous or large-scale Spec Recovery to `ui-surface-inventory` first; added `current` as a recognised status value alongside `draft`, `approved`, and `complete`.
 - `shared/references/spec-package-format.md` — `00-index.md` is now the canonical package index; `manifest.md` is legacy-compatible (read if no `00-index.md` exists).
