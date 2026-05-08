@@ -1,6 +1,6 @@
 ---
 name: ui-surface-inventory
-description: Identify the product's UI scopes (inspectable areas), classify them by type (App Shell, Journey, Route, Component), and recommend a prioritized recovery or specification order. Use this as the first step for large-scale projects or when performing Retrospective Specification Recovery on an existing app.
+description: Identify the product's UI Scopes (inspectable areas), classify them by type (App Shell, Journey, Route, Component), and recommend a prioritized recovery or specification order. Use this as the first step for large-scale projects or when performing Retrospective Specification Recovery on an existing app.
 status: draft
 ---
 
