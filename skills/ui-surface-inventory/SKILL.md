@@ -1,6 +1,6 @@
 ---
 name: ui-surface-inventory
-description: Identify the product's UI Scopes (inspectable areas), classify them by type (App Shell, Journey, Route, Component), and recommend a prioritized recovery or specification order. Use this as the first step for large-scale projects or when performing Retrospective Specification Recovery on an existing app.
+description: Identify the product's UI scopes (inspectable areas), classify them by type (App Shell, Journey, Route, Sub-surface), note component candidates within each scope, and recommend a prioritized recovery or specification order. Use this as the first step for large-scale projects or when performing Retrospective Specification Recovery on an existing app.
 status: draft
 ---
 
@@ -33,12 +33,13 @@ A **smallest coherent scope** should meet these criteria:
 
 ## Scope Classification
 
-| Layer                | Example                                | What it owns                   |
-| -------------------- | -------------------------------------- | ------------------------------ |
-| **App shell**        | Left sidebar, header, project switcher | Navigation frame               |
-| **Domain / journey** | Content journey                        | Cross-route flow               |
-| **Route / screen**   | `/create` page                         | One page’s layout and behavior |
-| **Component**        | Nav item, post card, approve button    | Local states and interactions  |
+| Layer                   | Example                                | What it owns                   |
+| ----------------------- | -------------------------------------- | ------------------------------ |
+| **App Shell**           | Left sidebar, header, project switcher | Navigation frame               |
+| **Journey**             | Content journey                        | Cross-route flow               |
+| **Route**               | `/create` page                         | One page’s layout and behavior |
+| **Sub-surface**         | AI review panel, wizard, modal         | Meaningful area inside a route |
+| **Component candidate** | Nav item, post card, approve button    | Reusable UI piece; candidate for `ui-component-spec` |
 
 ## Workflow
 
@@ -48,9 +49,9 @@ If performing **Spec Recovery**, browse the existing app or review provided scre
 
 Identify:
 - Persistent navigation and framing (App Shell).
-- Major user journeys and flows (Domains).
+- Major user journeys and flows (Journeys).
 - Individual pages and URLs (Routes).
-- Complex, reusable interactive units (Components).
+- Complex, reusable interactive units (Component candidates; record them inside sub-surfaces).
 
 ### Step 2 — Filter and Classify
 
@@ -60,9 +61,9 @@ Apply the "Smallest Coherent Scope" test. Group related items into their respect
 
 Recommend a recovery or specification order. Generally, the order should be:
 1. **App Shell:** Establishes the frame and global navigation.
-2. **Domain / Journey Maps:** Establishes the "connective tissue" between routes.
+2. **Journey maps:** Establishes the "connective tissue" between routes.
 3. **Primary Routes:** The core screens where the most important actions happen.
-4. **Complex Sub-surfaces:** Modals, wizards, or complex cards within routes.
+4. **Sub-surfaces:** Modals, wizards, or complex cards within routes.
 
 ### Step 4 — Produce the inventory.md
 
@@ -84,7 +85,7 @@ status: draft
 - [ ] **<Scope Name>**: <One sentence description of role and what it owns>
 - [ ] **Example**: Left sidebar navigation (owns nav order, labels, active states)
 
-## 2. Domain / Journey Scopes
+## 2. Journey Scopes
 - [ ] **<Scope Name>**: <Describes the cross-route flow or logic it owns>
 - [ ] **Example**: Content Journey (owns movement from planning to scheduling)
 
@@ -92,7 +93,9 @@ status: draft
 - [ ] **<Scope Name>**: <The specific page or URL>
 
 ## 4. Sub-surface Scopes
-- [ ] **<Scope Name>**: <Complex components, modals, or wizards that deserve their own spec>
+| Sub-surface | Parent route | User job | States | Component candidates |
+|---|---|---|---|---|
+| **<Name>** | `/create` | <Describe the user job this surface supports> | loading, edited, approved, error | PostPreviewCard, CaptionEditor, ApproveButton |
 
 ## 5. Recommended Specification Order
 1. **<Scope Name>**: <Reason for prioritizing this>
@@ -104,7 +107,7 @@ status: draft
 
 ## Acceptance criteria for this skill's output
 
-- [ ] All four layers (App Shell, Domain, Route, Sub-surface) are evaluated.
+- [ ] All four layers (App Shell, Journey, Route, Sub-surface) are evaluated, and each sub-surface includes a `Component candidates` field where applicable.
 - [ ] Every listed scope passes the "Smallest Coherent Scope" test.
 - [ ] A prioritized specification order is provided with reasoning.
 - [ ] Output follows the template structure exactly.
