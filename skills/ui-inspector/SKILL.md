@@ -40,7 +40,7 @@ Flag any interactive element that lacks semantic markup (e.g., a `<div>` with an
 
 ### 2. Computed styles sample
 
-For the 5–10 most visually significant elements (primary CTA, main heading, body text, card Surface Style, input field, navigation item — whichever apply), record the browser-computed values at the primary breakpoint.
+For the 5–10 most visually significant elements (primary CTA, main heading, body text, card surface style, input field, navigation item — whichever apply), record the browser-computed values at the primary breakpoint.
 
 Collect for each element:
 - Computed text color (hex or `rgb()`)
