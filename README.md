@@ -70,6 +70,7 @@ For new products, unfamiliar domains, or any work where misalignment is expensiv
 11. Run `ui-generate-code`
 12. Run `ui-inspector`
 13. Run `ui-redline`
+14. Run `ui-docs-sync` *(after creating or updating a spec package, to keep repo docs in sync)*
 
 ### Retrospective specification workflow
 Use this when a UI already exists but no specification was created first ("Spec Recovery").
@@ -84,6 +85,7 @@ Use this when a UI already exists but no specification was created first ("Spec 
 8. Run `ui-acceptance` to create the target checklist.
 9. Run `ui-spec-linter` to check the recovered spec package.
 10. Optionally run `ui-redline` to compare the existing UI against the recovered target spec.
+11. Run `ui-docs-sync` to confirm repository docs reference and agree with the recovered spec package.
 
 ## Skill Map
 
@@ -100,8 +102,9 @@ Use this when a UI already exists but no specification was created first ("Spec 
 | `ui-acceptance`           | approved specs                 | testable checklist                | `ui-redline`                            |
 | `ui-spec-linter` ⚠️        | full spec package              | completeness + consistency report | `ui-generate-code`                      |
 | `ui-generate-code`        | approved specs                 | implementation                    | `ui-inspector`, `ui-redline`            |
-| `ui-inspector` ⚠️          | live implementation            | DOM/a11y evidence report          | `ui-redline`                            |
+| `ui-inspector` ⚠️          | live or static implementation  | DOM/a11y evidence report          | `ui-redline`                            |
 | `ui-redline`              | spec + implementation          | mismatch report + refactor prompt | code refactor                           |
+| `ui-docs-sync` ⚠️          | repo docs + spec packages      | link and consistency report       | repo doc updates                        |
 | `ui-storybook-docs` ⚠️     | component spec                 | MDX docs, stories, prop tables    | —                                       |
 | `ui-orchestrator` ⚠️       | current project state          | recommended next skill to run     | any skill                               |
 

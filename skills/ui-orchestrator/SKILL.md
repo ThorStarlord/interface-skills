@@ -58,11 +58,18 @@ The orchestrator checks for spec package files in pipeline order. The first miss
 
 **Multi-screen vs single-screen:** `flow.md` is only required when the feature spans more than one screen. If the brief describes a single screen, skip the flow check and proceed to `blueprint.md`.
 
+**Numbered spec packages:** Some spec packages use numbered filenames instead of canonical names (e.g., `02-brief.md`, `04-blueprint.md`, `05-screen-spec.md`). If a `00-index.md` exists in the package directory, it is the authoritative manifest — use the file list and dependency chain it describes rather than searching for canonical filenames. If no `00-index.md` exists, fall back to searching for canonical names and then numbered equivalents (any file whose name ends with `-brief.md`, `-blueprint.md`, etc.). Never require both forms to be present — whichever form is used, treat it as equivalent to the canonical name for routing purposes.
+
 ## Workflow
 
 ### Step 1 — Scan the working directory
 
-Look for spec package files using the canonical names defined in the routing table above (`brief.md`, `blueprint.md`, `screen-spec.md`, etc.) within the feature's spec package folder. List every file found with its `status` value from frontmatter. If a file has no frontmatter or no `status` field, treat it as `draft`.
+First, check whether a `00-index.md` file exists in the spec package directory.
+
+- **If `00-index.md` exists:** Read it to determine the package's file list, scope, and dependency chain. Use the filenames it declares as the authoritative list — do not require canonical names. A numbered file listed in the index (e.g., `02-brief.md`) is equivalent to its canonical counterpart (`brief.md`) for all routing decisions.
+- **If no `00-index.md`:** Scan for spec files using both canonical names (`brief.md`, `blueprint.md`, etc.) and numbered equivalents (any file ending in `-brief.md`, `-blueprint.md`, etc.). Treat the first match found for each spec type as that type's representative file.
+
+List every spec file found with its `status` value from frontmatter. If a file has no frontmatter or no `status` field, treat it as `draft`.
 
 ### Step 2 — Check each file's status
 

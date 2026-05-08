@@ -1,0 +1,8 @@
+name: ui-docs-sync
+description: Verifies that repository docs and UI spec packages are linked and consistent
+
+# Optional display metadata — strip before uploading to platforms that only accept name + description.
+# See CONTRIBUTING.md "Frontmatter compatibility note" for guidance.
+interface:
+  display_name: UI Docs Sync
+  short_description: Check that repo docs and UI spec packages agree.

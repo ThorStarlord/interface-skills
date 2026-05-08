@@ -104,7 +104,9 @@ For each breakpoint tested:
 
 ---
 
-## Tooling: two paths
+## Tooling: three paths
+
+Choose the path that matches what is available. Record the chosen path in the report header. All three paths produce the same evidence report schema — the only difference is the confidence level that can be claimed for each finding.
 
 ### Path A — AI model with browser tooling (Playwright, Puppeteer, browser MCP)
 
@@ -127,7 +129,29 @@ If browser automation is not available, a developer runs the inspector manually:
 4. **Accessibility:** DevTools → Accessibility panel for individual element checks. Or run axe DevTools browser extension.
 5. **Responsiveness:** Toggle device toolbar. Test at each breakpoint. Screenshot each state.
 
-Both paths produce the same evidence report schema. Note which path was used in the report header.
+### Path C — Static source-code inspection
+
+Use this path when no live browser or running dev server is available — for example, when the route is auth-gated, when CI access is unavailable, or when running in an environment with no browser tooling.
+
+In static inspection, all evidence is gathered by reading source files directly (component files, stylesheets, CSS-in-JS, utility class lists, ARIA attributes in JSX/HTML). The output is structurally identical to Paths A and B but every finding must carry an explicit **confidence label**.
+
+**Confidence labels for static inspection:**
+
+| Label | Meaning |
+|---|---|
+| `exact — source` | Value read directly from source (e.g., a hard-coded `className="rounded-md"` or `style={{ padding: '16px' }}`). Reliable. |
+| `inferred — source` | Value derived from a utility class, theme token lookup, or CSS variable without a live computed value (e.g., `p-4` inferred as `16px` via Tailwind scale). Reliable but not browser-verified. |
+| `deferred — needs live DOM` | Could not be established from static analysis alone (e.g., styles applied conditionally at runtime, animations, pseudo-states). Must be re-verified with a live browser. |
+
+Steps for static inspection:
+
+1. **DOM inventory:** Read component JSX/TSX/HTML. List every interactive element (button, input, link, role widget) found. Note whether semantic markup is present or absent in the source.
+2. **Computed styles sample:** Read className lists, inline styles, and CSS files. For utility class frameworks (Tailwind, etc.), translate classes to computed values using the framework's scale. Label each value `exact — source` or `inferred — source`.
+3. **Token usage:** Search stylesheets and component files for `var(--)` references. Search for literal color and spacing values. Label each finding.
+4. **Accessibility:** Read ARIA attributes, `alt` attributes, label associations, and `tabIndex` values in source. Note that hover/focus visual states, screen reader announcements, and keyboard navigation order cannot be verified statically — record as `deferred — needs live DOM`.
+5. **Responsiveness:** Read responsive class variants (e.g., `md:grid-cols-2`) and media queries. Infer reflow behavior. Label as `inferred — source`.
+
+All three paths produce the same evidence report schema. Note which path was used in the report header.
 
 ---
 
@@ -141,7 +165,7 @@ spec_type: inspector-evidence
 spec_id: <slug>
 based_on: <spec package name or "none — no linked spec">
 created: <YYYY-MM-DD>
-inspection_method: <"automated (Playwright)" | "automated (Puppeteer)" | "automated (browser MCP)" | "manual (DevTools)">
+inspection_method: <"automated (Playwright)" | "automated (Puppeteer)" | "automated (browser MCP)" | "manual (DevTools)" | "static source-code" | "hybrid (static + manual)">
 status: draft
 ---
 
@@ -168,6 +192,8 @@ status: draft
 ---
 
 ## 2. Computed Styles Sample
+
+_Note: If static source-code inspection was used, add a Confidence column to every row (`exact — source` / `inferred — source` / `deferred — needs live DOM`)._
 
 | Element | Selector | Text color | Bg color | Font size | Font weight | Border radius | Padding (T R B L) |
 |---|---|---|---|---|---|---|---|
@@ -230,6 +256,7 @@ status: draft
 3. **Do not approximate computed values.** Record `border-radius: 6px`, not "slightly rounded." The difference between 6px and 8px is a nit; the difference between "slightly rounded" and 6px is unresolvable.
 4. **Do not omit literal values because they happen to match a token value.** If an element uses `padding: 16px` instead of `var(--space-4)`, record the literal even if 16px equals `space.4`. Token usage and token correctness are separate questions.
 5. **Do not run the inspector against a spec instead of an implementation.** The inspector reads code and browsers, not markdown. If there is no implementation, say so and stop.
+6. **Do not omit confidence labels in static inspections.** When Path C is used, every finding in the computed styles, token usage, accessibility, and responsiveness sections must carry a confidence label. An unlabeled static finding gives `ui-redline` no way to know whether the value was browser-verified or inferred.
 
 ---
 
@@ -238,7 +265,8 @@ status: draft
 An evidence report produced by this skill is acceptable only if every one of these is true:
 
 - [ ] All five sections (DOM Inventory, Computed Styles, Token Usage, Accessibility Findings, Responsiveness) are present, even if some contain "None found" or empty tables.
-- [ ] The inspection method (automated or manual, and which tool) is declared in both the frontmatter and the report header.
+- [ ] The inspection method (automated or manual, tool, or static source-code) is declared in both the frontmatter and the report header.
+- [ ] If static source-code inspection was used (Path C), every computed value carries a confidence label (`exact — source`, `inferred — source`, or `deferred — needs live DOM`).
 - [ ] Every computed style value is the exact browser-computed value — no approximations, no rounding, no prose descriptions substituted for numeric values.
 - [ ] The DOM inventory accounts for every interactive element on the inspected UI Scope — not just a representative sample.
 - [ ] The Token Usage section lists every literal color and spacing value found, not just a count. A count alone is not actionable.

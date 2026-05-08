@@ -28,11 +28,40 @@ Do **not** use this skill when:
 Before drafting, confirm:
 
 1. **A spec exists.** Brief, blueprint, component spec, system spec, or acceptance checklist. At least one. Without a spec, the redline has nothing to compare to.
-2. **The implementation evidence is available.** This can be a screenshot, code snippet, or live URL.
+2. **The implementation evidence is available.** This can be a screenshot, code snippet, live URL, or static source-code inspection report.
    **Preferred input:** Use the evidence report produced by `ui-inspector` (found at `redlines/inspector-report.md`) as the primary data source, supplemented by screenshots or code where helpful.
 3. **The user knows what they're complaining about, or is genuinely unsure.** If they can articulate it ("the button is the wrong color, the spacing is too tight"), capture those as starting points. If they can't ("just looks weird"), proceed systematically through the spec.
+4. **Determine the redline mode.** Choose one of the three modes below and declare it in the report header. The mode controls which verification status values are available.
 
 If no spec exists, refuse and propose: "Let's recover a brief and blueprint quickly first — otherwise I'm just guessing what you wanted."
+
+---
+
+## Redline modes
+
+Declare one mode at the top of the report. The mode determines how each mismatch finding is classified and what the overall report can reliably assert.
+
+### Mode 1 — Live authenticated browser
+
+Full browser access with a valid auth session. All states, dynamic behaviors, keyboard navigation, and network-triggered states can be tested directly.
+
+Verification status values available: `verified live`, `cannot verify`.
+
+### Mode 2 — Live unauthenticated smoke
+
+Browser access but the target route redirects to login. Only pre-auth states (login page, redirect, public landing, error pages) can be verified live. Post-auth UI must be checked by static source-code analysis or deferred.
+
+Verification status values available: `verified live`, `verified by static code`, `deferred — auth-gated`, `cannot verify`.
+
+### Mode 3 — Static-code-assisted partial
+
+No live browser access. All evidence is from source code, screenshots, or a static inspector report. Useful when the route is behind auth, an environment is unavailable, or the redline is being run in a headless context.
+
+Verification status values available: `verified by static code`, `deferred — needs live DOM`, `cannot verify`.
+
+**Mode 3 reports must be labelled "partial redline" in the frontmatter (`partial: true`) and in the report title.** A partial redline is valid and useful, but readers must know its limits.
+
+---
 
 ## The severity scale
 
@@ -78,7 +107,21 @@ For live URLs:
 
 ### Step 3 — Record each mismatch in the table
 
-Use the redline table format. Each row: section, what spec says, what implementation does, severity, fix.
+### Step 3 — Record each mismatch in the table
+
+Use the redline table format. Each row: section, what spec says, what implementation does, severity, verification status, fix.
+
+**Verification status values** (choose the one that matches the redline mode):
+
+| Status | Meaning |
+|---|---|
+| `verified live` | Confirmed by direct browser interaction with an authenticated session (Mode 1 only). |
+| `verified by static code` | Confirmed by reading source files — reliable but not browser-confirmed (Modes 2 and 3). |
+| `deferred — auth-gated` | Cannot be checked without an authenticated session (Mode 2). |
+| `deferred — needs live DOM` | Requires a running browser to verify (hover/focus states, runtime-injected styles, animations) (Mode 3). |
+| `cannot verify` | Evidence is insufficient regardless of access level (e.g., a state that requires a specific data fixture not available). |
+
+Deferred and cannot-verify rows must still appear in the table with their severity marked. Do not silently omit checks because they could not be verified — a deferred blocker is still a blocker.
 
 ### Step 4 — Prescribe exact fixes
 
@@ -107,11 +150,13 @@ based_on:
   - component-<slug>  # or whichever spec(s)
   - system-<slug>
 implementation_source: <screenshot path | code snippet | URL>
+redline_mode: <"live authenticated" | "live unauthenticated" | "static partial">
+partial: <true | false>  # true when redline_mode is "static partial"
 created: <YYYY-MM-DD>
 status: draft
 ---
 
-# Redline: <component or screen name>
+# Redline: <component or screen name><br>_(partial — static-code-assisted)_ <!-- include this suffix only when partial: true -->
 
 ## 0. Summary
 
@@ -126,16 +171,16 @@ status: draft
 
 ## 1. Mismatches
 
-| # | Section | Spec says | Implementation does | Severity | Fix |
-|---|---|---|---|---|---|
-| 1 | component §4 (Disabled state) | "border `border-muted`, background `surface-disabled`, text `text-muted`, cursor `not-allowed`" | Disabled state has the same color as default; no cursor change | **Blocker** | Add `disabled:bg-surface-disabled disabled:text-text-muted disabled:cursor-not-allowed` to the className list. |
-| 2 | component §4 (Loading state) | "spinner replaces icon while loading; click blocked" | No loading state implemented at all | **Blocker** | Add `loading?: boolean` prop. Render `<Spinner />` in place of icon when `loading=true`. Wire `disabled={disabled \|\| loading}`. |
-| 3 | component §7 (a11y) | "error linked to input via `aria-describedby`" | `aria-describedby` is missing | **Blocker** | Add `aria-describedby={error ? \`${id}-error\` : undefined}` to the input. |
-| 4 | system §2 (Spacing) | "all spacing uses tokens from `space.*`" | `padding: 13px` (literal value) | **Major** | Replace `13px` with `padding-3` (12px, token `space.3`) — closest token, slight visual diff acceptable. |
-| 5 | component §4 (Focus-visible) | "2px focus ring at `focus-ring-color`, offset 2px" | Focus ring is browser default (1px outline) | **Major** | Add `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2`. |
-| 6 | component §1 (Label) | Button label is "Save profile" | Implementation says "Submit" | **Major** | Change button text to "Save profile". |
-| 7 | system §6 (Border radius) | Cards use `radius.md` (8px) | Cards use 6px | **Minor** | Change `border-radius: 6px` → `radius-md` (8px). |
-| 8 | (not in spec) | — | Icon stroke is 2px, system convention seems to be 1.5px elsewhere | **Polish** | If the system spec adds an `icon.stroke` token, switch to it. |
+| # | Section | Spec says | Implementation does | Severity | Verification | Fix |
+|---|---|---|---|---|---|---|
+| 1 | component §4 (Disabled state) | "border `border-muted`, background `surface-disabled`, text `text-muted`, cursor `not-allowed`" | Disabled state has the same color as default; no cursor change | **Blocker** | verified live | Add `disabled:bg-surface-disabled disabled:text-text-muted disabled:cursor-not-allowed` to the className list. |
+| 2 | component §4 (Loading state) | "spinner replaces icon while loading; click blocked" | No loading state implemented at all | **Blocker** | verified by static code | Add `loading?: boolean` prop. Render `<Spinner />` in place of icon when `loading=true`. Wire `disabled={disabled \|\| loading}`. |
+| 3 | component §7 (a11y) | "error linked to input via `aria-describedby`" | `aria-describedby` is missing | **Blocker** | verified by static code | Add `aria-describedby={error ? \`${id}-error\` : undefined}` to the input. |
+| 4 | system §2 (Spacing) | "all spacing uses tokens from `space.*`" | `padding: 13px` (literal value) | **Major** | verified by static code | Replace `13px` with `padding-3` (12px, token `space.3`) — closest token, slight visual diff acceptable. |
+| 5 | component §4 (Focus-visible) | "2px focus ring at `focus-ring-color`, offset 2px" | Focus ring is browser default (1px outline) | **Major** | deferred — needs live DOM | Add `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2`. |
+| 6 | component §1 (Label) | Button label is "Save profile" | Implementation says "Submit" | **Major** | verified by static code | Change button text to "Save profile". |
+| 7 | system §6 (Border radius) | Cards use `radius.md` (8px) | Cards use 6px | **Minor** | verified by static code | Change `border-radius: 6px` → `radius-md` (8px). |
+| 8 | (not in spec) | — | Icon stroke is 2px, system convention seems to be 1.5px elsewhere | **Polish** | verified by static code | If the system spec adds an `icon.stroke` token, switch to it. |
 
 ## 2. Fix order
 Apply blockers first, majors second, minors when convenient, polish later.
@@ -219,11 +264,13 @@ A redline produced by this skill is acceptable only if every one of these is tru
 
 - [ ] Frontmatter links to at least one upstream spec.
 - [ ] Implementation source is identified (screenshot / code / URL).
+- [ ] Redline mode is declared in the frontmatter (`redline_mode`) and in the report header.
+- [ ] If mode is "static partial", `partial: true` is set in frontmatter and the report title carries the _(partial — static-code-assisted)_ suffix.
 - [ ] Summary table shows counts at each severity.
-- [ ] Every mismatch row has all six columns filled (#, section, spec says, impl does, severity, fix).
+- [ ] Every mismatch row has all seven columns filled (#, section, spec says, impl does, severity, verification status, fix).
 - [ ] Every fix is specific enough to be executed without further questions.
 - [ ] A refactor prompt is included, and every line of it traces to a row in the mismatch table.
 - [ ] The "could not verify" section is present (even if empty, to make the limits of the analysis explicit).
-- [ ] No mismatch is graded above its evidence — if you can't see it, you can't blocker it.
+- [ ] No mismatch is graded above its evidence — if you can't see it, you can't blocker it. Deferred items may carry an estimated severity but must be labeled `deferred` in the verification column.
 
 If any check fails, revise before delivering.
