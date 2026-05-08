@@ -29,7 +29,7 @@ Do **not** use this skill when:
 
 When using this skill for **Spec Recovery**, distinguish between the current aesthetics and the intended style:
 
-- **Observed Visual Language:** The density, shape language, and Surface Styles as they exist in the current implementation.
+- **Observed Visual Language:** The density, shape language, and Surface Style as they exist in the current implementation.
 - **Target Visual Language:** The desired aesthetic direction (e.g., if the user wants to keep the sidebar but make the palette "cleaner").
 - **Gap:** Inconsistencies or accidental aesthetic choices in the current UI.
 
