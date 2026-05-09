@@ -11,7 +11,7 @@ The goal is simple: reduce the gap between the interface you imagine and the int
 ## Core workflow
 
 ```text
-surface inventory → brief → visual calibration → flow → blueprint → system → screen spec → component spec → microcopy → acceptance → lint → code → inspection → redline → docs sync
+surface inventory → brief → visual calibration → flow → blueprint → system → screen spec → component spec → microcopy → acceptance → lint → code → inspection → redline → docs sync → agent routing
 ```
 
 > `surface inventory` is only needed when the scope is ambiguous or an existing app is being documented. For brand-new, well-scoped features start at `brief`.
@@ -76,6 +76,7 @@ For new products, unfamiliar domains, or any work where misalignment is expensiv
 12. Run `ui-inspector`
 13. Run `ui-redline`
 14. Run `ui-docs-sync` *(after creating or updating a spec package, to keep repo docs in sync)*
+15. Run `ui-agent-routing` *(after docs sync, to wire the spec into agent-facing routing files so AI agents discover it automatically)*
 
 ### Retrospective specification workflow
 Use this when a UI already exists but no specification was created first ("Spec Recovery").
@@ -92,8 +93,9 @@ Use this when a UI already exists but no specification was created first ("Spec 
 10. Run `ui-spec-linter` to check the recovered spec package.
 11. Optionally run `ui-redline` to compare the existing UI against the recovered target spec.
 12. Run `ui-docs-sync` to confirm repository docs reference and agree with the recovered spec package.
+13. Run `ui-agent-routing` to wire the recovered package into CLAUDE.md, AGENTS.md, and other agent-facing routing files; create `DEPRECATED.md` redirects in superseded spec folders.
 
-> Steps 3–12 are repeated for each scope identified in step 1.
+> Steps 3–13 are repeated for each scope identified in step 1.
 
 ## Skill Map
 
@@ -113,7 +115,8 @@ Use this when a UI already exists but no specification was created first ("Spec 
 | `ui-generate-code`        | approved specs                 | implementation                    | `ui-inspector`, `ui-redline`            |
 | `ui-inspector` ⚠️          | live or static implementation  | DOM/a11y evidence report          | `ui-redline`                            |
 | `ui-redline`              | spec + implementation          | mismatch report + refactor prompt | code refactor                           |
-| `ui-docs-sync` ⚠️          | repo docs + spec packages      | link and consistency report       | repo doc updates                        |
+| `ui-docs-sync` ⚠️          | repo docs + spec packages      | link and consistency report       | `ui-agent-routing`                      |
+| `ui-agent-routing` ⚠️      | accepted spec + routing files  | routing patches + routing report  | —                                       |
 | `ui-storybook-docs` ⚠️     | component spec                 | MDX docs, stories, prop tables    | —                                       |
 | `ui-orchestrator` ⚠️       | current project state          | recommended next skill to run     | any skill                               |
 

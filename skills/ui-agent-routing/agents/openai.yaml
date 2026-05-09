@@ -1,0 +1,8 @@
+name: ui-agent-routing
+description: Wires a completed UI spec package into AI-agent-facing routing files so coding agents discover and use the active spec before editing implementation code
+
+# Optional display metadata — strip before uploading to platforms that only accept name + description.
+# See CONTRIBUTING.md "Frontmatter compatibility note" for guidance.
+interface:
+  display_name: UI Agent Routing
+  short_description: Wire a completed spec package into CLAUDE.md, AGENTS.md, and other agent routing files.

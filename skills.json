@@ -149,6 +149,16 @@
       "output": "documentation updates in target system",
       "workflow_position": "final step after redline is resolved",
       "prev": ["ui-redline"],
+      "next": ["ui-agent-routing"]
+    },
+    {
+      "name": "ui-agent-routing",
+      "status": "draft",
+      "description": "Wire a completed spec package into AI-agent-facing routing files so coding agents discover and use the active spec before editing implementation code.",
+      "input": "completed or accepted spec package + agent-facing routing files (CLAUDE.md, AGENTS.md, GEMINI.md, llm-docs/, etc.)",
+      "output": "routing report with exact edits or applied patches; DEPRECATED.md in superseded spec folders; updated 00-index.md discovery section",
+      "workflow_position": "final activation step — run after ui-docs-sync to make the spec operationally discoverable by AI agents",
+      "prev": ["ui-docs-sync"],
       "next": []
     },
     {

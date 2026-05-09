@@ -26,6 +26,30 @@ It demonstrates the full recovery workflow:
 | 7 | [`microcopy.md`](microcopy.md) | `ui-microcopy` | draft | 2026-05-08 |
 | 8 | [`acceptance.md`](acceptance.md) | `ui-acceptance` | draft | 2026-05-08 |
 | 9 | [`spec-linter-report.md`](spec-linter-report.md) | `ui-spec-linter` | draft | 2026-05-08 |
+| 10 | [`agent-routing-report.md`](agent-routing-report.md) | `ui-agent-routing` | current | 2026-05-09 |
+
+## How AI agents find this package
+
+This package is the active target specification for the Pulse `/create` UI.
+
+**Routing files that point here:**
+- `CLAUDE.md` — §/create — Content Creation Route
+- `AGENTS.md` — §/create — Content Creation Route
+- `llm-docs/CONTENT-JOURNEY-UX-CONTRACT.md` — §Content Creation / /create
+
+See `agent-routing-report.md` for the full routing chain and verification status.
+
+**Required first read:**
+1. `00-index.md` (this file) — scope, status, open questions
+2. `brief.md` — goals, primary user, constraints, non-goals
+3. `screen-spec.md` — regions, states, behaviour
+4. `acceptance.md` — done criteria
+5. `redlines/inspector-report.md` — if modifying areas flagged in the redline report
+
+**Deprecated paths — do not use:**
+- `docs/saas-frontend/specs/content-journey/create/` → superseded by this recovery package. See `agent-routing-report.md` §6 item 2 for the exact `DEPRECATED.md` content to create in that folder.
+
+---
 
 ## Recovery context
 
@@ -43,4 +67,5 @@ It demonstrates the full recovery workflow:
 
 | Date | Change |
 |------|--------|
+| 2026-05-09 | Agent routing pass (Patch mode). "How agents find this package" section updated; `agent-routing-report.md` promoted to current. 4 routing edits remain pending on the Pulse codebase (see report §6 items 2–5). |
 | 2026-05-08 | Initial recovery draft. All files created; screen-spec, microcopy, acceptance remain draft pending open question resolution. |
