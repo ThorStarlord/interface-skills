@@ -66,6 +66,7 @@ def extract_file_rows(index_text: str) -> list[str]:
     _md_link_re = re.compile(r"\[.*?\]\((.+?)\)")
 
     paths = []
+    seen = set()
     in_table = False
     for line in index_text.splitlines():
         stripped = line.strip()
@@ -96,8 +97,30 @@ def extract_file_rows(index_text: str) -> list[str]:
             # Fall back: strip backticks and whitespace
             path = path_cell.strip("`").strip()
         skip_values = {"file", "path", "—", "-", ""}
-        if path.lower() not in skip_values and not path.startswith("#"):
+        if path.lower() not in skip_values and not path.startswith("#") and path not in seen:
             paths.append(path)
+            seen.add(path)
+
+    # Support bullet-link indexes used by several fixtures.
+    # Example: - [brief.md](./brief.md)
+    bullet_link_re = re.compile(r"^\s*[-*]\s+\[[^\]]+\]\(([^)]+)\)")
+    for line in index_text.splitlines():
+        match = bullet_link_re.match(line)
+        if not match:
+            continue
+        href = match.group(1).strip()
+        if not href:
+            continue
+        # Ignore in-document anchors and absolute URLs.
+        if href.startswith("#") or re.match(r"^[a-zA-Z][a-zA-Z0-9+.-]*://", href):
+            continue
+        normalized = href
+        if normalized.startswith("./"):
+            normalized = normalized[2:]
+        if normalized and normalized not in seen:
+            paths.append(normalized)
+            seen.add(normalized)
+
     return paths
 
 

@@ -6,7 +6,7 @@ tracker_mode: markdown
 
 ## Issue 1: Implement user-triggerable slicing
 - **Labels:** `ui`, `frontend`, `blocker`
-- **Spec:** `acceptance.md#slice`
+- **Spec:** `acceptance.md#1-primary-action-slice`
 - **Description:** Allow the user to trigger the slicing process.
 - **Task List:**
   - [ ] Add trigger button
@@ -19,7 +19,7 @@ tracker_mode: markdown
 
 ## Issue 2: Vertical issue generation
 - **Labels:** `ui`, `frontend`, `major`
-- **Spec:** `acceptance.md#slice`
+- **Spec:** `acceptance.md#1-primary-action-slice`
 - **Description:** Ensure slicing produces vertical issues instead of technical layers.
 - **Task List:**
   - [ ] Implement vertical slicing logic

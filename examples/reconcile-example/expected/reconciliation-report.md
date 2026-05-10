@@ -1,7 +1,7 @@
 # UI Spec Reconciliation Report: reconcile-example
 
 ## 1. Input Evidence
-- Redline Audit: `redline-audit.md`
+- Redline Audit: `redlines/redline-audit.md`
 - Implementation: `Brief.tsx`
 
 ## 2. Reconciliation Summary

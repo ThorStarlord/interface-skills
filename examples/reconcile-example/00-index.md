@@ -7,7 +7,7 @@ agent_routing: wired
 # Index: Reconcile Example
 
 - [brief.md](./brief.md)
-- [redline-audit.md](./redline-audit.md)
+- [redlines/redline-audit.md](./redlines/redline-audit.md)
 
 ## How agents find this package
 Wired via setup-interface-skills.

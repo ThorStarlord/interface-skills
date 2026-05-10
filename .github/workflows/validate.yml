@@ -23,6 +23,9 @@ jobs:
       - name: Run skill validator
         run: python scripts/validate-skill.py
 
+      - name: Run examples validator
+        run: python scripts/validate-examples.py
+
       - name: Smoke test packaging
         run: |
           # Package every skill and verify each ZIP is valid
