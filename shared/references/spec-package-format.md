@@ -7,6 +7,7 @@ A spec package represents the single source of truth for a feature. It groups al
 ```text
 feature-name/
   00-index.md                # Package index and sign-off sheet (required; canonical)
+  surface-inventory.md       # UI scope map and recovery order (ui-surface-inventory)
   brief.md                   # Product/design brief (ui-brief)
   visual-calibration.md      # Visual taste → concrete decisions (ui-visual-calibration)
   flow.md                    # User journey graph (ui-flow, multi-screen features only)

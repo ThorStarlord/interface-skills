@@ -1,3 +1,11 @@
+---
+spec_type: index
+spec_id: admin-nav-recovery
+status: current
+fixture_type: rubric
+agent_routing: partial
+---
+
 # Admin Navigation Recovery Fixture
 
 ## Fixture Purpose
@@ -57,30 +65,28 @@ admin-nav-recovery/
 
 ---
 
-## How Agents Find This Fixture
+## How agents find this package
 
 This fixture demonstrates a **navigation/app-shell retrospective specification**, not yet validated against live agents. When ready for integration testing:
 
-1. Agents will search for fixtures with `surface_type: app-shell-navigation` in fixture.yaml
-2. fixture.yaml lists all surfaces and focused skills
-3. notes.md documents human-review status and refresh markers
-4. reports/ folder contains expected outputs (currently being populated)
+1. Agents will search for fixtures with `surface_type: app-shell-navigation` in `fixture.yaml`
+2. `fixture.yaml` lists all surfaces and focused skills
+3. `notes.md` documents human-review status and refresh markers
+4. `reports/` folder contains expected outputs (currently being populated)
 
 Link in agent docs: [Admin Navigation Recovery](../admin-nav-recovery/00-index.md)
 
----
-
 ## Key Differences vs `/kanban` Fixture
 
-| Aspect | `/kanban` | `admin-nav-recovery` |
+| Aspect | Kanban | Admin Nav |
 |--------|-----------|----------------------|
-| **Surface Type** | content page (spec for cards, modals) | app-shell navigation (route registry, active states) |
-| **Inspector Type** | browser-based full screenshot | static source-code (partial coverage) |
-| **Reconciliation** | full reconciliation of spec vs impl | target-only (spec stable, impl awaits refactor) |
-| **Agent Docs** | single AGENTS.md | nested (root + app-level) |
-| **Redline** | full visual verification | partial (unverifiable without browser) |
-| **Routing** | applied/confirmed | report-mode failure (unresolved) |
-| **Core Test** | Can skills handle full spec recovery? | Can skills handle nav/shell partial recovery? |
+| **Surface Type** | `content page` | `app-shell navigation` |
+| **Inspector Type** | `browser-based` | `static source-code` |
+| **Reconciliation** | `full reconciliation` | `target-only` |
+| **Agent Docs** | `single AGENTS.md` | `nested` |
+| **Redline** | `full visual` | `partial` |
+| **Routing** | `applied/confirmed` | `report-mode failure` |
+| **Core Test** | `Full spec recovery` | `Nav/shell partial recovery` |
 
 ---
 

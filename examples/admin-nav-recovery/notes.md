@@ -1,8 +1,25 @@
 # Admin-Nav Fixture Notes
 
-## Human review required
+## Human review
 
-This fixture is in construction phase. Validation of responses against real admin-nav UI surfaces from ThorStarlord/metamorfose-edutech is pending. All skill learnings documented; source files not yet snapshot
+- Machine validation: pass
+- Human review required: yes
+- Human status: pending
+- Reviewer:
+- Review date:
+- Notes:
+  - This fixture is in construction phase. Validation of responses against real admin-nav UI surfaces from ThorStarlord/metamorfose-edutech is pending. All skill learnings documented; source files not yet snapshot.
+
+## Downstream consumption
+
+- `ui-redline` consumes:
+  - `input/inspector-findings.md`
+- `ui-spec-reconcile` consumes:
+  - `input/spec-reconcile-input.md`
+- `ui-docs-sync` consumes:
+  - `input/docs-sync-input.md`
+- `ui-to-issues` consumes:
+  - `reports/REDLINE-PARTIAL.md`
 
 - **Created:** 2026-05-10
 - **Freeze Status:** ⏸️ Not frozen (awaiting source population and validation)
