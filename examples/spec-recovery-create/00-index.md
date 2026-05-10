@@ -18,7 +18,7 @@ It demonstrates the full recovery workflow:
 
 | # | File | Skill | Status | Last updated |
 |---|------|-------|--------|--------------|
-| 1 | [`inventory.md`](inventory.md) | `ui-surface-inventory` | approved | 2026-05-08 |
+| 1 | [`surface-inventory.md`](surface-inventory.md) | `ui-surface-inventory` | approved | 2026-05-08 |
 | 2 | [`redlines/inspector-report.md`](redlines/inspector-report.md) | `ui-inspector` | approved | 2026-05-08 |
 | 3 | [`brief.md`](brief.md) | `ui-brief` | approved | 2026-05-08 |
 | 4 | [`visual-calibration.md`](visual-calibration.md) | `ui-visual-calibration` | approved | 2026-05-08 |
@@ -28,6 +28,9 @@ It demonstrates the full recovery workflow:
 | 8 | [`acceptance.md`](acceptance.md) | `ui-acceptance` | draft | 2026-05-08 |
 | 9 | [`spec-linter-report.md`](spec-linter-report.md) | `ui-spec-linter` | draft | 2026-05-08 |
 | 10 | [`agent-routing-report.md`](agent-routing-report.md) | `ui-agent-routing` | current | 2026-05-09 |
+| 11 | [`fixture.yaml`](fixture.yaml) | reproducibility manifest | current | 2026-05-10 |
+| 12 | [`notes.md`](notes.md) | human-review markers | current | 2026-05-10 |
+| 13 | [`expected/rubric.md`](expected/rubric.md) | scoring rubric | current | 2026-05-10 |
 
 ## How agents find this package
 

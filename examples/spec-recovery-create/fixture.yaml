@@ -1,0 +1,27 @@
+fixture_id: spec-recovery-create
+fixture_type: rubric
+source_repo: ThorStarlord/Pulse
+source_repo_local_hint: H:/GithubRepositories/Pulse
+source_commit: a3f9c12
+surface: /create
+workflow: retrospective-specification
+primary_skills_tested:
+  - ui-surface-inventory
+  - ui-inspector
+  - ui-brief
+  - ui-visual-calibration
+  - ui-blueprint
+  - ui-screen-spec
+  - ui-microcopy
+  - ui-acceptance
+  - ui-spec-linter
+  - ui-agent-routing
+source_files:
+  - path: saas_frontend/src/routes/create.tsx
+    role: route owner
+  - path: saas_frontend/src/components/AiDraftButton.tsx
+    role: sub-surface component
+routing_files:
+  - CLAUDE.md
+  - AGENTS.md
+  - llm-docs/CONTENT-JOURNEY-UX-CONTRACT.md

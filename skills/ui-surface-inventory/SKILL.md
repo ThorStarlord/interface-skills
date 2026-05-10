@@ -65,45 +65,64 @@ Recommend a recovery or specification order. Generally, the order should be:
 3. **Primary Routes:** The core screens where the most important actions happen.
 4. **Sub-surfaces:** Modals, wizards, or complex cards within routes.
 
-### Step 4 — Produce the inventory.md
+### Step 4 — Produce the surface-inventory.md
 
-Use the template below. Save as `inventory.md` in the root of the spec package directory (or the project root if mapping a whole app).
+Use the template below. Save as `surface-inventory.md` in the root of the spec package directory (or the project root if mapping a whole app).
 
 ## Output template
 
 ```markdown
 ---
 spec_type: inventory
-spec_id: <project-slug>
+spec_id: <project-slug>-surface-inventory
 created: <YYYY-MM-DD>
 status: draft
-surface_type: page | component | app-shell-navigation | navigation-map | modal | workflow
+surface_type: multi-surface-map
 ---
 
 # UI Surface Inventory: <Project Name>
 
-## 1. App Shell Scopes
+## 1. Purpose
+<One-sentence description of the goal of this inventory.>
+
+## 2. Source evidence
+<List of files, URLs, or screenshots used to derive this inventory.>
+- `path/to/source/files`
+- `https://app.example.com/route`
+
+## 3. App Shell Scopes
 - [ ] **<Scope Name>**: <One sentence description of role and what it owns>
 - [ ] **Example**: Left sidebar navigation (owns nav order, labels, active states)
 
-## 2. Journey Scopes
+## 4. Journey Scopes
 - [ ] **<Scope Name>**: <Describes the cross-route flow or logic it owns>
 - [ ] **Example**: Content Journey (owns movement from planning to scheduling)
 
-## 3. Route-level Scopes
+## 5. Route-level Scopes
 - [ ] **<Scope Name>**: <The specific page or URL>
 
-## 4. Sub-surface Scopes
+## 6. Sub-surface Scopes
 | Sub-surface | Parent route | User job | States | Component candidates |
 |---|---|---|---|---|
 | **<Name>** | `/create` | <Describe the user job this surface supports> | loading, edited, approved, error | PostPreviewCard, CaptionEditor, ApproveButton |
 
-## 5. Recommended Specification Order
+## 7. Surface Status Table
+| Surface | Type | Status | Existing spec? | Recommended next skill |
+|---|---|---|---|---|
+| `/example` | route | pending | no | ui-inspector |
+
+## 8. Recommended Specification Order
 1. **<Scope Name>**: <Reason for prioritizing this>
 2. **<Scope Name>**: ...
 
-## 6. Open Questions / Ambiguities
+## 9. Next-skill routing
+<Instructions on which skill to run next for the primary target surface.>
+
+## 10. Open Questions / Ambiguities
 - <Numbered list of areas where the boundary is unclear or classification is difficult>
+
+## 11. Deprecated or duplicate inventory files
+- `inventory.md` → deprecated; use this file.
 ```
 
 ## Acceptance criteria for this skill's output
@@ -122,9 +141,9 @@ Complete every item before changing `status: draft` to `status: stable`.
 
 ### Evidence on the spec-recovery-create fixture
 
-- [ ] Running this skill against the Pulse app description produces output consistent with `examples/spec-recovery-create/inventory.md`.
+- [ ] Running this skill against the Pulse app description produces output consistent with `examples/spec-recovery-create/surface-inventory.md`.
 - [ ] The four-layer structure (App Shell, Journey, Route, Sub-surface) is fully populated — no layer is blank or marked TBD.
-- [ ] The recovery order matches the one in `inventory.md` (`/create` → AI Draft Panel → Channel Selector).
+- [ ] The recovery order matches the one in `surface-inventory.md` (`/create` → AI Draft Panel → Channel Selector).
 
 ### Evidence on the settings-page fixture
 

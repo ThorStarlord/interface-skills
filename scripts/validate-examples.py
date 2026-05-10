@@ -88,7 +88,8 @@ def extract_file_rows(index_text: str) -> list[str]:
         if not in_table and "#" in parts[0] and re.search(r"\bfile\b", parts[1], re.I):
             in_table = True
             continue
-        in_table = True
+        if not in_table:
+            continue
         path_cell = parts[1].strip()
         # Try markdown link first: [text](path)
         md_match = _md_link_re.search(path_cell)
