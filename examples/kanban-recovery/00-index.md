@@ -33,6 +33,16 @@ This fixture captures a realistic retrospective-specification run for a `/kanban
 | 17 | [expected/rubric.md](expected/rubric.md) | scoring rubric | approved |
 | 18 | [notes.md](notes.md) | human-review markers | current |
 
+## Fixture layout contract
+
+- `source-docs/`: frozen copy of selected source package documents from `ViralFactory` for provenance and offline review. These files are treated as snapshot inputs and are **not** considered generated current-state output by default.
+- `input/`: normalized fixture inputs used to evaluate skills in this repository (stable, test-oriented representation).
+- `reports/`: skill outputs captured for this fixture run (lint, reconcile, docs-sync, routing, issue plan).
+- `expected/`: rubric-style expectations that define what a good output must contain.
+- `fixture.yaml`: reproducibility manifest that pins origin (`source_repo`, `source_commit`), source paths, routing context, and tested skills.
+
+Source document refresh is explicit: when `source-docs/` is intentionally refreshed, record it in `notes.md` with a `Source docs refresh marker:` line.
+
 ## How agents find this package
 
 This fixture is the active `/kanban` recovery benchmark used to validate draft bridge skills.

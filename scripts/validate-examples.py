@@ -229,61 +229,74 @@ def validate_package(
                 errors.append(f"[{name}] fixture.yaml missing 'routing_files' list")
 
         # Guard: if fixture files look auto-generated, require explicit refresh marker.
+        # `source-docs/` is treated as a frozen provenance snapshot by default and is
+        # excluded from this check unless explicitly refreshed.
         auto_generated_pattern = re.compile(
             r"(?i)(fixture_generated:\s*true|generated from current state|auto-generated|this report was generated)"
         )
+        notes_path = package_dir / "notes.md"
+        notes_text = notes_path.read_text(encoding="utf-8") if notes_path.exists() else ""
+        source_docs_refresh_enabled = "Source docs refresh marker:" in notes_text
+
         auto_generated_hits = []
         for md_file in package_dir.rglob("*.md"):
+            try:
+                relative_md = md_file.relative_to(package_dir)
+            except ValueError:
+                relative_md = md_file
+
+            # Skip provenance snapshots unless a deliberate source-doc refresh was recorded.
+            if str(relative_md).startswith("source-docs") and not source_docs_refresh_enabled:
+                continue
+
             md_text = md_file.read_text(encoding="utf-8")
             if auto_generated_pattern.search(md_text):
                 auto_generated_hits.append(md_file)
 
         if auto_generated_hits:
-            notes_path = package_dir / "notes.md"
             if not notes_path.exists():
                 errors.append(
                     f"[{name}] auto-generated-looking files detected but notes.md is missing"
                 )
             else:
-                notes_text = notes_path.read_text(encoding="utf-8")
                 if "Fixture refresh marker:" not in notes_text:
                     rel_hits = ", ".join(str(p.relative_to(package_dir)) for p in auto_generated_hits[:5])
                     errors.append(
                         f"[{name}] auto-generated-looking fixture files require explicit 'Fixture refresh marker:' in notes.md (examples: {rel_hits})"
                     )
 
-            if strict_local_sources:
-                local_hint = fixture_data.get("source_repo_local_hint") if fixture_data else None
-                if not isinstance(local_hint, str) or not local_hint.strip():
-                    warnings.append(f"[{name}] strict-local-sources: fixture.yaml missing source_repo_local_hint; skipped local source checks")
+        if strict_local_sources:
+            local_hint = fixture_data.get("source_repo_local_hint") if fixture_data else None
+            if not isinstance(local_hint, str) or not local_hint.strip():
+                warnings.append(f"[{name}] strict-local-sources: fixture.yaml missing source_repo_local_hint; skipped local source checks")
+            else:
+                local_repo = Path(local_hint)
+                if not local_repo.exists():
+                    warnings.append(
+                        f"[{name}] strict-local-sources: source_repo_local_hint not found ({local_repo}); skipped local source checks"
+                    )
                 else:
-                    local_repo = Path(local_hint)
-                    if not local_repo.exists():
-                        warnings.append(
-                            f"[{name}] strict-local-sources: source_repo_local_hint not found ({local_repo}); skipped local source checks"
-                        )
-                    else:
-                        source_paths = _extract_path_entries(fixture_data.get("source_files"))
-                        routing_paths = _extract_path_entries(fixture_data.get("routing_files"))
+                    source_paths = _extract_path_entries(fixture_data.get("source_files"))
+                    routing_paths = _extract_path_entries(fixture_data.get("routing_files"))
 
-                        if not source_paths:
-                            errors.append(f"[{name}] strict-local-sources: source_files list is empty in fixture.yaml")
-                        if not routing_paths:
-                            errors.append(f"[{name}] strict-local-sources: routing_files list is empty in fixture.yaml")
+                    if not source_paths:
+                        errors.append(f"[{name}] strict-local-sources: source_files list is empty in fixture.yaml")
+                    if not routing_paths:
+                        errors.append(f"[{name}] strict-local-sources: routing_files list is empty in fixture.yaml")
 
-                        for rel_path in source_paths:
-                            abs_path = local_repo / rel_path
-                            if not abs_path.exists():
-                                errors.append(
-                                    f"[{name}] strict-local-sources: missing source file at {abs_path}"
-                                )
+                    for rel_path in source_paths:
+                        abs_path = local_repo / rel_path
+                        if not abs_path.exists():
+                            errors.append(
+                                f"[{name}] strict-local-sources: missing source file at {abs_path}"
+                            )
 
-                        for rel_path in routing_paths:
-                            abs_path = local_repo / rel_path
-                            if not abs_path.exists():
-                                errors.append(
-                                    f"[{name}] strict-local-sources: missing routing file at {abs_path}"
-                                )
+                    for rel_path in routing_paths:
+                        abs_path = local_repo / rel_path
+                        if not abs_path.exists():
+                            errors.append(
+                                f"[{name}] strict-local-sources: missing routing file at {abs_path}"
+                            )
 
     # New: Validate agent_routing status
     routing_status = index_fm.get("agent_routing", "")

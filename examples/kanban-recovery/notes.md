@@ -8,6 +8,9 @@ status: current
 
 Fixture refresh marker: manual-freeze-2026-05-10
 
+# Optional marker for provenance refreshes
+# Source docs refresh marker: manual-refresh-YYYY-MM-DD
+
 ## Human review required
 
 - Whether coarse-pointer-first default should be canonical.
