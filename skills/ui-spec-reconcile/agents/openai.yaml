@@ -1,0 +1,3 @@
+interface:
+  display_name: UI Spec Reconcile
+  short_description: Synchronize UI spec with implementation fixes.

@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `ui-to-issues` — slices a UI spec package, redline audit, or acceptance checklist into independently implementable vertical issues.
+- `ui-spec-reconcile` — synchronizes a UI spec package with the implementation after fixes or audits, ensuring the spec remains the source of truth.
+- `setup-interface-skills` — configures a repository for the Interface Skills workflow, including folders, agent routing, and root policy.
 - `ui-surface-inventory` — maps an existing UI into coherent, recoverable scopes before deep specification or Spec Recovery. Identifies App Shell, Journeys, Routes, Sub-surfaces, and Component candidates.
 - `ui-docs-sync` — verifies that repository documentation and UI spec packages are linked and consistent. Distinct from `ui-spec-linter` (internal spec consistency) and `ui-redline` (code vs spec) — its job is the bridge between the two: do repo docs say the same thing the UI specs say?
 

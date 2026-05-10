@@ -1,0 +1,3 @@
+interface:
+  display_name: UI to Issues
+  short_description: Slice UI specs and redlines into implementable issues.
