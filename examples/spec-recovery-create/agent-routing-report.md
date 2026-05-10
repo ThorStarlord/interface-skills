@@ -2,6 +2,7 @@
 spec_type: agent-routing-report
 scope: Pulse /create Route
 spec_package: docs/saas-frontend/specs/create/00-index.md
+agent_routing: partial
 created: 2026-05-09
 updated: 2026-05-09
 status: current

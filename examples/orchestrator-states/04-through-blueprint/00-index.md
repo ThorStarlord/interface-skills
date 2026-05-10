@@ -3,6 +3,7 @@ spec_type: index
 spec_id: orchestrator-04
 created: 2026-05-08
 status: draft
+intentionally_incomplete: true
 ---
 
 # Spec Package Index: Orchestrator State 04 — Through Blueprint

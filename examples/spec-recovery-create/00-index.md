@@ -4,6 +4,7 @@ spec_id: pulse-create
 created: 2026-05-08
 status: draft
 recovery: true
+agent_routing: wired
 ---
 
 # Spec Package: Pulse /create Route (Spec Recovery)
@@ -28,7 +29,7 @@ It demonstrates the full recovery workflow:
 | 9 | [`spec-linter-report.md`](spec-linter-report.md) | `ui-spec-linter` | draft | 2026-05-08 |
 | 10 | [`agent-routing-report.md`](agent-routing-report.md) | `ui-agent-routing` | current | 2026-05-09 |
 
-## How AI agents find this package
+## How agents find this package
 
 This package is the active target specification for the Pulse `/create` UI.
 
