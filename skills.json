@@ -180,6 +180,36 @@
       "next": []
     },
     {
+      "name": "setup-interface-skills",
+      "status": "draft",
+      "description": "Configure a repository for Interface Skills, including folders, agent routing, and root policy.",
+      "input": "new or existing repository",
+      "output": "INTERFACE_SKILLS.md, spec folders, and patched agent routing files (CLAUDE.md, AGENTS.md, etc.)",
+      "workflow_position": "initial setup — run once per repository before any other skills",
+      "prev": [],
+      "next": ["ui-surface-inventory", "ui-brief"]
+    },
+    {
+      "name": "ui-spec-reconcile",
+      "status": "draft",
+      "description": "Reconcile a UI spec package with the current implementation after fixes or audits.",
+      "input": "spec package + redline report or code evidence",
+      "output": "updated spec package + reconciliation report",
+      "workflow_position": "after code fixes or redline audits to stabilize the spec as source of truth",
+      "prev": ["ui-redline"],
+      "next": ["ui-to-issues", "ui-docs-sync"]
+    },
+    {
+      "name": "ui-to-issues",
+      "status": "draft",
+      "description": "Slice a UI spec package or redline audit into independently implementable issues.",
+      "input": "spec package, redline audit, or acceptance checklist",
+      "output": "markdown issue drafts grouped by vertical UI slices",
+      "workflow_position": "after spec approval or redline audit to plan implementation work",
+      "prev": ["ui-acceptance", "ui-redline", "ui-spec-reconcile"],
+      "next": ["ui-generate-code"]
+    },
+    {
       "name": "ui-storybook-docs",
       "status": "draft",
       "description": "Generate or update Storybook MDX documentation from a component spec.",

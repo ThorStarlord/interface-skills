@@ -11,7 +11,7 @@ The goal is simple: reduce the gap between the interface you imagine and the int
 ## Core workflow
 
 ```text
-surface inventory → brief → visual calibration → flow → blueprint → system → screen spec → component spec → microcopy → acceptance → lint → code → inspection → redline → docs sync → agent routing
+setup → surface inventory → brief → visual calibration → flow → blueprint → system → screen spec → component spec → microcopy → acceptance → lint → code → inspection → redline → reconcile → docs sync → agent routing → to issues
 ```
 
 > `surface inventory` is only needed when the scope is ambiguous or an existing app is being documented. For brand-new, well-scoped features start at `brief`.
@@ -97,38 +97,44 @@ For small, well-scoped features where visual tone is already agreed:
 
 ### Full documentation-first workflow
 For new products, unfamiliar domains, or any work where misalignment is expensive:
-1. Run `ui-brief`
-2. Run `ui-visual-calibration`
-3. Run `ui-flow` *(multi-screen features only)*
-4. Run `ui-blueprint`
-5. Run `ui-system`
-6. Run `ui-screen-spec`
-7. Run `ui-component-spec`
-8. Run `ui-microcopy`
-9. Run `ui-acceptance`
-10. Run `ui-spec-linter`
-11. Run `ui-generate-code`
-12. Run `ui-inspector`
-13. Run `ui-redline`
-14. Run `ui-docs-sync` *(after creating or updating a spec package, to keep repo docs in sync)*
-15. Run `ui-agent-routing` *(after docs sync, to wire the spec into agent-facing routing files so AI agents discover it automatically)*
+1. Run `setup-interface-skills` *(once per repo)*
+2. Run `ui-brief`
+3. Run `ui-visual-calibration`
+4. Run `ui-flow` *(multi-screen features only)*
+5. Run `ui-blueprint`
+6. Run `ui-system`
+7. Run `ui-screen-spec`
+8. Run `ui-component-spec`
+9. Run `ui-microcopy`
+10. Run `ui-acceptance`
+11. Run `ui-spec-linter`
+12. Run `ui-generate-code`
+13. Run `ui-inspector`
+14. Run `ui-redline`
+15. Run `ui-spec-reconcile` *(to stabilize the spec after fixes)*
+16. Run `ui-docs-sync` *(after creating or updating a spec package, to keep repo docs in sync)*
+17. Run `ui-agent-routing` *(after docs sync, to wire the spec into agent-facing routing files so AI agents discover it automatically)*
+18. Run `ui-to-issues` *(to plan remaining implementation work or next sprint)*
 
 ### Retrospective specification workflow
 Use this when a UI already exists but no specification was created first ("Spec Recovery").
 
-1. Run `ui-surface-inventory` to map the existing UI into coherent, recoverable scopes.
-2. Run `ui-inspector` on each scope's existing implementation.
-3. Run `ui-brief` to reconstruct the missing product and design intent.
-4. Run `ui-visual-calibration` to name the existing visual language.
-5. Run `ui-blueprint` to document the as-built layout.
-6. Run `ui-screen-spec` to map regions, components, data, and states.
-7. Run `ui-component-spec` for each non-trivial component.
-8. Run `ui-microcopy` to extract and approve existing UI text.
-9. Run `ui-acceptance` to create the target checklist.
-10. Run `ui-spec-linter` to check the recovered spec package.
-11. Optionally run `ui-redline` to compare the existing UI against the recovered target spec.
-12. Run `ui-docs-sync` to confirm repository docs reference and agree with the recovered spec package.
-13. Run `ui-agent-routing` to wire the recovered package into CLAUDE.md, AGENTS.md, and other agent-facing routing files; create `DEPRECATED.md` redirects in superseded spec folders.
+1. Run `setup-interface-skills` *(once per repo)*
+2. Run `ui-surface-inventory` to map the existing UI into coherent, recoverable scopes.
+3. Run `ui-inspector` on each scope's existing implementation.
+4. Run `ui-brief` to reconstruct the missing product and design intent.
+5. Run `ui-visual-calibration` to name the existing visual language.
+6. Run `ui-blueprint` to document the as-built layout.
+7. Run `ui-screen-spec` to map regions, components, data, and states.
+8. Run `ui-component-spec` for each non-trivial component.
+9. Run `ui-microcopy` to extract and approve existing UI text.
+10. Run `ui-acceptance` to create the target checklist.
+11. Run `ui-spec-linter` to check the recovered spec package.
+12. Optionally run `ui-redline` to compare the existing UI against the recovered target spec.
+13. Run `ui-spec-reconcile` *(to stabilize the spec if redlines were found)*
+14. Run `ui-docs-sync` to confirm repository docs reference and agree with the recovered spec package.
+15. Run `ui-agent-routing` to wire the recovered package into CLAUDE.md, AGENTS.md, and other agent-facing routing files; create `DEPRECATED.md` redirects in superseded spec folders.
+16. Run `ui-to-issues` *(to plan any necessary refactors found during recovery)*
 
 > Steps 3–13 are repeated for each scope identified in step 1.
 
@@ -136,26 +142,29 @@ Use this when a UI already exists but no specification was created first ("Spec 
 
 | Skill                     | Input                          | Output                            | Next                                    |
 | ------------------------- | ------------------------------ | --------------------------------- | --------------------------------------- |
-| `ui-surface-inventory` ⚠️ | existing app or ambiguous scope | UI scope map + recovery order    | `ui-brief`, `ui-inspector`              |
+| `ui-surface-inventory`  ⚠️  | existing app or ambiguous scope | UI scope map + recovery order    | `ui-brief`, `ui-inspector`              |
 | `ui-brief`                | vague UI idea                  | product/design brief              | `ui-flow`, `ui-blueprint`               |
-| `ui-visual-calibration` ⚠️ | vague visual taste             | density/layout/shape decisions    | `ui-blueprint`, `ui-system`             |
+| `ui-visual-calibration`  ⚠️  | vague visual taste             | density/layout/shape decisions    | `ui-blueprint`, `ui-system`             |
 | `ui-flow`                 | brief for multi-screen feature | journey graph                     | `ui-blueprint`                          |
 | `ui-blueprint`            | approved brief                 | layout/wireframe spec             | `ui-screen-spec`, `ui-system`           |
 | `ui-system`               | brand/visual direction         | tokens and design rules           | `ui-component-spec`, `ui-generate-code` |
-| `ui-screen-spec` ⚠️        | blueprint + system             | screen contract                   | `ui-component-spec`                     |
+| `ui-screen-spec`  ⚠️         | blueprint + system             | screen contract                   | `ui-component-spec`                     |
 | `ui-component-spec`       | screen/component context       | anatomy/state/a11y spec           | `ui-acceptance`, `ui-generate-code`     |
 | `ui-microcopy`            | brief/spec                     | approved copy                     | `ui-acceptance`, `ui-generate-code`     |
 | `ui-acceptance`           | approved specs                 | testable checklist                | `ui-redline`                            |
-| `ui-spec-linter` ⚠️        | full spec package              | completeness + consistency report | `ui-generate-code`                      |
+| `ui-spec-linter`  ⚠️         | full spec package              | completeness + consistency report | `ui-generate-code`                      |
 | `ui-generate-code`        | approved specs                 | implementation                    | `ui-inspector`, `ui-redline`            |
-| `ui-inspector` ⚠️          | live or static implementation  | DOM/a11y evidence report          | `ui-redline`                            |
+| `ui-inspector`  ⚠️           | live or static implementation  | DOM/a11y evidence report          | `ui-redline`                            |
 | `ui-redline`              | spec + implementation          | mismatch report + refactor prompt | code refactor                           |
 | `ui-docs-sync`            | repo docs + spec packages      | link and consistency report       | `ui-agent-routing`                      |
 | `ui-agent-routing`        | accepted spec + routing files  | routing patches + routing report  | —                                       |
-| `ui-storybook-docs` ⚠️     | component spec                 | MDX docs, stories, prop tables    | —                                       |
-| `ui-orchestrator` ⚠️       | current project state          | recommended next skill to run     | any skill                               |
+| `setup-interface-skills`  ⚠️  | new or existing repository     | INTERFACE_SKILLS.md + folders     | `ui-surface-inventory`, `ui-brief`      |
+| `ui-spec-reconcile`  ⚠️       | spec package + redline/code    | updated spec package + report     | `ui-to-issues`, `ui-docs-sync`          |
+| `ui-to-issues`  ⚠️            | spec / redline / acceptance    | markdown issue drafts             | `ui-generate-code`                      |
+| `ui-storybook-docs`  ⚠️     | component spec                 | MDX docs, stories, prop tables    | —                                       |
+| `ui-orchestrator`  ⚠️       | current project state          | recommended next skill to run     | any skill                               |
 
-> ⚠️ = currently a **draft** skill — the core behaviour is defined but some implementation details are still being validated.
+>  ⚠️ = currently a **draft** skill — the core behaviour is defined but some implementation details are still being validated.
 
 ## Contributing
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for how to add or improve skills.
