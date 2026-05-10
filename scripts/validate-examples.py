@@ -14,6 +14,7 @@ Usage:
   python scripts/validate-examples.py
   python scripts/validate-examples.py --verbose
   python scripts/validate-examples.py --examples-dir examples/spec-recovery-create
+    python scripts/validate-examples.py --strict-local-sources
 """
 
 import argparse
@@ -139,16 +140,47 @@ def load_config(repo_root: Path) -> dict:
     return {}
 
 
-def validate_package(package_dir: Path, config: dict, verbose: bool = False) -> list[str]:
-    """Validate a single example package directory. Returns a list of error strings."""
+def _load_yaml_file(file_path: Path) -> dict:
+    if yaml is None:
+        return {}
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+            return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+
+def _extract_path_entries(value) -> list[str]:
+    """Extract path entries from either string lists or object lists with {path, role}."""
+    paths: list[str] = []
+    if isinstance(value, list):
+        for item in value:
+            if isinstance(item, str) and item.strip():
+                paths.append(item.strip())
+            elif isinstance(item, dict):
+                path_value = item.get("path")
+                if isinstance(path_value, str) and path_value.strip():
+                    paths.append(path_value.strip())
+    return paths
+
+
+def validate_package(
+    package_dir: Path,
+    config: dict,
+    verbose: bool = False,
+    strict_local_sources: bool = False,
+) -> tuple[list[str], list[str]]:
+    """Validate a single example package directory. Returns (errors, warnings)."""
     errors = []
+    warnings = []
     name = package_dir.name
 
     # 1. Find index file
     index_path = find_index(package_dir)
     if index_path is None:
         errors.append(f"[{name}] MISSING index file (expected 00-index.md or manifest.md)")
-        return errors
+        return errors, warnings
 
     index_text = index_path.read_text(encoding="utf-8")
     index_fm = parse_frontmatter(index_text)
@@ -175,6 +207,7 @@ def validate_package(package_dir: Path, config: dict, verbose: bool = False) -> 
             errors.append(f"[{name}] fixture_type=rubric requires fixture.yaml")
         else:
             fixture_text = fixture_manifest.read_text(encoding="utf-8")
+            fixture_data = _load_yaml_file(fixture_manifest)
             required_scalar_keys = [
                 "fixture_id:",
                 "source_repo:",
@@ -195,6 +228,39 @@ def validate_package(package_dir: Path, config: dict, verbose: bool = False) -> 
             if "routing_files:" not in fixture_text:
                 errors.append(f"[{name}] fixture.yaml missing 'routing_files' list")
 
+            if strict_local_sources:
+                local_hint = fixture_data.get("source_repo_local_hint") if fixture_data else None
+                if not isinstance(local_hint, str) or not local_hint.strip():
+                    warnings.append(f"[{name}] strict-local-sources: fixture.yaml missing source_repo_local_hint; skipped local source checks")
+                else:
+                    local_repo = Path(local_hint)
+                    if not local_repo.exists():
+                        warnings.append(
+                            f"[{name}] strict-local-sources: source_repo_local_hint not found ({local_repo}); skipped local source checks"
+                        )
+                    else:
+                        source_paths = _extract_path_entries(fixture_data.get("source_files"))
+                        routing_paths = _extract_path_entries(fixture_data.get("routing_files"))
+
+                        if not source_paths:
+                            errors.append(f"[{name}] strict-local-sources: source_files list is empty in fixture.yaml")
+                        if not routing_paths:
+                            errors.append(f"[{name}] strict-local-sources: routing_files list is empty in fixture.yaml")
+
+                        for rel_path in source_paths:
+                            abs_path = local_repo / rel_path
+                            if not abs_path.exists():
+                                errors.append(
+                                    f"[{name}] strict-local-sources: missing source file at {abs_path}"
+                                )
+
+                        for rel_path in routing_paths:
+                            abs_path = local_repo / rel_path
+                            if not abs_path.exists():
+                                errors.append(
+                                    f"[{name}] strict-local-sources: missing routing file at {abs_path}"
+                                )
+
     # New: Validate agent_routing status
     routing_status = index_fm.get("agent_routing", "")
     if routing_status and routing_status not in VALID_ROUTING_STATUSES:
@@ -208,7 +274,7 @@ def validate_package(package_dir: Path, config: dict, verbose: bool = False) -> 
         errors.append(f"[{name}] {index_path.name}: missing '## How agents find this package' section")
 
     if intentionally_incomplete:
-        return errors  # Skip file existence checks for intentionally broken packages
+        return errors, warnings  # Skip file existence checks for intentionally broken packages
 
     # 4. Extract listed files from the Files table
     listed_files = extract_file_rows(index_text)
@@ -330,7 +396,7 @@ def validate_package(package_dir: Path, config: dict, verbose: bool = False) -> 
         if "Human review required" not in notes_text:
             errors.append(f"[{name}] notes.md missing 'Human review required' marker")
 
-    return errors
+    return errors, warnings
 
 
 def main() -> int:
@@ -346,6 +412,11 @@ def main() -> int:
         "--verbose",
         action="store_true",
         help="Print details for each package, including passes.",
+    )
+    parser.add_argument(
+        "--strict-local-sources",
+        action="store_true",
+        help="When fixture.yaml provides source_repo_local_hint and the path exists, verify all source_files and routing_files exist locally.",
     )
     args = parser.parse_args()
 
@@ -369,6 +440,7 @@ def main() -> int:
         return 0
 
     all_errors: list[str] = []
+    all_warnings: list[str] = []
     passed = 0
     failed = 0
 
@@ -379,7 +451,12 @@ def main() -> int:
         # has subdirectories like component-specs/ or redlines/).
         has_own_index = find_index(pkg_dir) is not None
         if has_own_index:
-            errors = validate_package(pkg_dir, config, verbose=args.verbose)
+            errors, warnings = validate_package(
+                pkg_dir,
+                config,
+                verbose=args.verbose,
+                strict_local_sources=args.strict_local_sources,
+            )
             if errors:
                 for e in errors:
                     print(f"  FAIL  {e}")
@@ -389,6 +466,9 @@ def main() -> int:
                 if args.verbose:
                     print(f"  PASS  [{pkg_dir.name}]")
                 passed += 1
+            for w in warnings:
+                print(f"  WARN  {w}")
+            all_warnings.extend(warnings)
         else:
             # No own index — treat as container and recurse into children
             subdirs = sorted(
@@ -410,7 +490,12 @@ def main() -> int:
                     all_errors.append(err)
                     failed += 1
                     continue
-                errors = validate_package(subdir, config, verbose=args.verbose)
+                errors, warnings = validate_package(
+                    subdir,
+                    config,
+                    verbose=args.verbose,
+                    strict_local_sources=args.strict_local_sources,
+                )
                 if errors:
                     for e in errors:
                         print(f"  FAIL  {e}")
@@ -420,9 +505,15 @@ def main() -> int:
                     if args.verbose:
                         print(f"  PASS  [{pkg_dir.name}/{subdir.name}]")
                     passed += 1
+                for w in warnings:
+                    print(f"  WARN  {w}")
+                all_warnings.extend(warnings)
 
     print()
-    print(f"Results: {passed} passed, {failed} failed, {len(all_errors)} total errors")
+    print(
+        f"Results: {passed} passed, {failed} failed, "
+        f"{len(all_errors)} total errors, {len(all_warnings)} total warnings"
+    )
 
     if all_errors:
         return 1

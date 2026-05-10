@@ -1,6 +1,7 @@
 fixture_id: kanban-recovery
 fixture_type: rubric
 source_repo: ThorStarlord/ViralFactory
+source_repo_local_hint: H:/GithubRepositories/ViralFactory
 source_commit: bc815b38d7245ffec42016306b486e48c2896681
 surface: /kanban
 workflow: retrospective-specification
@@ -12,12 +13,18 @@ primary_skills_tested:
   - ui-agent-routing
   - ui-to-issues
 source_files:
-  - saas_frontend/src/pages/KanbanPage.tsx
-  - saas_frontend/src/components/kanban/KanbanCard.tsx
-  - saas_frontend/src/components/kanban/PostDetailModal.tsx
-  - saas_frontend/src/hooks/useKanban.tsx
-  - saas_frontend/src/lib/kanbanReviewMode.ts
-  - saas_frontend/src/index.css
+  - path: saas_frontend/src/pages/KanbanPage.tsx
+    role: route/page owner
+  - path: saas_frontend/src/components/kanban/KanbanCard.tsx
+    role: primary card component
+  - path: saas_frontend/src/components/kanban/PostDetailModal.tsx
+    role: modal/detail component
+  - path: saas_frontend/src/hooks/useKanban.tsx
+    role: data/state hook
+  - path: saas_frontend/src/lib/kanbanReviewMode.ts
+    role: review mode derivation logic
+  - path: saas_frontend/src/index.css
+    role: design tokens and global styles
 routing_files:
   - CLAUDE.md
   - AGENTS.md
