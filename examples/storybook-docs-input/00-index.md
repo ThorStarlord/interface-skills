@@ -3,6 +3,7 @@ spec_type: index
 spec_id: storybook-button
 created: 2026-05-08
 status: approved
+intentionally_incomplete: true
 ---
 
 # Spec Package Index: Storybook Docs Input — Button

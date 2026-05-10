@@ -27,6 +27,7 @@ feature-name/
 
 - Use the canonical file names above. Downstream skills look for these exact names — renaming `blueprint.md` to `layout.md` will cause the next skill in the pipeline to fail to find it.
 - The package index is `00-index.md`. It sorts first alphabetically, is obvious to humans, and is the preferred discovery signal used by `ui-docs-sync` and `ui-orchestrator`.
+- `00-index.md` must contain a `## How agents find this package` section and an `agent_routing` frontmatter field to support automated routing and discovery.
 - If you are migrating an older package that uses `manifest.md`, rename it to `00-index.md`. Tools will still read `manifest.md` as a fallback, but `00-index.md` is authoritative when both are present.
 - Component specs live in `component-specs/` (with the hyphen). One file per component, named after the component (`ProfileForm.md`, `MetricCard.md`).
 - A feature that is single-screen does not need `flow.md`.
@@ -35,5 +36,32 @@ feature-name/
 ## Component specs vs. shared design system
 
 Component specs in `component-specs/` are scoped to the feature. They describe the variant of a component used in this spec package. If a component is genuinely shared across many features (a global Button, a global Modal), put its spec at the repo root in a `design-system/` directory and reference it from the feature's spec package — do not duplicate it inside every feature folder.
+
+## Agent discovery
+
+How AI agents should discover and use this package. Every package should include this section in `00-index.md` to ensure that any agent that lands in the directory understands how to orient itself.
+
+```md
+## How agents find this package
+
+This package is the active source of truth for `<scope>`.
+
+Agent entry points that route here:
+- `CLAUDE.md` — see §<section>
+- `AGENTS.md` — see §<section>
+- `GEMINI.md` — see §<section>
+- `.github/copilot-instructions.md` — see §<section>
+- `<folder_context.md or llm-docs file>`
+
+Before editing this UI, agents must read:
+1. `00-index.md`
+2. `brief.md`
+3. `screen-spec.md`
+4. `acceptance.md`
+5. `redlines/inspector-report.md` (if fixing defects)
+
+Deprecated paths:
+- `<old path>` → use `<new path>`
+```
 
 A canonical worked example is in [`examples/settings-page/`](../../examples/settings-page/). Its package index is [`00-index.md`](../../examples/settings-page/00-index.md).

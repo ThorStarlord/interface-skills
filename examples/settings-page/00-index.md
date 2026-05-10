@@ -3,6 +3,7 @@ spec_type: index
 spec_id: settings-account
 created: 2026-05-06
 status: approved
+agent_routing: wired
 ---
 
 # Spec Package Manifest: Prosper Settings Page
@@ -22,6 +23,20 @@ This package contains the complete set of specifications for the Settings page f
 | 7 | [`component-specs/profile-form.md`](component-specs/profile-form.md) | `ui-component-spec` | approved | 2026-05-06   |
 | 8 | [`microcopy.md`](microcopy.md)                        | `ui-microcopy`         | approved | 2026-05-06   |
 | 9 | [`acceptance.md`](acceptance.md)                      | `ui-acceptance`        | approved | 2026-05-06   |
+
+## How agents find this package
+
+This package is the active source of truth for the Settings page.
+
+**Agent entry points that route here:**
+- `CLAUDE.md` — §Settings
+- `AGENTS.md` — §Settings
+
+**Before editing this UI, agents must read:**
+1. `00-index.md`
+2. `brief.md`
+3. `screen-spec.md`
+4. `acceptance.md`
 
 ## Open questions still unresolved
 

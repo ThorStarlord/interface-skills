@@ -1,0 +1,6 @@
+agent_routing:
+  required_entrypoints:
+    - CLAUDE.md
+    - AGENTS.md
+    - GEMINI.md
+    - .github/copilot-instructions.md

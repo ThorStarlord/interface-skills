@@ -143,17 +143,17 @@
     },
     {
       "name": "ui-docs-sync",
-      "status": "draft",
-      "description": "Synchronise a completed spec package with external documentation (Storybook, Confluence, Notion, etc.).",
-      "input": "approved and complete spec package",
-      "output": "documentation updates in target system",
-      "workflow_position": "final step after redline is resolved",
+      "status": "stable",
+      "description": "Verify that repository documentation, product contracts, route docs, and UI spec packages are linked and consistent.",
+      "input": "repo docs + spec packages",
+      "output": "link and consistency report",
+      "workflow_position": "after creating or updating a spec package, to keep repo docs in sync",
       "prev": ["ui-redline"],
       "next": ["ui-agent-routing"]
     },
     {
       "name": "ui-agent-routing",
-      "status": "draft",
+      "status": "stable",
       "description": "Wire a completed spec package into AI-agent-facing routing files so coding agents discover and use the active spec before editing implementation code.",
       "input": "completed or accepted spec package + agent-facing routing files (CLAUDE.md, AGENTS.md, GEMINI.md, llm-docs/, etc.)",
       "output": "routing report with exact edits or applied patches; DEPRECATED.md in superseded spec folders; updated 00-index.md discovery section",
