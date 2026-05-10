@@ -22,3 +22,7 @@ desktop.ini
 *.local
 .env
 .env.local
+
+# Build and install artefacts (created by scripts, not committed)
+dist/
+scratch/

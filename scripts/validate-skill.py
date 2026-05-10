@@ -96,6 +96,50 @@ def validate_readme_skill_map(repo_root, skill_folders):
     return passed
 
 
+def validate_distribution_registry(repo_root):
+    """Check that skills.json has a valid top-level 'distribution' block."""
+    registry_path = os.path.join(repo_root, 'skills.json')
+    if not os.path.exists(registry_path):
+        # validate_readme_skill_map handles a missing registry separately
+        return True
+
+    try:
+        with open(registry_path, 'r', encoding='utf-8') as f:
+            registry = json.load(f)
+    except Exception as exc:
+        print(f'[skills.json] [FAIL] Could not parse: {exc}')
+        return False
+
+    dist = registry.get('distribution')
+    if dist is None:
+        print("[skills.json] [FAIL] Missing top-level 'distribution' key")
+        return False
+
+    methods = dist.get('methods')
+    if not isinstance(methods, dict) or not methods:
+        print("[skills.json] [FAIL] 'distribution.methods' must be a non-empty object")
+        return False
+
+    passed = True
+    for method_name, method in methods.items():
+        script = method.get('script')
+        if not script:
+            print(f"[skills.json] [FAIL] distribution.methods.{method_name} missing 'script'")
+            passed = False
+            continue
+        script_path = os.path.join(repo_root, script)
+        if not os.path.exists(script_path):
+            print(f"[skills.json] [FAIL] distribution.methods.{method_name}.script '{script}' does not exist")
+            passed = False
+        if not method.get('target'):
+            print(f"[skills.json] [FAIL] distribution.methods.{method_name} missing 'target'")
+            passed = False
+
+    if passed:
+        print('[skills.json] [OK] distribution registry valid')
+    return passed
+
+
 def validate_skills():
     repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     skills_dir = os.path.join(repo_root, 'skills')
@@ -105,6 +149,9 @@ def validate_skills():
         return False
 
     all_passed = validate_shared_references(repo_root)
+
+    if not validate_distribution_registry(repo_root):
+        all_passed = False
 
     skill_folders = sorted(
         f for f in os.listdir(skills_dir)

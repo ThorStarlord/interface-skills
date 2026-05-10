@@ -42,11 +42,14 @@ def install_skill(skill_dir, scope, mode='copy', target_override=None, force=Fal
     target_base.mkdir(parents=True, exist_ok=True)
 
     if mode == 'symlink':
+        resolved = skill_path.resolve()
         try:
-            target_dir.symlink_to(skill_path.resolve(), target_is_directory=True)
+            target_dir.symlink_to(resolved, target_is_directory=True)
         except (OSError, NotImplementedError) as exc:
             print(
                 f'Error: symlink creation failed — {exc}\n'
+                f'  source : {resolved}\n'
+                f'  target : {target_dir}\n'
                 f'Tip: on Windows, symlinks require Developer Mode or Administrator '
                 f'privileges. Use --mode copy instead.'
             )
