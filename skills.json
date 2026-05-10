@@ -1,6 +1,24 @@
 {
   "version": "1",
   "description": "Machine-readable registry of all UI skills in this repository.",
+  "distribution": {
+    "note": "All skills support all install methods below. Universal layout is a local export path, not a published skills.sh registry entry.",
+    "methods": {
+      "chatgpt_zip": {
+        "script": "scripts/package-skill.py",
+        "target": "ChatGPT Skill upload"
+      },
+      "claude_code": {
+        "script": "scripts/install-claude-code-skill.py",
+        "target": ".claude/skills"
+      },
+      "universal_agents": {
+        "script": "scripts/install-agent-skills.py",
+        "target": ".agents/skills",
+        "default_mode": "copy"
+      }
+    }
+  },
   "skills": [
     {
       "name": "ui-surface-inventory",

@@ -36,3 +36,46 @@ jobs:
           # Spot-check that shared references are bundled for a skill that uses them
           unzip -p dist/ui-visual-calibration.zip SKILL.md | grep "references/vague-language-translator.md"
           ls -R dist
+
+      - name: Smoke test universal agent installer
+        run: |
+          python scripts/install-agent-skills.py skills/ui-brief \
+            --scope project --target scratch/agent-install-test
+
+          # SKILL.md must exist
+          test -f scratch/agent-install-test/ui-brief/SKILL.md
+
+          # status must be stripped from the exported frontmatter
+          # (only the first frontmatter block — between the first two --- lines)
+          awk '/^---/{n++; if(n==2) exit} n==1' \
+            scratch/agent-install-test/ui-brief/SKILL.md \
+            | (! grep "^status:")
+
+          # If the skill references shared files, they must be bundled locally
+          if grep -q "shared/references/" skills/ui-visual-calibration/SKILL.md; then
+            python scripts/install-agent-skills.py skills/ui-visual-calibration \
+              --scope project --target scratch/agent-install-test
+            ls scratch/agent-install-test/ui-visual-calibration/references/
+          fi
+
+          # --force flag: re-install over an existing target must succeed
+          python scripts/install-agent-skills.py skills/ui-brief \
+            --scope project --target scratch/agent-install-test --force
+          test -f scratch/agent-install-test/ui-brief/SKILL.md
+
+          # Default (no --force): second install without --force must skip, not error
+          python scripts/install-agent-skills.py skills/ui-brief \
+            --scope project --target scratch/agent-install-test
+
+      - name: Smoke test Claude Code installer
+        run: |
+          python scripts/install-claude-code-skill.py skills/ui-brief \
+            --scope project --target scratch/claude-install-test
+
+          # SKILL.md must exist
+          test -f scratch/claude-install-test/ui-brief/SKILL.md
+
+          # status must be stripped from the exported frontmatter
+          awk '/^---/{n++; if(n==2) exit} n==1' \
+            scratch/claude-install-test/ui-brief/SKILL.md \
+            | (! grep "^status:")

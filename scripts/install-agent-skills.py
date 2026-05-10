@@ -15,7 +15,7 @@ def get_target_base(scope, target_override=None):
     return Path.cwd() / '.agents' / 'skills'
 
 
-def install_skill(skill_dir, scope, mode='copy', target_override=None):
+def install_skill(skill_dir, scope, mode='copy', target_override=None, force=False):
     skill_path = Path(os.path.normpath(skill_dir))
     skill_name = skill_path.name
     skill_md_path = skill_path / 'SKILL.md'
@@ -28,6 +28,12 @@ def install_skill(skill_dir, scope, mode='copy', target_override=None):
     print(f'Installing {skill_name} to {target_dir} using {mode} mode...')
 
     if target_dir.exists() or target_dir.is_symlink():
+        if not force:
+            print(
+                f'Skipping {skill_name}: {target_dir} already exists. '
+                f'Use --force to overwrite.'
+            )
+            return
         if target_dir.is_symlink() or target_dir.is_file():
             target_dir.unlink()
         else:
@@ -36,7 +42,15 @@ def install_skill(skill_dir, scope, mode='copy', target_override=None):
     target_base.mkdir(parents=True, exist_ok=True)
 
     if mode == 'symlink':
-        target_dir.symlink_to(skill_path.resolve(), target_is_directory=True)
+        try:
+            target_dir.symlink_to(skill_path.resolve(), target_is_directory=True)
+        except (OSError, NotImplementedError) as exc:
+            print(
+                f'Error: symlink creation failed — {exc}\n'
+                f'Tip: on Windows, symlinks require Developer Mode or Administrator '
+                f'privileges. Use --mode copy instead.'
+            )
+            sys.exit(1)
     else:
         try:
             export_skill_to_directory(skill_path, target_dir)
@@ -65,7 +79,12 @@ if __name__ == '__main__':
         help='Install by copying a bundled export or by creating a symlink (default: copy)',
     )
     parser.add_argument('--target', help='Override default target directory')
+    parser.add_argument(
+        '--force',
+        action='store_true',
+        help='Overwrite an existing installation (default: skip if already installed)',
+    )
 
     args = parser.parse_args()
     for skill_dir in args.skill_dir:
-        install_skill(skill_dir, args.scope, mode=args.mode, target_override=args.target)
+        install_skill(skill_dir, args.scope, mode=args.mode, target_override=args.target, force=args.force)

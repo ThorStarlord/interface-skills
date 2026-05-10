@@ -48,23 +48,40 @@ python scripts/install-claude-code-skill.py skills/ui-brief --scope project
 
 See [Claude Code Installation Guide](./docs/claude-code-installation.md) for full details.
 
-### Option E: Universal `.agents/skills` layout
-For agents that support the shared `.agents/skills` convention, use the universal installer:
+### Option E: Universal agent export (`.agents/skills`)
+
+For agents that support the shared `.agents/skills` directory convention, use the universal installer. This is a **local export/install path** — it is not a published `skills.sh` registry integration.
 
 ```bash
-# Install one or more skills into the current repository
+# Install one or more skills into the current project
 python scripts/install-agent-skills.py skills/ui-orchestrator skills/ui-brief --scope project
 
 # Install globally for all supported agents on this machine
 python scripts/install-agent-skills.py skills/ui-orchestrator skills/ui-brief --scope global
 
-# Use symlinks when you want local repo changes to show up immediately
+# Re-install over an existing installation
+python scripts/install-agent-skills.py skills/ui-brief --scope global --force
+
+# Use symlinks to track live repo changes (local development only)
 python scripts/install-agent-skills.py skills/ui-brief --scope global --mode symlink
 ```
 
-Copy mode exports a self-contained skill folder with bundled shared references and repo-internal metadata removed. Symlink mode is useful for local development, but it points directly at this repository and does not bundle references.
+**`copy` mode** (default) produces a self-contained skill folder: shared references are bundled and repo-internal metadata is stripped. This is the safe default for all platforms.
 
-This adds the missing distribution layer for agents that read `.agents/skills`, while preserving the existing ZIP packaging and Claude-specific install path.
+**`symlink` mode** is for local skill development only. It points directly at this repository and does not bundle references. Symlinks require Developer Mode or Administrator privileges on Windows — if creation fails, the script exits with a clear error. Use `copy` mode when in doubt.
+
+By default the installer skips a skill if the target folder already exists. Pass `--force` to overwrite.
+
+### Distribution support matrix
+
+| Install mode        | Script                              | Target               | Best for                          |
+| ------------------- | ----------------------------------- | -------------------- | --------------------------------- |
+| ZIP package         | `scripts/package-skill.py`          | ChatGPT Skill upload | single-skill import to ChatGPT    |
+| Claude Code         | `scripts/install-claude-code-skill.py` | `.claude/skills`  | Claude Code (global or project)   |
+| Universal agents    | `scripts/install-agent-skills.py`   | `.agents/skills`     | multi-agent local workflows       |
+| skills.sh registry  | not yet                             | —                    | future public distribution        |
+
+All three active install methods use the same bundling logic: shared references are inlined and `status` is stripped before export.
 
 ### Minimum viable workflow
 For small, well-scoped features where visual tone is already agreed:
