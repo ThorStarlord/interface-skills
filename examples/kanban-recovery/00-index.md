@@ -29,9 +29,10 @@ This fixture captures a realistic retrospective-specification run for a `/kanban
 | 13 | [reports/UI-AGENT-ROUTING-SUMMARY.md](reports/UI-AGENT-ROUTING-SUMMARY.md) | ui-agent-routing result | approved |
 | 14 | [reports/GITHUB-ISSUES-PLAN.md](reports/GITHUB-ISSUES-PLAN.md) | ui-to-issues output | current |
 | 15 | [fixture.yaml](fixture.yaml) | reproducibility manifest | current |
-| 16 | [input/source-snippets/README.md](input/source-snippets/README.md) | source excerpt map | current |
-| 17 | [expected/rubric.md](expected/rubric.md) | scoring rubric | approved |
-| 18 | [notes.md](notes.md) | human-review markers | current |
+| 16 | [source-docs/00-index.md](source-docs/00-index.md) | frozen raw source package snapshot entry point | current |
+| 17 | [input/source-snippets/README.md](input/source-snippets/README.md) | source excerpt map + rerun recipe | current |
+| 18 | [expected/rubric.md](expected/rubric.md) | scoring rubric | approved |
+| 19 | [notes.md](notes.md) | human-review markers | current |
 
 ## Fixture layout contract
 

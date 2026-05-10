@@ -25,6 +25,12 @@ Pinned source commit: `bc815b38d7245ffec42016306b486e48c2896681`
 
 To avoid duplicating a large application inside this repository, this fixture pins exact source paths and commit SHA. Reproduction tooling should load these files from `ViralFactory` at the pinned commit.
 
+## Validation modes
+
+- Normal CI mode (`python scripts/validate-examples.py`) validates fixture structure and consistency only.
+- Strict local mode (`python scripts/validate-examples.py --strict-local-sources`) additionally validates pinned source and routing paths when the local source repo exists.
+- If `source_repo_local_hint` is unavailable locally, strict mode warns and skips local-path checks instead of failing.
+
 ## Re-run recipe
 
 1. Checkout `ViralFactory` at commit `bc815b38d7245ffec42016306b486e48c2896681`.
