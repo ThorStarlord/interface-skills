@@ -3,6 +3,7 @@ spec_type: index
 spec_id: orchestrator-03
 created: 2026-05-08
 status: draft
+intentionally_incomplete: true
 ---
 
 # Spec Package Index: Orchestrator State 03 — Brief Approved

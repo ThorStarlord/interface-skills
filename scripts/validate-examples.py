@@ -20,8 +20,10 @@ import argparse
 import re
 import sys
 from pathlib import Path
+import yaml
 
 VALID_STATUSES = {"draft", "current", "approved", "complete", "superseded"}
+VALID_ROUTING_STATUSES = {"wired", "partial", "missing", "not_required"}
 INDEX_FILENAMES = ("00-index.md", "manifest.md")
 
 
@@ -95,7 +97,19 @@ def extract_file_rows(index_text: str) -> list[str]:
     return paths
 
 
-def validate_package(package_dir: Path, verbose: bool = False) -> list[str]:
+def load_config(repo_root: Path) -> dict:
+    """Load configuration from .interface-skills.yaml if it exists."""
+    config_path = repo_root / ".interface-skills.yaml"
+    if config_path.exists():
+        try:
+            with open(config_path, "r", encoding="utf-8") as f:
+                return yaml.safe_load(f) or {}
+        except Exception as e:
+            print(f"Warning: Could not parse {config_path}: {e}")
+    return {}
+
+
+def validate_package(package_dir: Path, config: dict, verbose: bool = False) -> list[str]:
     """Validate a single example package directory. Returns a list of error strings."""
     errors = []
     name = package_dir.name
@@ -122,6 +136,18 @@ def validate_package(package_dir: Path, verbose: bool = False) -> list[str]:
             f"[{name}] {index_path.name}: invalid status '{index_status}' "
             f"(valid: {', '.join(sorted(VALID_STATUSES))})"
         )
+
+    # New: Validate agent_routing status
+    routing_status = index_fm.get("agent_routing", "")
+    if routing_status and routing_status not in VALID_ROUTING_STATUSES:
+        errors.append(
+            f"[{name}] {index_path.name}: invalid agent_routing '{routing_status}' "
+            f"(valid: {', '.join(sorted(VALID_ROUTING_STATUSES))})"
+        )
+
+    # New: Check for "How agents find this package" section
+    if "## How agents find this package" not in index_text and not intentionally_incomplete:
+        errors.append(f"[{name}] {index_path.name}: missing '## How agents find this package' section")
 
     if intentionally_incomplete:
         return errors  # Skip file existence checks for intentionally broken packages
@@ -163,6 +189,29 @@ def validate_package(package_dir: Path, verbose: bool = False) -> list[str]:
         if not abs_ip.exists():
             errors.append(f"[{name}] Inspector report listed but not found: {ip}")
 
+    # 9. Validate routing reports
+    routing_reports = [p for p in listed_files if "agent-routing-report" in p or p.endswith("ui-agent-routing-report.md")]
+    for rp in routing_reports:
+        abs_rp = package_dir / rp
+        if abs_rp.exists():
+            rp_text = abs_rp.read_text(encoding="utf-8")
+            rp_fm = parse_frontmatter(rp_text)
+            rp_routing_status = rp_fm.get("agent_routing", "")
+            if rp_routing_status and rp_routing_status not in VALID_ROUTING_STATUSES:
+                errors.append(f"[{name}] {rp}: invalid agent_routing status '{rp_routing_status}'")
+
+            # If report is PASS, check required entry points (from config or defaults)
+            if "**PASS**" in rp_text or "result: PASS" in rp_text or "Result: PASS" in rp_text:
+                required = config.get("agent_routing", {}).get("required_entrypoints", [
+                    "CLAUDE.md", "AGENTS.md", "GEMINI.md", ".github/copilot-instructions.md"
+                ])
+                for entry in required:
+                    if entry not in rp_text:
+                        # Report may not need all if it's a specific example, but generally it should mention them
+                        # We'll make this a warning or a soft error for now
+                        if verbose:
+                            print(f"  Warning: [{name}] routing report {rp} claims PASS but doesn't mention required entry point '{entry}'")
+
     return errors
 
 
@@ -184,6 +233,8 @@ def main() -> int:
 
     repo_root = Path(__file__).parent.parent
     examples_root = repo_root / args.examples_dir
+
+    config = load_config(repo_root)
 
     if not examples_root.is_dir():
         print(f"ERROR: examples directory not found: {examples_root}", file=sys.stderr)
@@ -210,7 +261,7 @@ def main() -> int:
         # has subdirectories like component-specs/ or redlines/).
         has_own_index = find_index(pkg_dir) is not None
         if has_own_index:
-            errors = validate_package(pkg_dir, verbose=args.verbose)
+            errors = validate_package(pkg_dir, config, verbose=args.verbose)
             if errors:
                 for e in errors:
                     print(f"  FAIL  {e}")
@@ -241,7 +292,7 @@ def main() -> int:
                     all_errors.append(err)
                     failed += 1
                     continue
-                errors = validate_package(subdir, verbose=args.verbose)
+                errors = validate_package(subdir, config, verbose=args.verbose)
                 if errors:
                     for e in errors:
                         print(f"  FAIL  {e}")

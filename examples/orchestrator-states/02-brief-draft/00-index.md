@@ -3,11 +3,13 @@ spec_type: index
 spec_id: orchestrator-02
 created: 2026-05-08
 status: draft
+intentionally_incomplete: true
 ---
 
 # Spec Package Index: Orchestrator State 02 — Brief Draft
 
 > **Fixture purpose:** Test that `ui-orchestrator` recognises a brief with `status: draft` as a gap — not a completed step — and prompts the user to finish and approve the brief before proceeding.
+intentionally_incomplete: true
 
 ## Files
 

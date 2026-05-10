@@ -115,8 +115,8 @@ Use this when a UI already exists but no specification was created first ("Spec 
 | `ui-generate-code`        | approved specs                 | implementation                    | `ui-inspector`, `ui-redline`            |
 | `ui-inspector` ⚠️          | live or static implementation  | DOM/a11y evidence report          | `ui-redline`                            |
 | `ui-redline`              | spec + implementation          | mismatch report + refactor prompt | code refactor                           |
-| `ui-docs-sync` ⚠️          | repo docs + spec packages      | link and consistency report       | `ui-agent-routing`                      |
-| `ui-agent-routing` ⚠️      | accepted spec + routing files  | routing patches + routing report  | —                                       |
+| `ui-docs-sync`            | repo docs + spec packages      | link and consistency report       | `ui-agent-routing`                      |
+| `ui-agent-routing`        | accepted spec + routing files  | routing patches + routing report  | —                                       |
 | `ui-storybook-docs` ⚠️     | component spec                 | MDX docs, stories, prop tables    | —                                       |
 | `ui-orchestrator` ⚠️       | current project state          | recommended next skill to run     | any skill                               |
 

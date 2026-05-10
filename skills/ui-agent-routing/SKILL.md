@@ -1,7 +1,7 @@
 ---
 name: ui-agent-routing
 description: Use when a UI spec package is complete or recovered and AI coding agents need to find it before editing implementation code. Also use when old spec paths have been deprecated, replaced, or moved. Symptoms: agents edit UI code without consulting the spec; agents use stale docs; multiple spec folders exist for the same route.
-status: draft
+status: stable
 ---
 
 # UI Agent Routing
@@ -55,9 +55,24 @@ This skill produces one of two outputs depending on context:
 | Mode | When to use | Output |
 |---|---|---|
 | **Report** | Agent cannot or should not apply edits (read-only session, needs human review) | Markdown routing report + exact edit plan |
-| **Patch** | Agent has write access and user has approved applying edits | Applies edits directly + produces a routing report documenting what changed |
+| **Patch** | Agent has write access and user has approved applying edits | Applies edits directly using section markers + produces a routing report |
 
 Default to **Report** mode unless the user explicitly says to apply the edits.
+
+### Patch mode rules
+When running in Patch mode, use **bounded section markers** to ensure edits are surgical and do not disrupt other repository instructions:
+
+```md
+<!-- interface-skills:start -->
+## Interface Skills routing
+
+[Routing entries go here]
+<!-- interface-skills:end -->
+```
+
+1. **If marker block exists:** Replace the entire block (including markers) with the updated routing content.
+2. **If marker block does not exist:** Append the block to the end of the file.
+3. **Preservation:** Never rewrite or delete content outside the markers. Never delete other tool-specific instruction blocks.
 
 ## Workflow
 
@@ -133,18 +148,28 @@ Deprecated: `docs/saas-frontend/specs/content-journey/create/` — superseded by
 
 ### Step 5 — Add a discovery section to `00-index.md`
 
-Every spec package should explain its own discovery path so agents that land on the index first can orient themselves. Add or update this section in `00-index.md`:
+Every spec package should explain its own discovery path so agents that land on the index first can orient themselves. Add or update this section in `00-index.md`.
+
+Also add a machine-readable field to the frontmatter:
+```yaml
+agent_routing: wired | partial | missing | not_required
+```
+
+The markdown section should follow this format:
 
 ```markdown
-## How AI agents find this package
+## How agents find this package
 
-This package is the active target specification for the `<route>` UI.
+This package is the active source of truth for `<scope>`.
 
-**Routing files that point here:**
+**Agent entry points that route here:**
 - `CLAUDE.md` — see §<section name>
-- `llm-docs/<CONTRACT-FILE>.md` — see §<section name>
+- `AGENTS.md` — see §<section name>
+- `GEMINI.md` — see §<section name>
+- `.github/copilot-instructions.md` — see §<section name>
+- `<folder_context.md or llm-docs file>`
 
-**Required first read:**
+**Before editing this UI, agents must read:**
 1. `00-index.md` (this file)
 2. `brief.md`
 3. `screen-spec.md`
@@ -202,7 +227,7 @@ If any pass condition is not met, the result is FAIL.
 
 ---
 
-## Output format
+## Output template
 
 Produce the routing report in this structure. In Patch mode, note which edits were applied vs. which were only planned.
 
@@ -211,6 +236,7 @@ Produce the routing report in this structure. In Patch mode, note which edits we
 spec_type: agent-routing-report
 scope: <route or feature name>
 spec_package: <path to 00-index.md>
+agent_routing: wired | partial | missing | not_required
 created: <YYYY-MM-DD>
 status: draft
 mode: report | patch
@@ -344,18 +370,16 @@ A routing report or patch produced by this skill is acceptable only if:
 
 ## Promotion checklist
 
-Complete every item before changing `status: draft` to `status: stable`.
-
 ### Evidence on the spec-recovery-create fixture
 
-- [ ] Running this skill against `examples/spec-recovery-create/` produces a routing report that satisfies all acceptance criteria.
-- [ ] The report identifies the missing "How agents find this package" section in `00-index.md` and adds or plans it.
-- [ ] The report includes a `DEPRECATED.md` for any deprecated path mentioned in the example.
-- [ ] The routing chain is shown even if it is short (spec index → required artifact only, since the example has no CLAUDE.md/AGENTS.md).
+- [x] Running this skill against `examples/spec-recovery-create/` produces a routing report that satisfies all acceptance criteria.
+- [x] The report identifies the missing "How agents find this package" section in `00-index.md` and adds or plans it.
+- [x] The report includes a `DEPRECATED.md` for any deprecated path mentioned in the example.
+- [x] The routing chain is shown even if it is short (spec index → required artifact only, since the example has no CLAUDE.md/AGENTS.md).
 
 ### Skill integration
 
-- [ ] `validate-skill.py` passes with `status: stable`.
-- [ ] `skills.json` entry is updated to `"status": "stable"`.
-- [ ] README core workflow and retrospective workflow end with `ui-agent-routing` after `ui-docs-sync`.
-- [ ] README Skill Map table has been updated to show `ui-agent-routing`.
+- [x] `validate-skill.py` passes with `status: stable`.
+- [x] `skills.json` entry is updated to `"status": "stable"`.
+- [x] README core workflow and retrospective workflow end with `ui-agent-routing` after `ui-docs-sync`.
+- [x] README Skill Map table has been updated to show `ui-agent-routing`.

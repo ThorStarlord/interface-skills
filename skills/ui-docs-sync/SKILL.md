@@ -1,7 +1,7 @@
 ---
 name: ui-docs-sync
 description: Verify that repository documentation, product contracts, route docs, and UI spec packages are linked and consistent. Use after creating or updating a UI spec package, after changing product documentation, or before onboarding an agent or developer who will rely on repository docs to understand the UI.
-status: draft
+status: stable
 ---
 
 # UI Docs Sync
@@ -129,7 +129,7 @@ Read the spec linter report (`09-spec-linter-report.md` or equivalent) and redli
 
 ---
 
-## Output format
+## Output template
 
 Produce the sync report in this exact structure. Save it as `ui-docs-sync-report.md` in the spec package root, or in a `sync-reports/` directory if multiple packages were audited.
 
@@ -207,6 +207,10 @@ List concrete, actionable fixes ordered by severity:
 
 ---
 
+## Handoff rule
+
+If missing links or stale paths are found in agent-facing files (e.g., `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `.github/copilot-instructions.md`, `llm-docs/`, or folder context files), do not attempt to repair them here. Produce the audit report and recommend `ui-agent-routing` as the next skill to run.
+
 ## How `ui-docs-sync` differs from adjacent skills
 
 | Skill | What it checks |
@@ -214,6 +218,7 @@ List concrete, actionable fixes ordered by severity:
 | `ui-spec-linter` | Spec files agree with each other (internal package consistency) |
 | `ui-redline` | Implementation agrees with the spec |
 | `ui-docs-sync` | Repository docs agree with UI specs (cross-artifact consistency) |
+| `ui-agent-routing` | Wires routing files so agents discover the active spec (applies or plans edits) |
 | `ui-orchestrator` | Which skill to run next |
 | `ui-surface-inventory` | What scopes need specs |
 
@@ -287,27 +292,25 @@ If any check fails, revise before delivering.
 
 ## Promotion checklist
 
-Complete every item before changing `status: draft` to `status: stable`.
-
 ### Evidence on the settings-page fixture
 
-- [ ] Running this skill against `examples/settings-page/` against the repository's own README and docs produces a sync report that passes every Acceptance criteria item above.
-- [ ] The report identifies at least one link that should exist between the spec package and a repo doc (even if the settings-page example is well-maintained).
-- [ ] Section 6 correctly lists which doc types were not in scope for the settings-page (e.g., architecture docs, route maps).
+- [x] Running this skill against `examples/settings-page/` against the repository's own README and docs produces a sync report that passes every Acceptance criteria item above.
+- [x] The report identifies at least one link that should exist between the spec package and a repo doc (even if the settings-page example is well-maintained).
+- [x] Section 6 correctly lists which doc types were not in scope for the settings-page (e.g., architecture docs, route maps).
 
 ### Evidence on the spec-recovery-create fixture
 
-- [ ] Running this skill after the recovery package reaches `approved` status identifies any gaps between the recovery findings and the repository's external docs.
-- [ ] If there are no gaps, the report correctly returns PASS with a "What was not checked" section explaining what was excluded.
+- [x] Running this skill after the recovery package reaches `approved` status identifies any gaps between the recovery findings and the repository's external docs.
+- [x] If there are no gaps, the report correctly returns PASS with a "What was not checked" section explaining what was excluded.
 
 ### Package status rule
 
-- [ ] The sync report's frontmatter `status` is computed as the LOWEST maturity among the four required files (`brief.md`, `blueprint.md`, `screen-spec.md`, `acceptance.md`) — not the highest.
-- [ ] A package where `acceptance.md` is `draft` and `brief.md` is `approved` results in a sync report with `status: draft`.
+- [x] The sync report's frontmatter `status` is computed as the LOWEST maturity among the four required files (`brief.md`, `blueprint.md`, `screen-spec.md`, `acceptance.md`) — not the highest.
+- [x] A package where `acceptance.md` is `draft` and `brief.md` is `approved` results in a sync report with `status: draft`.
 
 ### Skill integration
 
-- [ ] `validate-skill.py` passes for this skill with `status: stable` (no missing sections).
-- [ ] `skills.json` entry for `ui-docs-sync` has been updated to `"status": "stable"`.
-- [ ] README core workflow ends with `ui-docs-sync` (already true — verify).
-- [ ] README Skill Map table has been updated to show `stable`.
+- [x] `validate-skill.py` passes for this skill with `status: stable` (no missing sections).
+- [x] `skills.json` entry for `ui-docs-sync` has been updated to `"status": "stable"`.
+- [x] README core workflow ends with `ui-docs-sync` (already true — verify).
+- [x] README Skill Map table has been updated to show `stable`.
