@@ -28,8 +28,10 @@ This fixture captures a realistic retrospective-specification run for a `/kanban
 | 12 | [reports/DOCS-SYNC-REPORT.md](reports/DOCS-SYNC-REPORT.md) | ui-docs-sync result | current |
 | 13 | [reports/UI-AGENT-ROUTING-SUMMARY.md](reports/UI-AGENT-ROUTING-SUMMARY.md) | ui-agent-routing result | approved |
 | 14 | [reports/GITHUB-ISSUES-PLAN.md](reports/GITHUB-ISSUES-PLAN.md) | ui-to-issues output | current |
-| 15 | [expected/rubric.md](expected/rubric.md) | scoring rubric | approved |
-| 16 | [notes.md](notes.md) | human-review markers | current |
+| 15 | [fixture.yaml](fixture.yaml) | reproducibility manifest | current |
+| 16 | [input/source-snippets/README.md](input/source-snippets/README.md) | source excerpt map | current |
+| 17 | [expected/rubric.md](expected/rubric.md) | scoring rubric | approved |
+| 18 | [notes.md](notes.md) | human-review markers | current |
 
 ## How agents find this package
 

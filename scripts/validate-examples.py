@@ -167,6 +167,34 @@ def validate_package(package_dir: Path, config: dict, verbose: bool = False) -> 
             f"(valid: {', '.join(sorted(VALID_STATUSES))})"
         )
 
+    # New: Rubric fixtures must include a reproducibility manifest.
+    fixture_type = index_fm.get("fixture_type", "").lower()
+    if fixture_type == "rubric":
+        fixture_manifest = package_dir / "fixture.yaml"
+        if not fixture_manifest.exists():
+            errors.append(f"[{name}] fixture_type=rubric requires fixture.yaml")
+        else:
+            fixture_text = fixture_manifest.read_text(encoding="utf-8")
+            required_scalar_keys = [
+                "fixture_id:",
+                "source_repo:",
+                "source_commit:",
+                "surface:",
+                "workflow:",
+            ]
+            for key in required_scalar_keys:
+                if key not in fixture_text:
+                    errors.append(f"[{name}] fixture.yaml missing required key '{key[:-1]}'")
+
+            # Minimal list checks for source and routing context.
+            if "source_files:" not in fixture_text:
+                errors.append(f"[{name}] fixture.yaml missing 'source_files' list")
+            elif not re.search(r"^\s*-\s+\S+", fixture_text, re.MULTILINE):
+                errors.append(f"[{name}] fixture.yaml source_files list appears empty")
+
+            if "routing_files:" not in fixture_text:
+                errors.append(f"[{name}] fixture.yaml missing 'routing_files' list")
+
     # New: Validate agent_routing status
     routing_status = index_fm.get("agent_routing", "")
     if routing_status and routing_status not in VALID_ROUTING_STATUSES:
