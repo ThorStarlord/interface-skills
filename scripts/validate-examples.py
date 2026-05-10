@@ -242,6 +242,66 @@ def validate_package(package_dir: Path, config: dict, verbose: bool = False) -> 
                         if verbose:
                             print(f"  Warning: [{name}] routing report {rp} claims PASS but doesn't mention required entry point '{entry}'")
 
+    # 10. Lint report supersession rules (for realistic multi-report packages)
+    lint_reports = sorted(package_dir.glob("reports/SPEC-LINT-REPORT*.md"))
+    if len(lint_reports) > 1:
+        active_reports = []
+        for report_path in lint_reports:
+            report_text = report_path.read_text(encoding="utf-8")
+            report_fm = parse_frontmatter(report_text)
+            if report_fm.get("active_report", "").lower() == "true":
+                active_reports.append(report_path)
+
+            supersedes = report_fm.get("supersedes", "")
+            if supersedes:
+                supersedes_path = package_dir / supersedes
+                if not supersedes_path.exists():
+                    errors.append(f"[{name}] {report_path.relative_to(package_dir)} supersedes missing file: {supersedes}")
+
+        if len(active_reports) == 0:
+            errors.append(f"[{name}] Multiple lint reports found but none marked active_report: true")
+        elif len(active_reports) > 1:
+            errors.append(f"[{name}] Multiple lint reports marked active_report: true")
+
+    # 11. Docs-sync FAIL must hand off to ui-agent-routing
+    docs_sync_report = package_dir / "reports" / "DOCS-SYNC-REPORT.md"
+    if docs_sync_report.exists():
+        ds_text = docs_sync_report.read_text(encoding="utf-8")
+        ds_fm = parse_frontmatter(ds_text)
+        result = ds_fm.get("result", "").lower()
+        if result == "fail":
+            next_skill = ds_fm.get("next_skill", "")
+            if next_skill != "ui-agent-routing":
+                errors.append(f"[{name}] reports/DOCS-SYNC-REPORT.md result=fail must set next_skill: ui-agent-routing")
+
+    # 12. Agent-routing PASS should mention a direct 00-index link
+    routing_summary = package_dir / "reports" / "UI-AGENT-ROUTING-SUMMARY.md"
+    if routing_summary.exists():
+        rs_text = routing_summary.read_text(encoding="utf-8")
+        rs_fm = parse_frontmatter(rs_text)
+        if rs_fm.get("result", "").lower() == "pass" and "00-index.md" not in rs_text:
+            errors.append(f"[{name}] reports/UI-AGENT-ROUTING-SUMMARY.md result=pass but no direct 00-index.md link found")
+
+    # 13. Critical redlines must map to issues or reconcile decisions
+    redline_report = package_dir / "input" / "07-redline-audit.md"
+    issues_plan = package_dir / "reports" / "GITHUB-ISSUES-PLAN.md"
+    reconcile_report = package_dir / "reports" / "SPEC-RECONCILE-SUMMARY.md"
+    if redline_report.exists() and issues_plan.exists() and reconcile_report.exists():
+        redline_text = redline_report.read_text(encoding="utf-8")
+        issues_text = issues_plan.read_text(encoding="utf-8")
+        reconcile_text = reconcile_report.read_text(encoding="utf-8")
+        critical_ids = sorted(set(re.findall(r"\[Critical\]\s*(K-\d+)", redline_text)))
+        for item_id in critical_ids:
+            if item_id not in issues_text and item_id not in reconcile_text:
+                errors.append(f"[{name}] Critical redline item {item_id} missing issue/reconcile coverage")
+
+    # 14. Subjective fixtures must include explicit human-review markers
+    fixture_notes = package_dir / "notes.md"
+    if fixture_notes.exists():
+        notes_text = fixture_notes.read_text(encoding="utf-8")
+        if "Human review required" not in notes_text:
+            errors.append(f"[{name}] notes.md missing 'Human review required' marker")
+
     return errors
 
 
