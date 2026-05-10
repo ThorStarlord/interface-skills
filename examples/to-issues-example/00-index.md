@@ -1,6 +1,6 @@
 ---
 spec_id: to-issues-example
-status: approved
+status: draft
 agent_routing: wired
 ---
 

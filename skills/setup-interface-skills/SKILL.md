@@ -1,7 +1,7 @@
 ---
 name: setup-interface-skills
 description: Configure a repository for Interface Skills. This skill sets up the UI specification layer, including folders, agent routing files (CLAUDE.md, AGENTS.md), and a repository-wide INTERFACE_SKILLS.md policy. Use this once per repository or when routing conventions change.
-status: stable
+status: draft
 ---
 
 # Setup Interface Skills
@@ -21,6 +21,17 @@ Use this skill:
 2. **Safe patching:** Use bounded section markers (`<!-- interface-skills:start -->`) when editing shared agent files like `CLAUDE.md` or `AGENTS.md`. Never overwrite user-written or other tool-owned instructions.
 3. **Single source of policy:** Keep detailed Interface Skills rules in a root-level `INTERFACE_SKILLS.md`. Agent files should link to this policy rather than duplicating it.
 4. **Composability:** This skill should play well with other setup tools (like Matt Pocock's skills). It adds the UI layer without disrupting the general engineering layer.
+
+## Modes
+
+This skill produces one of two outputs depending on context:
+
+| Mode | When to use | Output |
+|---|---|---|
+| **Report** | Default. Needs human review or read-only session | Setup report + exact edit plan |
+| **Patch** | Agent has write access and user has approved applying edits | Applies edits directly using section markers + produces a setup report |
+
+Default to **Report** mode unless the user explicitly says to apply the edits.
 
 ## Workflow
 
@@ -74,7 +85,21 @@ Use `ui-orchestrator` to find the right spec for a given route.
 
 ### Step 6 — Update `.interface-skills.yaml`
 
-Ensure the repo-level configuration matches the setup.
+Ensure the repo-level configuration matches the setup. The file must follow this schema:
+
+```yaml
+specs:
+  root: <path-to-specs, e.g. docs/saas-frontend/specs>
+agent_routing:
+  required_entrypoints:
+    - CLAUDE.md
+    - AGENTS.md
+    - GEMINI.md
+    - .github/copilot-instructions.md
+  optional_entrypoints:
+    - .cursor/rules
+deprecated_paths: []
+```
 
 ## Output template
 

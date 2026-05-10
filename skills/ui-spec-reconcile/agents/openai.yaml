@@ -1,3 +1,6 @@
+name: ui-spec-reconcile
+description: Reconcile a UI spec package with the current implementation after code fixes or redline audits. This skill ensures the specification remains the source of truth by incorporating resolved defects, confirmed implementation details, and approved design decisions back into the spec files.
+
 interface:
   display_name: UI Spec Reconcile
   short_description: Synchronize UI spec with implementation fixes.

@@ -1,7 +1,7 @@
 ---
 name: ui-to-issues
 description: Slice a UI spec package, redline audit, or acceptance checklist into independently implementable GitHub issues or markdown drafts. This skill ensures that UI work is broken down into vertical slices that deliver observable user outcomes.
-status: stable
+status: draft
 ---
 
 # UI to Issues
@@ -22,6 +22,17 @@ Use this skill:
 2. **User-Verifiable:** Every issue should have a "How to verify" section that describes what a user (or agent) will see or do to confirm the task is complete.
 3. **Spec-Linked:** Every issue must link back to the specific part of the UI spec it implements or fixes.
 4. **Actionable:** Issues must contain enough detail (props, tokens, microcopy) that an agent or developer can implement them without re-reading the entire spec package.
+
+## Modes
+
+This skill produces one of two outputs depending on context:
+
+| Mode | When to use | Output |
+|---|---|---|
+| **Markdown** | Default. Safe and portable. | Markdown issue drafts. |
+| **Tracker** | Only when explicitly requested and tracker is configured (e.g. `gh` CLI). | Creates issues in the tracker + produces a summary report. |
+
+Default to **Markdown** mode unless the user explicitly says to create the issues in a tracker.
 
 ## Workflow
 
@@ -63,9 +74,14 @@ Review the set of issues with the user. Check for:
 
 ### Step 5 — Export
 
-Output the final set of issues as a Markdown block. If `gh` (GitHub CLI) is available and the user requests it, provide the commands to create the issues.
+Output the final set of issues as a Markdown block. Do not create tracker issues unless the user explicitly asks and the tracker is configured.
 
 ## Output template
+
+Include metadata about the export mode in the frontmatter:
+```yaml
+tracker_mode: markdown | github-cli | linear | local-files
+```
 
 Produce the issues as a single Markdown document:
 

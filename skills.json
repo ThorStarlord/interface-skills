@@ -163,7 +163,7 @@
     },
     {
       "name": "setup-interface-skills",
-      "status": "stable",
+      "status": "draft",
       "description": "Configure a repository for Interface Skills, including folders, agent routing, and root policy.",
       "input": "new or existing repository",
       "output": "INTERFACE_SKILLS.md, spec folders, and patched agent routing files (CLAUDE.md, AGENTS.md, etc.)",
@@ -173,7 +173,7 @@
     },
     {
       "name": "ui-spec-reconcile",
-      "status": "stable",
+      "status": "draft",
       "description": "Reconcile a UI spec package with the current implementation after fixes or audits.",
       "input": "spec package + redline report or code evidence",
       "output": "updated spec package + reconciliation report",
@@ -183,7 +183,7 @@
     },
     {
       "name": "ui-to-issues",
-      "status": "stable",
+      "status": "draft",
       "description": "Slice a UI spec package or redline audit into independently implementable issues.",
       "input": "spec package, redline audit, or acceptance checklist",
       "output": "markdown issue drafts grouped by vertical UI slices",

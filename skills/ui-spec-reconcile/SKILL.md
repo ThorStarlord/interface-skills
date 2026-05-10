@@ -1,7 +1,7 @@
 ---
 name: ui-spec-reconcile
 description: Reconcile a UI spec package with the current implementation after code fixes or redline audits. This skill ensures the specification remains the source of truth by incorporating resolved defects, confirmed implementation details, and approved design decisions back into the spec files.
-status: stable
+status: draft
 ---
 
 # UI Spec Reconcile
@@ -23,14 +23,30 @@ Use this skill:
 3. **Evidence-based:** Prefer `ui-redline` reports or `ui-inspector` reports as primary evidence for reconciliation.
 4. **Distinguish Intent:** Clearly separate bug fixes (reconciling spec to intended state) from design changes (updating the intended state based on implementation reality).
 
+## Reconciliation Rules
+
+To prevent "canonizing" accidental implementation drift, follow these rules:
+
+1. **Never promote implementation behavior to target spec unless:**
+   - It resolves an accepted redline item.
+   - It is explicitly approved by the user/product owner.
+   - It is already required by an upstream product/UX contract.
+2. **Flag Drift:** If the implementation differs from the spec but is NOT a verified fix, mark it as "Implementation Drift" in the report and ask for a product decision before updating the spec.
+3. **Evidence Hierarchy:** A verified `ui-redline` fix is stronger evidence than raw source code.
+
 ## Workflow
 
 ### Step 1 — Gather Evidence
 
-Identify the spec package to be reconciled and gather evidence:
-- **Primary:** `redlines/redline-audit.md` (if it exists).
-- **Secondary:** `redlines/inspector-report.md` or direct source code inspection.
-- **Context:** The existing spec files (brief, blueprint, screen-spec, component-specs, microcopy, acceptance).
+Identify the spec package to be reconciled and gather evidence. Search for all known redline/audit conventions:
+- `redlines/redline-audit.md`
+- `redlines/redline-report.md`
+- `redlines/redline-*.md`
+- `10-redline-report.md`
+- `redlines/inspector-report.md`
+- Direct source code inspection.
+
+**Context:** Read the existing spec files (brief, blueprint, screen-spec, component-specs, microcopy, acceptance).
 
 ### Step 2 — Analyze Mismatches
 
