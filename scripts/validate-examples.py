@@ -228,6 +228,30 @@ def validate_package(
             if "routing_files:" not in fixture_text:
                 errors.append(f"[{name}] fixture.yaml missing 'routing_files' list")
 
+        # Guard: if fixture files look auto-generated, require explicit refresh marker.
+        auto_generated_pattern = re.compile(
+            r"(?i)(fixture_generated:\s*true|generated from current state|auto-generated|this report was generated)"
+        )
+        auto_generated_hits = []
+        for md_file in package_dir.rglob("*.md"):
+            md_text = md_file.read_text(encoding="utf-8")
+            if auto_generated_pattern.search(md_text):
+                auto_generated_hits.append(md_file)
+
+        if auto_generated_hits:
+            notes_path = package_dir / "notes.md"
+            if not notes_path.exists():
+                errors.append(
+                    f"[{name}] auto-generated-looking files detected but notes.md is missing"
+                )
+            else:
+                notes_text = notes_path.read_text(encoding="utf-8")
+                if "Fixture refresh marker:" not in notes_text:
+                    rel_hits = ", ".join(str(p.relative_to(package_dir)) for p in auto_generated_hits[:5])
+                    errors.append(
+                        f"[{name}] auto-generated-looking fixture files require explicit 'Fixture refresh marker:' in notes.md (examples: {rel_hits})"
+                    )
+
             if strict_local_sources:
                 local_hint = fixture_data.get("source_repo_local_hint") if fixture_data else None
                 if not isinstance(local_hint, str) or not local_hint.strip():

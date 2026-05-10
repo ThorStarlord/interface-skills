@@ -6,6 +6,8 @@ status: current
 
 # Notes: Kanban Recovery Fixture
 
+Fixture refresh marker: manual-freeze-2026-05-10
+
 ## Human review required
 
 - Whether coarse-pointer-first default should be canonical.
