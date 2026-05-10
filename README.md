@@ -48,6 +48,24 @@ python scripts/install-claude-code-skill.py skills/ui-brief --scope project
 
 See [Claude Code Installation Guide](./docs/claude-code-installation.md) for full details.
 
+### Option E: Universal `.agents/skills` layout
+For agents that support the shared `.agents/skills` convention, use the universal installer:
+
+```bash
+# Install one or more skills into the current repository
+python scripts/install-agent-skills.py skills/ui-orchestrator skills/ui-brief --scope project
+
+# Install globally for all supported agents on this machine
+python scripts/install-agent-skills.py skills/ui-orchestrator skills/ui-brief --scope global
+
+# Use symlinks when you want local repo changes to show up immediately
+python scripts/install-agent-skills.py skills/ui-brief --scope global --mode symlink
+```
+
+Copy mode exports a self-contained skill folder with bundled shared references and repo-internal metadata removed. Symlink mode is useful for local development, but it points directly at this repository and does not bundle references.
+
+This adds the missing distribution layer for agents that read `.agents/skills`, while preserving the existing ZIP packaging and Claude-specific install path.
+
 ### Minimum viable workflow
 For small, well-scoped features where visual tone is already agreed:
 1. Run `ui-brief`
