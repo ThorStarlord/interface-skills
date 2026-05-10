@@ -77,6 +77,7 @@ spec_type: inventory
 spec_id: <project-slug>
 created: <YYYY-MM-DD>
 status: draft
+surface_type: page | component | app-shell-navigation | navigation-map | modal | workflow
 ---
 
 # UI Surface Inventory: <Project Name>

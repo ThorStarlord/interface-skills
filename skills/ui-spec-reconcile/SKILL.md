@@ -102,7 +102,14 @@ Produce a reconciliation report in the following format:
 - [ ] Items that could not be reconciled (e.g., pending product decision).
 
 ## 5. Result
-**Status:** Reconciled / Partially Reconciled
+**Status:** fully reconciled | target-only reconciled | implementation-only reconciled | partially reconciled | blocked by product decision
+
+**Result Types:**
+- **Fully reconciled:** Spec and implementation agree; no gaps remain.
+- **Target-only reconciled:** Spec is stable and approved; implementation still awaits refactoring or completion.
+- **Implementation-only reconciled:** Implementation state accepted as new target; spec has been updated to match.
+- **Partially reconciled:** Some items resolved; others remain open (e.g., awaiting product decision).
+- **Blocked by product decision:** Reconciliation cannot proceed until a product/UX decision is made.
 ```
 
 ## Acceptance criteria for this skill's output

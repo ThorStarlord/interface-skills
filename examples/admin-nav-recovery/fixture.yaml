@@ -1,0 +1,59 @@
+---
+fixture_type: rubric
+workflow: retrospective-specification
+surface_type: app-shell-navigation
+surface_name: Admin Sidebar Navigation
+
+source:
+  repo: ThorStarlord/metamorfose-edutech
+  commit: unknown-at-fixture-creation
+  local_hint: "H:/GithubRepositories/metamorfose-edutech"
+  note: "This fixture tests app-shell recovery. Source commit should be documented when fixture is populated."
+
+surfaces:
+  - name: admin-sidebar-nav
+    type: app-shell-navigation
+    scope: /admin/*
+    role: primary-navigation-target
+  - name: route-registry
+    type: infrastructure
+    scope: admin-product-surface.ts
+    role: source-of-truth-for-active-routes
+  - name: agent-docs
+    type: documentation
+    scope: root AGENTS.md, metamorfose-platform/AGENTS.md
+    role: monorepo-style-agent-routing
+
+skills_in_workflow:
+  - name: ui-surface-inventory
+    focus: app-shell and navigation surfaces
+  - name: ui-inspector
+    focus: static source-code inspection with partial coverage
+  - name: ui-spec-linter
+    focus: spec consistency vs implementation alignment distinction
+  - name: ui-spec-reconcile
+    focus: target-only-reconciled category and finance route contradiction
+  - name: ui-docs-sync
+    focus: nested monorepo agent documentation
+  - name: ui-agent-routing
+    focus: report-mode failure with explicit status tracking
+  - name: ui-redline
+    focus: partial static redline with unverifiable items documented
+  - name: ui-to-issues
+    focus: redline-to-issue coverage mapping
+
+key_learnings:
+  - app-shell surfaces require route registry validation
+  - partial static redlines must document unverifiable items
+  - spec linter should distinguish pass from implementation ready
+  - reconciliation needs target-only category
+  - monorepo docs need nested agent file support
+  - agent routing can run in report mode and fail gracefully
+  - navigation surfaces differ fundamentally from content pages
+
+test_categories:
+  - navigation-and-route-discovery
+  - partial-static-verification
+  - monorepo-docs-sync
+  - target-spec-only-reconciliation
+  - agent-routing-failure-modes

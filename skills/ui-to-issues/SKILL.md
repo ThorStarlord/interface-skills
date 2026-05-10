@@ -104,10 +104,32 @@ Produce the issues as a single Markdown document:
 ## Issue 2: ...
 ```
 
+## Redline-to-Issue Coverage Map
+
+If input is a `ui-redline` audit, the output **must** include a coverage map showing how each redline item is addressed:
+
+```markdown
+## Redline Coverage
+
+| Redline ID | Category | Issue | Status |
+|---|---|---|---|
+| [K-1] | Finance path | #2 (Correct route registry) | covered |
+| [K-2] | Active state | #1 (Implement active indicator) | covered |
+| [K-3] | ARIA labels | #3 (Add accessibility markers) | covered |
+| [K-4] | Rounded corners | #4 (Apply radius token) | covered |
+| [K-5] | Icon spacing | deferred | known polish, tracked separately |
+| [K-6] | Duplicate links | deferred | product decision pending |
+```
+
+**Requirements:**
+- Every redline finding (especially critical items K-1..K-N) must have a fate: covered by an issue, deferred with justification, or explicitly marked as not_applicable.
+- No redline item should disappear silently without an entry in this map.
+
 ## Acceptance criteria for this skill's output
 
 - [ ] Issues are vertical slices of behavior, not horizontal architectural layers.
 - [ ] Every issue contains a specific verification step.
+- [ ] If input is a redline audit, redline-to-issue coverage map is included and complete.
 - [ ] All items from the input (acceptance checklist or redline) are mapped to an issue.
 - [ ] No "vague" tasks (e.g., "clean up code", "make it look modern") are included.
 - [ ] Issues include direct links to the relevant UI specifications.

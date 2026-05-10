@@ -148,6 +148,30 @@ Deprecated: `docs/saas-frontend/specs/content-journey/create/` — superseded by
 
 ### Step 5 — Add a discovery section to `00-index.md`
 
+---
+
+## Status Field Requirements
+
+When reporting on routing readiness, use explicit statuses instead of checkboxes:
+
+```yaml
+done       # Link is present and correct
+missing    # Link should exist but does not
+planned    # Link is acknowledged but not yet added
+not_applicable  # This file does not apply to this spec package
+```
+
+**Example report format:**
+
+| Routing File | Route | Status | Notes |
+|---|---|---|---|
+| `CLAUDE.md` | `/admin/*` | done | Link added to admin-nav spec |
+| `metamorfose-platform/AGENTS.md` | `/admin/*` | missing | App-level AGENTS.md needs update |
+| `root CONTEXT.md` | `/admin/*` | planned | Will be added after platform-level routing is confirmed |
+| `.cursor/rules` | `/admin/*` | not_applicable | No Cursor setup for this repo |
+
+This prevents ambiguity where "planned" might look like "complete" in a checkbox view
+
 Every spec package should explain its own discovery path so agents that land on the index first can orient themselves. Add or update this section in `00-index.md`.
 
 Also add a machine-readable field to the frontmatter:

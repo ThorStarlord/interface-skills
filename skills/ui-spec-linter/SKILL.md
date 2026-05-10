@@ -130,6 +130,8 @@ spec_id: <slug matching the brief>
 based_on: <list of spec files linted>
 created: <YYYY-MM-DD>
 status: draft
+spec_consistency: pass | fail
+implementation_alignment: not_checked | partial | ready
 ---
 
 # Spec Lint Report
@@ -137,6 +139,8 @@ status: draft
 **Package:** <spec package name>
 **Date:** <YYYY-MM-DD>
 **Result:** PASS / FAIL (<N> issues found)
+**Spec Consistency:** pass (internal structure is coherent)
+**Implementation Alignment:** not_checked (spec may require redline fixes after code generation)
 
 ## Issues
 

@@ -45,6 +45,16 @@ What does **not** count as repository documentation for this skill's purposes:
 - Inline code comments
 - Changelog entries
 
+## Monorepo-specific documentation
+
+For **monorepo repositories** with app-level or platform-level subdirectories, check for documentation files at **multiple levels**:
+
+- **Root level:** `README.md`, `AGENTS.md`, `CONTEXT.md` (applies across the whole repo)
+- **App/platform level:** `metamorfose-platform/AGENTS.md`, `docs/saas-frontend/CONTEXT.md` (applies to a subproject)
+- **Per-directory level:** `src/pages/create/CONTEXT.md`, `src/components/CONTEXT.md` (applies to a subtree)
+
+A spec package may be documented at multiple levels. For example, a route may be mentioned in both the root `AGENTS.md` and the app-level `metamorfose-platform/AGENTS.md`. **Check all levels** — missing links at the app level can be just as damaging as missing root-level links, since agents navigating the app directory will only see the app-level docs.
+
 ## What counts as a UI spec package
 
 A spec package is a collection of files in a directory that together describe a single UI scope (route, flow, screen, or feature). A package is discoverable by the presence of any of these signals, in priority order:

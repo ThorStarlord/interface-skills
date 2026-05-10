@@ -214,8 +214,14 @@ Do not change anything else. Do not add features. Do not refactor working code. 
 ````
 
 ## 4. What I could not verify from this input
+
+This section is **required** for partial redlines. List items that cannot be verified without live browser access or runtime evidence:
+
 - <Things you couldn't tell from the inputs you had — e.g. "Cannot verify hover state from a static screenshot.">
+- <Things that would require live DOM — e.g. "Cannot verify focus-visible color at runtime.">
 - <Suggestion to provide more — e.g. "Please share a live URL or video to verify hover and focus states.">
+
+**Required for static/partial redlines:** For each item listed, include a recommended next verification mode (e.g., "run in live authenticated browser", "inspect at runtime", "test with screen reader").
 
 ## 5. Open questions
 - <Numbered>

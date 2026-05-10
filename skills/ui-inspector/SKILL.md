@@ -104,6 +104,27 @@ For each breakpoint tested:
 
 ---
 
+## Report Header Requirements
+
+Every inspector report must include these frontmatter fields:
+
+```yaml
+inspection_method: live-authenticated | live-unauthenticated | static-source
+runtime_verified: true | false
+partial: true | false
+```
+
+If `runtime_verified: false`, the report is based on static code inspection and must include a confidence breakdown:
+
+```
+Confidence breakdown:
+- Verified by source: <N> findings
+- Inferred from source: <N> findings
+- Requires live DOM: <N> findings (not verified)
+```
+
+---
+
 ## Tooling: three paths
 
 Choose the path that matches what is available. Record the chosen path in the report header. All three paths produce the same evidence report schema — the only difference is the confidence level that can be claimed for each finding.
