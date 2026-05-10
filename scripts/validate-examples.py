@@ -20,7 +20,11 @@ import argparse
 import re
 import sys
 from pathlib import Path
-import yaml
+
+try:
+    import yaml
+except ImportError:
+    yaml = None
 
 VALID_STATUSES = {"draft", "current", "approved", "complete", "superseded"}
 VALID_ROUTING_STATUSES = {"wired", "partial", "missing", "not_required"}
@@ -101,6 +105,9 @@ def load_config(repo_root: Path) -> dict:
     """Load configuration from .interface-skills.yaml if it exists."""
     config_path = repo_root / ".interface-skills.yaml"
     if config_path.exists():
+        if yaml is None:
+            print("Warning: PyYAML not installed. Skipping .interface-skills.yaml config.")
+            return {}
         try:
             with open(config_path, "r", encoding="utf-8") as f:
                 return yaml.safe_load(f) or {}
