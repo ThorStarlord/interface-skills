@@ -1,0 +1,346 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 98%;
+    --foreground: 220 20% 20%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 20%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 20%;
+
+    --primary: 12 76% 61%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 20% 30%;
+
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 10% 50%;
+
+    --accent: 172 66% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 12 76% 61%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 220 20% 30%;
+    --sidebar-primary: 12 76% 61%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 96%;
+    --sidebar-accent-foreground: 220 20% 30%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 12 76% 61%;
+
+    /* Custom tokens */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 100%;
+
+    /* Social colors */
+    --instagram: 326 78% 59%;
+    --facebook: 214 89% 52%;
+
+    /* Kanban columns */
+    --kanban-draft: 220 14% 96%;
+    --kanban-review: 38 92% 95%;
+    --kanban-scheduled: 199 89% 95%;
+    --kanban-published: 142 76% 95%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(12 76% 61%), hsl(20 80% 55%));
+    --gradient-hero: linear-gradient(135deg, hsl(12 76% 61% / 0.1), hsl(172 66% 50% / 0.1));
+
+    /* Depth surfaces — 4 levels of perceived elevation */
+    --surface-0: var(--background);
+    --surface-1: var(--card);
+    --surface-2: 220 15% 97%;
+    --surface-3: 0 0% 100%;
+
+    /* Glow tokens for interactive focus states */
+    --glow-primary: 0 0 0 3px hsl(var(--primary) / 0.18);
+    --glow-success: 0 0 0 3px hsl(var(--success) / 0.18);
+    --glow-accent: 0 0 0 3px hsl(var(--accent) / 0.18);
+  }
+
+  .dark {
+    --background: 220 20% 10%;
+    --foreground: 0 0% 95%;
+
+    --card: 220 20% 13%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 220 20% 13%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 12 76% 61%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 20% 18%;
+    --secondary-foreground: 0 0% 90%;
+
+    --muted: 220 20% 18%;
+    --muted-foreground: 220 10% 60%;
+
+    --accent: 172 66% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 20% 20%;
+    --input: 220 20% 20%;
+    --ring: 12 76% 61%;
+
+    --sidebar-background: 220 20% 10%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 12 76% 61%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 20% 18%;
+    --sidebar-accent-foreground: 0 0% 90%;
+    --sidebar-border: 220 20% 20%;
+    --sidebar-ring: 12 76% 61%;
+
+    --kanban-draft: 220 20% 18%;
+    --kanban-review: 38 50% 15%;
+    --kanban-scheduled: 199 50% 15%;
+    --kanban-published: 142 50% 15%;
+
+    /* Depth surfaces — dark mode */
+    --surface-0: 222 20% 9%;
+    --surface-1: 222 20% 13%;
+    --surface-2: 222 20% 17%;
+    --surface-3: 222 20% 21%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer utilities {
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  .animate-slide-in-left {
+    animation: slideInLeft 0.3s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* Hide scrollbar for horizontal carousels */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* ─── Semantic shadow scale ─────────────────────────────────────────────── */
+  /* Use shadow-card on resting cards, shadow-card-hover on hover/lifted state, */
+  /* shadow-modal on dialogs, popovers, and floating panels.                    */
+  .shadow-card {
+    box-shadow:
+      0 1px 3px 0 hsl(var(--foreground) / 0.06),
+      0 1px 2px -1px hsl(var(--foreground) / 0.06);
+  }
+
+  .shadow-card-hover {
+    box-shadow:
+      0 10px 30px -8px hsl(var(--primary) / 0.2),
+      0 4px 8px -4px hsl(var(--foreground) / 0.08);
+  }
+
+  .shadow-modal {
+    box-shadow: 0 25px 60px -15px hsl(var(--foreground) / 0.25);
+  }
+
+  /* Upgraded glass: slightly stronger blur + border for layered depth */
+  .glass {
+    @apply bg-card/80 backdrop-blur-md border border-border/40;
+  }
+
+  .hero-surface {
+    background:
+      radial-gradient(circle at top left, hsl(var(--primary) / 0.16), transparent 38%),
+      radial-gradient(circle at top right, hsl(var(--accent) / 0.12), transparent 30%),
+      hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    box-shadow:
+      0 18px 50px -24px hsl(var(--foreground) / 0.22),
+      0 6px 18px -10px hsl(var(--primary) / 0.18);
+  }
+
+  .hero-kicker {
+    @apply inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-primary;
+  }
+
+  .display-title {
+    font-family: 'Fraunces', Georgia, serif;
+    font-variation-settings: 'SOFT' 50;
+    letter-spacing: -0.04em;
+    line-height: 0.96;
+  }
+
+  .public-page-shell {
+    background:
+      radial-gradient(circle at top left, hsl(var(--primary) / 0.16), transparent 28%),
+      radial-gradient(circle at top right, hsl(var(--accent) / 0.14), transparent 22%),
+      radial-gradient(circle at bottom center, hsl(var(--primary) / 0.08), transparent 32%),
+      hsl(var(--background));
+  }
+
+  .concierge-panel {
+    background:
+      linear-gradient(145deg, hsl(var(--card)) 0%, hsl(var(--secondary)) 100%);
+    border: 1px solid hsl(var(--border));
+    box-shadow:
+      0 24px 60px -36px hsl(var(--foreground) / 0.35),
+      0 10px 24px -18px hsl(var(--primary) / 0.22);
+  }
+
+  .trust-pill {
+    @apply inline-flex items-center gap-2 rounded-full border border-border/70 bg-card/90 px-3 py-1.5 text-xs font-semibold text-foreground shadow-card;
+  }
+
+  /* ─── Extended shadow scale ─────────────────────────────────────────────── */
+  .shadow-drag {
+    box-shadow:
+      0 20px 60px -10px hsl(var(--foreground) / 0.22),
+      0 8px 20px -8px hsl(var(--primary) / 0.15);
+  }
+
+  .shadow-glow-primary {
+    box-shadow:
+      0 0 0 1px hsl(var(--primary) / 0.3),
+      0 4px 16px -4px hsl(var(--primary) / 0.25);
+  }
+
+  .shadow-drop-target {
+    box-shadow:
+      inset 0 0 0 2px hsl(var(--primary) / 0.4),
+      0 0 20px -4px hsl(var(--primary) / 0.15);
+  }
+
+  /* ─── Premium animation keyframes ──────────────────────────────────────── */
+  @keyframes scoreCountUp {
+    from {
+      opacity: 0;
+      transform: translateY(6px) scale(0.9);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes shimmer {
+    from {
+      background-position: -200% center;
+    }
+
+    to {
+      background-position: 200% center;
+    }
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% {
+      opacity: 0.6;
+    }
+
+    50% {
+      opacity: 1;
+    }
+  }
+
+  .animate-score {
+    animation: scoreCountUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 25%,
+      hsl(var(--muted-foreground) / 0.08) 50%,
+      hsl(var(--muted)) 75%
+    );
+    background-size: 200% auto;
+    animation: shimmer 1.4s linear infinite;
+  }
+
+  .animate-pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+}

@@ -228,6 +228,29 @@ def validate_package(
             if "routing_files:" not in fixture_text:
                 errors.append(f"[{name}] fixture.yaml missing 'routing_files' list")
 
+            # Commit-pinned rubric fixtures should carry local snapshots of listed source files.
+            source_commit = fixture_data.get("source_commit") if fixture_data else None
+            source_snapshot_root = fixture_data.get("source_snapshot_root") if fixture_data else None
+            if isinstance(source_commit, str) and source_commit.strip():
+                if not isinstance(source_snapshot_root, str) or not source_snapshot_root.strip():
+                    errors.append(
+                        f"[{name}] fixture.yaml with source_commit requires source_snapshot_root"
+                    )
+                else:
+                    snapshot_root = package_dir / source_snapshot_root
+                    if not snapshot_root.exists():
+                        errors.append(
+                            f"[{name}] source_snapshot_root does not exist: {source_snapshot_root}"
+                        )
+                    else:
+                        source_paths = _extract_path_entries(fixture_data.get("source_files"))
+                        for rel_path in source_paths:
+                            snapshot_path = snapshot_root / rel_path
+                            if not snapshot_path.exists():
+                                errors.append(
+                                    f"[{name}] missing source snapshot for {rel_path} under {source_snapshot_root}"
+                                )
+
         # Guard: if fixture files look auto-generated, require explicit refresh marker.
         # `source-docs/` is treated as a frozen provenance snapshot by default and is
         # excluded from this check unless explicitly refreshed.

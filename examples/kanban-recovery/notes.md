@@ -7,8 +7,10 @@ status: current
 # Notes: Kanban Recovery Fixture
 
 Fixture refresh marker: manual-freeze-2026-05-10
+Source docs refresh marker: manual-refresh-2026-05-10
 
-# Optional marker for provenance refreshes
+# Optional marker templates
+# Fixture refresh marker: manual-freeze-YYYY-MM-DD
 # Source docs refresh marker: manual-refresh-YYYY-MM-DD
 
 ## Human review required

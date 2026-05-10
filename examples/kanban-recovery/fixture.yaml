@@ -3,6 +3,7 @@ fixture_type: rubric
 source_repo: ThorStarlord/ViralFactory
 source_repo_local_hint: H:/GithubRepositories/ViralFactory
 source_commit: bc815b38d7245ffec42016306b486e48c2896681
+source_snapshot_root: input/source-snippets
 surface: /kanban
 workflow: retrospective-specification
 primary_skills_tested:
