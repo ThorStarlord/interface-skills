@@ -1,87 +1,156 @@
 # Interface Skills
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Skills](https://img.shields.io/badge/Skills-21-blue.svg)](#skill-catalog)
+[![Validate Skills](https://github.com/vibe-sh/interface-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/vibe-sh/interface-skills/actions/workflows/validate.yml)
+[![Universal Agent Export](https://img.shields.io/badge/Universal%20Agent%20Export-Supported-green.svg)](#option-e-universal-agent-export-agentsskills)
+
 > **Visual contracts for AI-built interfaces.**
 
-Reusable AI skills for turning fuzzy UI intent into precise, testable interface specifications.
-
-Interface Skills is a collection of skills for designing, documenting, generating, and diagnosing user interfaces with AI. It helps transform vague requests like “make this dashboard cleaner” into structured briefs, visual calibration sheets, screen blueprints, design tokens, component specs, acceptance criteria, implementation plans, and redline audits.
+Interface Skills is a collection of reusable AI skills for turning fuzzy UI intent into precise, testable interface specifications. It helps transform vague requests like “make this dashboard cleaner” into structured briefs, visual calibration sheets, screen blueprints, design tokens, component specs, acceptance criteria, implementation plans, and redline audits.
 
 The goal is simple: reduce the gap between the interface you imagine and the interface an AI model builds.
 
-## Core workflow
+## Why Interface Skills exists
+
+AI can produce UI quickly, but speed creates new failure modes:
+
+1. **Vague intent:** The model builds from ambiguous descriptions.
+2. **Implicit visual taste:** Design preferences stay in the human's head.
+3. **Missing specs:** Existing UI has no recoverable source of truth.
+4. **Spec drift:** Documentation and implementation quickly move out of sync.
+5. **Agent routing:** Coding agents ignore documentation because they can't find it.
+
+Interface Skills turns UI work into explicit, testable contracts so humans and agents can share the same target.
+
+## Philosophy
+
+**Interface failures are usually process failures, not people failures.**
+
+If an AI-built UI misses the mark, the fix is not to blame the model or the developer. The fix is to improve the contract:
+- Clearer intent through structured briefs.
+- Named visual language instead of "vibes."
+- Explicit states and behaviors.
+- Evidence-based inspection and redlines.
+- Routed documentation that agents actually discover.
+
+## What you can do with it
+
+- **Design a UI from vague intent** → Start with `ui-brief`
+- **Recover specs from an existing UI** → Use the [Retrospective Specification workflow](#retrospective-specification-workflow)
+- **Compare implementation to spec** → Use `ui-inspector` ⚠️ + `ui-redline`
+- **Reconcile specs after fixes** → Use `ui-spec-reconcile` ⚠️
+- **Route agents to the right docs** → Use `ui-docs-sync` + `ui-agent-routing`
+- **Turn redlines into work** → Use `ui-to-issues` ⚠️
+
+## Quickstart
+
+### New UI feature
+Ask your agent to run:
+1. `ui-brief`
+2. `ui-visual-calibration` ⚠️
+3. `ui-blueprint`
+4. `ui-screen-spec` ⚠️
+5. `ui-acceptance`
+
+### Existing UI with no spec
+Ask your agent to run:
+1. `ui-surface-inventory` ⚠️
+2. `ui-inspector` ⚠️
+3. `ui-brief`
+4. `ui-blueprint`
+
+### Repo setup
+Run once to prepare your repository for Interface Skills:
+`setup-interface-skills` ⚠️
+
+*Note: If installed in Claude Code or another slash-command environment, these may appear as slash commands. Otherwise, invoke them by name in your agent.*
+
+## Which workflow should I use?
+
+| Situation | Start here |
+|---|---|
+| I have a vague UI idea | `ui-brief` |
+| I have an existing UI but no spec | `ui-surface-inventory` ⚠️ |
+| I have a spec and code, but they differ | `ui-redline` |
+| I fixed code and need to update specs | `ui-spec-reconcile` |
+| I created specs but agents cannot find them | `ui-agent-routing` |
+| I need GitHub issues from a redline | `ui-to-issues` |
+
+## Example spec package
+
+A "Spec Package" is a directory containing the collective evidence and specifications for a UI scope.
 
 ```text
-setup → surface inventory → brief → visual calibration → flow → blueprint → system → screen spec → component spec → microcopy → acceptance → lint → code → inspection → redline → reconcile → docs sync → agent routing → to issues
+docs/saas-frontend/specs/create/
+├── 00-index.md
+├── 01-inspector-evidence.md
+├── 02-brief.md
+├── 03-visual-calibration.md
+├── 04-blueprint.md
+├── 05-screen-spec.md
+├── 06-component-spec-*.md
+├── 07-microcopy.md
+├── 08-acceptance-checklist.md
+├── 09-redlines.md
+├── SPEC-LINT-REPORT.md
+├── SPEC-RECONCILE-SUMMARY.md
+├── DOCS-SYNC-REPORT.md
+└── UI-AGENT-ROUTING-SUMMARY.md
 ```
 
-> `surface inventory` is only needed when the scope is ambiguous or an existing app is being documented. For brand-new, well-scoped features start at `brief`.
+> *Note: Some older examples in the repository may use legacy filenames while draft skills are being stabilized.*
 
-## Structure
+## Skill Catalog
 
-This repository is organized into a cohesive toolkit:
-- **`skills/`**: The individual AI skills.
-- **`shared/references/`**: Common vocabulary and taxonomies used across all skills to maintain consistency.
-- **`examples/`**: Example "Spec Packages" that group outputs for a feature.
-- **`templates/`**: Boilerplates for new projects.
+Grouped by the UI lifecycle. For a detailed technical reference with inputs and outputs, see [Skill Reference](./docs/skill-reference.md).
 
-## Installation & Use
+### Setup & Discovery
+| Skill                    | Use when                      | Produces                     |
+| ------------------------ | ----------------------------- | ---------------------------- |
+| `setup-interface-skills` ⚠️ | Starting in a repo            | Repo conventions and routing |
+| `ui-surface-inventory` ⚠️ | Existing app or unclear scope | Recoverable UI scope map     |
+| `ui-orchestrator` ⚠️      | Unsure what to run next       | Next-skill recommendation    |
 
-### Option A: As ChatGPT Skills
-Each folder under `skills/` is intended to be packaged as an individual Skill. They include `agents/openai.yaml` metadata for easy import.
+### Intent & Visual Language
+| Skill                   | Use when                      | Produces                  |
+| ----------------------- | ----------------------------- | ------------------------- |
+| `ui-brief`              | Vague product/design idea     | Product/design brief      |
+| `ui-visual-calibration` ⚠️ | Visual taste is unclear       | Visual language decisions |
+| `ui-flow`               | Multiple screens are involved | Journey graph             |
 
-### Option B: As agent instructions
-Copy the relevant `SKILL.md` into your coding agent context.
+### Specification
+| Skill               | Use when                         | Produces                  |
+| ------------------- | -------------------------------- | ------------------------- |
+| `ui-blueprint`      | Layout needs structure           | Wireframe/layout contract |
+| `ui-system`         | Tokens/rules are needed          | Design system rules       |
+| `ui-screen-spec` ⚠️    | Screen behavior must be explicit | Screen contract           |
+| `ui-component-spec` | Component behavior matters       | Component state/a11y spec |
+| `ui-microcopy`      | Copy must be approved            | Copy contract             |
+| `ui-acceptance`     | Ready for QA                     | Checklist                 |
 
-### Option C: Individual Skill ZIPs
-For platforms that require single skills (e.g. ChatGPT builder), you can package any folder as a self-contained ZIP using `scripts/package-skill.py`.
+### Implementation & Inspection
+| Skill               | Use when                  | Produces                          |
+| ------------------- | ------------------------- | --------------------------------- |
+| `ui-generate-code`  | Ready to build            | React/CSS/HTML implementation     |
+| `ui-inspector` ⚠️      | Inspect implementation    | DOM/a11y evidence report          |
+| `ui-redline`        | Compare code to spec      | Mismatch report + refactor prompt |
 
-### Option D: Claude Code (Recommended)
-Claude Code can use these skills globally or per-project. Use the installer script to ensure all shared references are bundled correctly:
+### Maintenance & Planning
+| Skill               | Use when                  | Produces               |
+| ------------------- | ------------------------- | ---------------------- |
+| `ui-spec-linter` ⚠️    | Validate spec package     | Lint report            |
+| `ui-spec-reconcile` ⚠️ | Code/spec changed         | Reconciled spec        |
+| `ui-docs-sync`         | Docs may be stale         | Sync report            |
+| `ui-agent-routing`     | Agents cannot find specs  | Routing report/patches |
+| `ui-to-issues` ⚠️      | Need implementation tasks | Issue drafts           |
+| `ui-storybook-docs` ⚠️ | Component spec exists     | MDX docs and stories   |
 
-```bash
-# Install globally for all projects
-python scripts/install-claude-code-skill.py skills/ui-brief --scope global
+> ⚠️ = currently a **draft** skill.
 
-# Install for the current project only
-python scripts/install-claude-code-skill.py skills/ui-brief --scope project
-```
+---
 
-See [Claude Code Installation Guide](./docs/claude-code-installation.md) for full details.
-
-### Option E: Universal agent export (`.agents/skills`)
-
-For agents that support the shared `.agents/skills` directory convention, use the universal installer. This is a **local export/install path** — it is not a published `skills.sh` registry integration.
-
-```bash
-# Install one or more skills into the current project
-python scripts/install-agent-skills.py skills/ui-orchestrator skills/ui-brief --scope project
-
-# Install globally for all supported agents on this machine
-python scripts/install-agent-skills.py skills/ui-orchestrator skills/ui-brief --scope global
-
-# Re-install over an existing installation
-python scripts/install-agent-skills.py skills/ui-brief --scope global --force
-
-# Use symlinks to track live repo changes (local development only)
-python scripts/install-agent-skills.py skills/ui-brief --scope global --mode symlink
-```
-
-**`copy` mode** (default) produces a self-contained skill folder: shared references are bundled and repo-internal metadata is stripped. This is the safe default for all platforms.
-
-**`symlink` mode** is for local skill development only. It points directly at this repository and does not bundle references. Symlinks require Developer Mode or Administrator privileges on Windows — if creation fails, the script exits with a clear error. Use `copy` mode when in doubt.
-
-By default the installer skips a skill if the target folder already exists. Pass `--force` to overwrite.
-
-### Distribution support matrix
-
-| Install mode        | Script                              | Target               | Best for                          |
-| ------------------- | ----------------------------------- | -------------------- | --------------------------------- |
-| ZIP package         | `scripts/package-skill.py`          | ChatGPT Skill upload | single-skill import to ChatGPT    |
-| Claude Code         | `scripts/install-claude-code-skill.py` | `.claude/skills`  | Claude Code (global or project)   |
-| Universal agents    | `scripts/install-agent-skills.py`   | `.agents/skills`     | multi-agent local workflows       |
-| skills.sh registry  | not yet                             | —                    | future public distribution        |
-
-All three active install methods use the same bundling logic: shared references are inlined and `status` is stripped before export.
+## Workflows
 
 ### Minimum viable workflow
 For small, well-scoped features where visual tone is already agreed:
@@ -90,10 +159,8 @@ For small, well-scoped features where visual tone is already agreed:
 3. Run `ui-component-spec`
 4. Run `ui-acceptance`
 5. Run `ui-generate-code`
-6. Run `ui-inspector`
+6. Run `ui-inspector` ⚠️
 7. Run `ui-redline`
-
-> For very small one-off changes, `ui-redline` can accept a screenshot or code snippet directly without a full inspector run. For any audit you intend to act on, run `ui-inspector` first — it replaces opinion with measured evidence.
 
 ### Full documentation-first workflow
 For new products, unfamiliar domains, or any work where misalignment is expensive:
@@ -107,20 +174,20 @@ For new products, unfamiliar domains, or any work where misalignment is expensiv
 8. Run `ui-component-spec`
 9. Run `ui-microcopy`
 10. Run `ui-acceptance`
-11. Run `ui-spec-linter`
+11. Run `ui-spec-linter` ⚠️
 12. Run `ui-generate-code`
 13. Run `ui-inspector`
 14. Run `ui-redline`
-15. Run `ui-spec-reconcile` *(to stabilize the spec after fixes)*
-16. Run `ui-docs-sync` *(after creating or updating a spec package, to keep repo docs in sync)*
-17. Run `ui-agent-routing` *(after docs sync, to wire the spec into agent-facing routing files so AI agents discover it automatically)*
-18. Run `ui-to-issues` *(to plan remaining implementation work or next sprint)*
+15. Run `ui-spec-reconcile`
+16. Run `ui-docs-sync`
+17. Run `ui-agent-routing`
+18. Run `ui-to-issues`
 
 ### Retrospective specification workflow
 Use this when a UI already exists but no specification was created first ("Spec Recovery").
 
 1. Run `setup-interface-skills` *(once per repo)*
-2. Run `ui-surface-inventory` to map the existing UI into coherent, recoverable scopes.
+2. Run `ui-surface-inventory` to map the existing UI.
 3. Run `ui-inspector` on each scope's existing implementation.
 4. Run `ui-brief` to reconstruct the missing product and design intent.
 5. Run `ui-visual-calibration` to name the existing visual language.
@@ -130,41 +197,53 @@ Use this when a UI already exists but no specification was created first ("Spec 
 9. Run `ui-microcopy` to extract and approve existing UI text.
 10. Run `ui-acceptance` to create the target checklist.
 11. Run `ui-spec-linter` to check the recovered spec package.
-12. Optionally run `ui-redline` to compare the existing UI against the recovered target spec.
-13. Run `ui-spec-reconcile` *(to stabilize the spec if redlines were found)*
-14. Run `ui-docs-sync` to confirm repository docs reference and agree with the recovered spec package.
-15. Run `ui-agent-routing` to wire the recovered package into CLAUDE.md, AGENTS.md, and other agent-facing routing files; create `DEPRECATED.md` redirects in superseded spec folders.
-16. Run `ui-to-issues` *(to plan any necessary refactors found during recovery)*
+12. Optionally run `ui-redline` to compare against the recovered target.
+13. Run `ui-spec-reconcile` to stabilize the spec.
+14. Run `ui-docs-sync` to confirm repository docs agreement.
+15. Run `ui-agent-routing` to wire the package into agent discovery.
+16. Run `ui-to-issues` to plan necessary refactors.
 
-> Steps 3–13 are repeated for each scope identified in step 1.
+## Installation & Use
 
-## Skill Map
+### Option A: Claude Code (Recommended)
+Claude Code can use these skills globally or per-project.
 
-| Skill                     | Input                          | Output                            | Next                                    |
-| ------------------------- | ------------------------------ | --------------------------------- | --------------------------------------- |
-| `ui-surface-inventory`  ⚠️  | existing app or ambiguous scope | UI scope map + recovery order    | `ui-brief`, `ui-inspector`              |
-| `ui-brief`                | vague UI idea                  | product/design brief              | `ui-flow`, `ui-blueprint`               |
-| `ui-visual-calibration`  ⚠️  | vague visual taste             | density/layout/shape decisions    | `ui-blueprint`, `ui-system`             |
-| `ui-flow`                 | brief for multi-screen feature | journey graph                     | `ui-blueprint`                          |
-| `ui-blueprint`            | approved brief                 | layout/wireframe spec             | `ui-screen-spec`, `ui-system`           |
-| `ui-system`               | brand/visual direction         | tokens and design rules           | `ui-component-spec`, `ui-generate-code` |
-| `ui-screen-spec`  ⚠️         | blueprint + system             | screen contract                   | `ui-component-spec`                     |
-| `ui-component-spec`       | screen/component context       | anatomy/state/a11y spec           | `ui-acceptance`, `ui-generate-code`     |
-| `ui-microcopy`            | brief/spec                     | approved copy                     | `ui-acceptance`, `ui-generate-code`     |
-| `ui-acceptance`           | approved specs                 | testable checklist                | `ui-redline`                            |
-| `ui-spec-linter`  ⚠️         | full spec package              | completeness + consistency report | `ui-generate-code`                      |
-| `ui-generate-code`        | approved specs                 | implementation                    | `ui-inspector`, `ui-redline`            |
-| `ui-inspector`  ⚠️           | live or static implementation  | DOM/a11y evidence report          | `ui-redline`                            |
-| `ui-redline`              | spec + implementation          | mismatch report + refactor prompt | code refactor                           |
-| `ui-docs-sync`            | repo docs + spec packages      | link and consistency report       | `ui-agent-routing`                      |
-| `ui-agent-routing`        | accepted spec + routing files  | routing patches + routing report  | —                                       |
-| `setup-interface-skills`  ⚠️  | new or existing repository     | INTERFACE_SKILLS.md + folders     | `ui-surface-inventory`, `ui-brief`      |
-| `ui-spec-reconcile`  ⚠️       | spec package + redline/code    | updated spec package + report     | `ui-to-issues`, `ui-docs-sync`          |
-| `ui-to-issues`  ⚠️            | spec / redline / acceptance    | markdown issue drafts             | `ui-generate-code`                      |
-| `ui-storybook-docs`  ⚠️     | component spec                 | MDX docs, stories, prop tables    | —                                       |
-| `ui-orchestrator`  ⚠️       | current project state          | recommended next skill to run     | any skill                               |
+```bash
+# Install globally for all projects
+python scripts/install-claude-code-skill.py skills/ui-brief --scope global
 
->  ⚠️ = currently a **draft** skill — the core behaviour is defined but some implementation details are still being validated.
+# Install for the current project only
+python scripts/install-claude-code-skill.py skills/ui-brief --scope project
+```
+
+### Option B: Universal agent export (`.agents/skills`)
+For agents that support the `.agents/skills` directory convention.
+
+```bash
+# Install one or more skills into the current project
+python scripts/install-agent-skills.py skills/ui-orchestrator skills/ui-brief --scope project
+```
+
+### Option C: As ChatGPT Skills
+Each folder under `skills/` includes `agents/openai.yaml` metadata for easy import into ChatGPT.
+
+### Option D: As agent instructions
+Copy the relevant `SKILL.md` into your coding agent context.
+
+### Distribution support matrix
+
+| Install mode        | Script                              | Target               | Best for                          |
+| ------------------- | ----------------------------------- | -------------------- | --------------------------------- |
+| Claude Code         | `scripts/install-claude-code-skill.py` | `.claude/skills`  | Claude Code (global or project)   |
+| Universal agents    | `scripts/install-agent-skills.py`   | `.agents/skills`     | multi-agent local workflows       |
+| ZIP package         | `scripts/package-skill.py`          | ChatGPT Skill upload | single-skill import to ChatGPT    |
+
+## Structure
+
+- **`skills/`**: The individual AI skills.
+- **`shared/references/`**: Common vocabulary and taxonomies used across all skills.
+- **`examples/`**: Example "Spec Packages" that group outputs for a feature.
+- **`templates/`**: Boilerplates for new projects.
 
 ## Contributing
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for how to add or improve skills.
