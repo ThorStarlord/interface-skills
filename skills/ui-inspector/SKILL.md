@@ -123,6 +123,51 @@ Confidence breakdown:
 - Requires live DOM: <N> findings (not verified)
 ```
 
+For static-only runs, include this additional block in frontmatter to make runtime limits explicit:
+
+```yaml
+inspection_mode: static-source
+runtime_verified: false
+browser_access: unavailable
+deferred_checks:
+	- keyboard focus order
+	- hover and focus states
+	- computed runtime layout
+	- responsive drawer or modal behavior
+	- console errors
+```
+
+---
+
+## Browser access policy
+
+Do not assume Playwright is installed.
+
+Before using live browser inspection:
+1. Detect whether Playwright is available in the current repository.
+2. Detect whether the app can run locally and a target route is reachable.
+3. If unavailable, continue in static mode and mark runtime checks as deferred.
+4. Do not install Playwright or modify package files unless the user explicitly asks for setup or patch mode.
+
+If Playwright is missing, state this clearly:
+
+```text
+Playwright is not installed in this repo. I can continue in static inspection mode, or you can install Playwright to enable live browser inspection.
+```
+
+Recommended install commands for JavaScript and TypeScript repositories:
+
+```bash
+npm install -D @playwright/test
+npx playwright install
+```
+
+For Linux CI:
+
+```bash
+npx playwright install --with-deps
+```
+
 ---
 
 ## Tooling: three paths
@@ -139,6 +184,13 @@ The inspector can be run fully by an AI model in an environment that provides br
 4. Scan all stylesheets for `var(--*)` references and literal color/spacing values.
 5. If axe-core is available, inject it and call `axe.run()`. Otherwise run the manual WCAG checks above.
 6. Resize to each secondary breakpoint and observe layout behavior.
+
+Preflight for Path A:
+1. Detect package manager lockfile (`pnpm-lock.yaml`, `package-lock.json`, `yarn.lock`, `bun.lockb`).
+2. Check `package.json` for `@playwright/test` or `playwright`.
+3. Check that Playwright browser binaries are installed.
+4. Check that the app starts and target route is reachable.
+5. If checks fail, switch to Path C and list deferred checks.
 
 ### Path B — Developer copying DevTools output (manual path)
 

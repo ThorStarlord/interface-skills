@@ -32,6 +32,7 @@ Before drafting, confirm:
    **Preferred input:** Use the evidence report produced by `ui-inspector` (found at `redlines/inspector-report.md`) as the primary data source, supplemented by screenshots or code where helpful.
 3. **The user knows what they're complaining about, or is genuinely unsure.** If they can articulate it ("the button is the wrong color, the spacing is too tight"), capture those as starting points. If they can't ("just looks weird"), proceed systematically through the spec.
 4. **Determine the redline mode.** Choose one of the three modes below and declare it in the report header. The mode controls which verification status values are available.
+5. **Choose evidence confidence level.** Prefer Playwright-backed inspector evidence when available for layout, responsive behavior, keyboard flow, modal or drawer behavior, and accessibility checks. If unavailable, continue with static evidence and clearly label the redline as partial.
 
 If no spec exists, refuse and propose: "Let's recover a brief and blueprint quickly first — otherwise I'm just guessing what you wanted."
 
@@ -60,6 +61,7 @@ No live browser access. All evidence is from source code, screenshots, or a stat
 Verification status values available: `verified by static code`, `deferred — needs live DOM`, `cannot verify`.
 
 **Mode 3 reports must be labelled "partial redline" in the frontmatter (`partial: true`) and in the report title.** A partial redline is valid and useful, but readers must know its limits.
+If Playwright evidence is unavailable, explicitly describe the report as `static partial` and do not imply live verification.
 
 ---
 

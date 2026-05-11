@@ -57,7 +57,15 @@ The standard sections are: Layout, Responsive, States, Behavior, Accessibility, 
 
 ### Step 3 — Mark each criterion machine-checkable or manual
 
-Some criteria can be checked with a script or a linter (e.g. "every `<input>` has an associated label" — checkable with a DOM query). Others require human eyes (e.g. "the empty state message is friendly and on-brand"). Mark each criterion `[A]` for automated or `[M]` for manual.
+Some criteria can be checked with a script or a linter (e.g. "every `<input>` has an associated label" — checkable with a DOM query). Others require human eyes (e.g. "the empty state message is friendly and on-brand").
+
+Do not use generic `[A]`.
+Use explicit automation labels:
+- `[A:playwright]` for browser interaction and runtime DOM checks
+- `[A:axe]` for axe accessibility automation
+- `[A:lint]` for static lint or code scanning checks
+- `[A:unit]` for unit or integration test assertions
+- `[M]` for manual verification
 
 ### Step 4 — Add severity
 
@@ -87,7 +95,7 @@ status: draft
 
 ## How to use this checklist
 - Each item has a severity: **blocker** (must fix before ship), **major** (should fix before ship), **minor** (fix before next milestone), **polish** (fix when time permits).
-- Each item is marked **[A]** (automatable — could be checked by script or test) or **[M]** (manual — requires human eyes).
+- Each item is marked with an explicit automation source: **[A:playwright]**, **[A:axe]**, **[A:lint]**, **[A:unit]**, or **[M]**.
 - Where a criterion traces back to a specific spec section, the source is noted in `[source]`.
 
 ## 1. Layout
@@ -96,9 +104,9 @@ status: draft
 |---|---|---|---|
 | ☐ | blocker | [M] Visual layout matches the wireframe at the primary breakpoint (allow ≤5% visual diff). | blueprint §4 |
 | ☐ | blocker | [M] Element ranked 1 in the hierarchy is the most visually prominent on the screen. | blueprint §3 |
-| ☐ | blocker | [A] Element ranked 1 is the first focusable element when tabbing through. | blueprint §3 |
+| ☐ | blocker | [A:playwright] Element ranked 1 is the first focusable element when tabbing through. | blueprint §3 |
 | ☐ | major | [M] Whitespace decisions from blueprint are honored (generous whitespace where specified, tight grouping where specified). | blueprint §4 |
-| ☐ | major | [A] All spacing values resolve to tokens defined in `space.*`. No inline padding/margin literals. | system §2 |
+| ☐ | major | [A:lint] All spacing values resolve to tokens defined in `space.*`. No inline padding/margin literals. | system §2 |
 
 ## 2. Responsive
 
@@ -106,7 +114,7 @@ status: draft
 |---|---|---|---|
 | ☐ | blocker | [M] At <descriptions of each non-primary breakpoint>, the layout reflows as specified using the verbs `<stack/collapse/hide/move/resize/swap>`. | blueprint §5 |
 | ☐ | blocker | [M] Primary action stays in the top half of the viewport at every breakpoint. | blueprint §5 |
-| ☐ | major | [A] No horizontal scroll appears at the smallest specified breakpoint. | blueprint §5 |
+| ☐ | major | [A:playwright] No horizontal scroll appears at the smallest specified breakpoint. | blueprint §5 |
 | ☐ | major | [M] Touch targets are at least 44×44px on mobile breakpoints. | accessibility default |
 
 ## 3. States (per component)
@@ -119,9 +127,9 @@ For each component spec, expand into a sub-table. Example for a primary CTA butt
 |---|---|---|---|
 | ☐ | blocker | [M] Default state matches the spec's default visual. | component §4 |
 | ☐ | blocker | [M] Hover state shows specified color change with `motion.fast` transition. | component §4 |
-| ☐ | blocker | [A] Focus-visible state shows a focus ring at WCAG AA contrast against adjacent surface. | component §7 |
+| ☐ | blocker | [A:playwright] Focus-visible state shows a focus ring at WCAG AA contrast against adjacent surface. | component §7 |
 | ☐ | blocker | [M] Active/pressed state shows specified color change. | component §4 |
-| ☐ | blocker | [A] Disabled state has `aria-disabled="true"` (or native `disabled`) and prevents click. | component §4, §7 |
+| ☐ | blocker | [A:unit] Disabled state has `aria-disabled="true"` (or native `disabled`) and prevents click. | component §4, §7 |
 | ☐ | blocker | [M] Loading state replaces label with spinner and prevents repeat clicks. | component §4 |
 | ☐ | major | [M] Error state renders only when error prop is non-null. | component §4 |
 | ☐ | minor | [M] Success state visible only when success prop is true. | component §4 |
@@ -134,21 +142,21 @@ For each component spec, expand into a sub-table. Example for a primary CTA butt
 |---|---|---|---|
 | ☐ | blocker | [M] On submit, primary action triggers exactly once even on rapid double-click. | component §5 |
 | ☐ | blocker | [M] On Enter inside the form, submission triggers (does not navigate). | component §5 |
-| ☐ | major | [M] Animations honor `prefers-reduced-motion` (collapse to instant when set). | system §8 |
+| ☐ | major | [A:playwright] Animations honor `prefers-reduced-motion` (collapse to instant when set). | system §8 |
 
 ## 5. Accessibility
 
 | | Severity | Criterion | Source |
 |---|---|---|---|
-| ☐ | blocker | [A] Every interactive element is reachable by Tab. | a11y default |
-| ☐ | blocker | [A] Tab order matches visual reading order. | a11y default |
-| ☐ | blocker | [A] Every input has an associated `<label>` (programmatically via `for`/`htmlFor` or wrapping). | component §7 |
-| ☐ | blocker | [A] Error messages are linked to their inputs via `aria-describedby`. | component §7 |
-| ☐ | blocker | [A] All text has at least 4.5:1 contrast (or 3:1 for large text) against background. | a11y default |
+| ☐ | blocker | [A:playwright] Every interactive element is reachable by Tab. | a11y default |
+| ☐ | blocker | [A:playwright] Tab order matches visual reading order. | a11y default |
+| ☐ | blocker | [A:lint] Every input has an associated `<label>` (programmatically via `for`/`htmlFor` or wrapping). | component §7 |
+| ☐ | blocker | [A:lint] Error messages are linked to their inputs via `aria-describedby`. | component §7 |
+| ☐ | blocker | [A:axe] All text has at least 4.5:1 contrast (or 3:1 for large text) against background. | a11y default |
 | ☐ | blocker | [M] Screen reader announces the agreed text on focus and on state change. | component §7 |
 | ☐ | blocker | [M] Modal dialogs trap focus and return focus to the trigger on close. | component §5 |
 | ☐ | major | [M] Pressing Escape closes any open popover/menu/modal and returns focus. | component §7 |
-| ☐ | major | [A] No element has `tabindex` greater than 0. | a11y default |
+| ☐ | major | [A:lint] No element has `tabindex` greater than 0. | a11y default |
 
 ## 6. Visual polish
 
@@ -156,7 +164,7 @@ For each component spec, expand into a sub-table. Example for a primary CTA butt
 |---|---|---|---|
 | ☐ | major | [M] Alignment: text baselines, icon centers, and button heights align to the spacing grid. | system §2 |
 | ☐ | major | [M] All borders use `color.border.*` semantic tokens. | system §5 |
-| ☐ | major | [A] All colors used in the implementation are present in the system spec. (Run a script to scan stylesheets/computed styles for off-system values.) | system §4–5 |
+| ☐ | major | [A:lint] All colors used in the implementation are present in the system spec. (Run a script to scan stylesheets/computed styles for off-system values.) | system §4–5 |
 | ☐ | minor | [M] Icons share a consistent stroke width and corner style. | system §1 |
 | ☐ | polish | [M] Visual rhythm — repeated elements feel evenly spaced, not arbitrary. | system §2 |
 
@@ -174,9 +182,9 @@ For each component spec, expand into a sub-table. Example for a primary CTA butt
 
 | | Severity | Criterion | Source |
 |---|---|---|---|
-| ☐ | major | [A] Largest Contentful Paint at primary breakpoint is under 2.5s on a 4G connection. | performance default |
-| ☐ | major | [A] Cumulative Layout Shift below 0.1. | performance default |
-| ☐ | minor | [A] Total JS bundle for this feature under <user-specified budget>. | brief §7 |
+| ☐ | major | [A:playwright] Largest Contentful Paint at primary breakpoint is under 2.5s on a 4G connection. | performance default |
+| ☐ | major | [A:playwright] Cumulative Layout Shift below 0.1. | performance default |
+| ☐ | minor | [A:unit] Total JS bundle for this feature under <user-specified budget>. | brief §7 |
 
 ## 9. Items intentionally NOT checked
 
@@ -217,7 +225,7 @@ A checklist produced by this skill is acceptable only if every one of these is t
 - [ ] Frontmatter links to at least one upstream spec.
 - [ ] Every section that applies to the scope has at least one criterion (no empty sections — if a section doesn't apply, omit the section and note in §9).
 - [ ] Every criterion has a severity (blocker / major / minor / polish).
-- [ ] Every criterion has an A or M tag.
+- [ ] Every criterion has one explicit label: [A:playwright], [A:axe], [A:lint], [A:unit], or [M].
 - [ ] Every criterion has a `[source]` reference to the spec.
 - [ ] No banned phrasings appear (looks good, feels right, is clean, intuitive, etc.).
 - [ ] If a feature is intentionally not checked, it appears in §9 with a reason.

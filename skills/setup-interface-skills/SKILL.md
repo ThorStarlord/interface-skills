@@ -21,6 +21,7 @@ Use this skill:
 2. **Safe patching:** Use bounded section markers (`<!-- interface-skills:start -->`) when editing shared agent files like `CLAUDE.md` or `AGENTS.md`. Never overwrite user-written or other tool-owned instructions.
 3. **Single source of policy:** Keep detailed Interface Skills rules in a root-level `INTERFACE_SKILLS.md`. Agent files should link to this policy rather than duplicating it.
 4. **Composability:** This skill should play well with other setup tools (like Matt Pocock's skills). It adds the UI layer without disrupting the general engineering layer.
+5. **Explicit consent for tooling installs:** Do not silently install Playwright, edit package files, or download browser binaries. Offer optional setup and proceed only with explicit user approval.
 
 ## Modes
 
@@ -100,6 +101,19 @@ agent_routing:
     - .cursor/rules
 deprecated_paths: []
 ```
+
+### Step 7 — Optional browser validation support (Playwright)
+
+If the repository appears to be a JavaScript or TypeScript frontend project, offer (do not force) optional browser validation setup:
+
+1. Detect package manager from lockfiles (`pnpm-lock.yaml`, `package-lock.json`, `yarn.lock`, `bun.lockb`).
+2. Detect whether `@playwright/test` or `playwright` already exists in `package.json`.
+3. If missing, ask for permission before any install or config edits.
+4. If approved, install with the detected package manager and run browser install.
+5. Add `playwright.config.ts` only if missing.
+6. Add example scripts only if missing (for example `test:e2e`, `test:e2e:ui`).
+
+If permission is not granted, continue setup without browser tooling and record that live browser validation is optional and not configured.
 
 ## Output template
 
