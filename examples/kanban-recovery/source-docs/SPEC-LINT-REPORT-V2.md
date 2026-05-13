@@ -1,17 +1,17 @@
 ---
 spec_type: lint-report
 spec_id: kanban-spec-package-lint-v2
-# based_on:
-  - docs/saas-frontend/specs/kanban/00-index.md
-  - docs/saas-frontend/specs/kanban/01-inspector-evidence.md
-  - docs/saas-frontend/specs/kanban/02-brief.md
-  - docs/saas-frontend/specs/kanban/03-visual-calibration.md
-  - docs/saas-frontend/specs/kanban/04-blueprint.md
-  - docs/saas-frontend/specs/kanban/05-screen-spec.md
-  - docs/saas-frontend/specs/kanban/06-component-spec-kanban-card.md
-  - docs/saas-frontend/specs/kanban/06-component-spec-post-detail-modal.md
-  - docs/saas-frontend/specs/kanban/07-microcopy.md
-  - docs/saas-frontend/specs/kanban/08-acceptance-checklist.md
+based_on:
+  - 00-index.md
+  - 01-inspector-evidence.md
+  - 02-brief.md
+  - 03-visual-calibration.md
+  - 04-blueprint.md
+  - 05-screen-spec.md
+  - 06-component-spec-kanban-card.md
+  - 06-component-spec-post-detail-modal.md
+  - 07-microcopy.md
+  - 08-acceptance-checklist.md
 created: 2026-05-10
 status: draft
 ---

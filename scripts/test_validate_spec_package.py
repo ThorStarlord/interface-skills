@@ -59,5 +59,18 @@ class TestValidateSpecPackage(unittest.TestCase):
         issues = self.validate_func(self.package_path)
         self.assertTrue(any("[A]" in issue for issue in issues))
 
+    def test_recursion(self):
+        os.makedirs(os.path.join(self.package_path, "reports"), exist_ok=True)
+        report_path = os.path.join("reports", "LINT-REPORT.md")
+        self.write_file(report_path, "---\nspec_type: report\nstatus: current\n---\n")
+        self.write_file("LINT-REPORT-MAIN.md", "---\nspec_type: report\nstatus: current\n---\n")
+        issues = self.validate_func(self.package_path)
+        self.assertTrue(any("multiple current" in issue.lower() for issue in issues))
+
+    def test_malformed_yaml(self):
+        self.write_file("broken.md", "---\nstatus: current\nbased_on:\n  - file1.md\n  - [broken list\n---\n")
+        issues = self.validate_func(self.package_path)
+        self.assertTrue(any("malformed yaml" in issue.lower() for issue in issues))
+
 if __name__ == "__main__":
     unittest.main()

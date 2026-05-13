@@ -1,7 +1,7 @@
 ---
 spec_type: component
 spec_id: kanban-card
-# based_on: kanban-approval-screen
+based_on: 05-screen-spec.md
 created: 2026-05-10
 status: draft
 source_evidence:
