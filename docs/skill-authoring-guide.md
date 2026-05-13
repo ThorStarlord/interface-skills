@@ -128,6 +128,16 @@ Each criterion must be:
 
 The set of acceptance criteria defines what "done" means for this skill's output. If you cannot write at least five specific criteria, the output template is not specific enough yet.
 
+## Browser automation policy for skill authors
+
+If a skill can optionally use browser tooling such as Playwright, encode that as a detect-first capability, not a hidden requirement.
+
+- Do not assume Playwright is installed.
+- Detect whether browser tooling is present before writing workflow steps that depend on live DOM inspection.
+- Provide a static fallback path and require deferred labeling for checks that need live runtime evidence.
+- Do not instruct the skill to install Playwright, edit `package.json`, edit lockfiles, or download browser binaries unless the user explicitly asked for setup.
+- When defining acceptance or inspection outputs, prefer explicit automation labels such as `[A:playwright]`, `[A:axe]`, `[A:lint]`, and `[A:unit]` over a generic `[A]`.
+
 ## Testing your skill
 
 A skill is not ready for use until it has been tested. Testing means: given a real input, does the skill produce output that passes all of its acceptance criteria?

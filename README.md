@@ -230,6 +230,22 @@ Each folder under `skills/` includes `agents/openai.yaml` metadata for easy impo
 ### Option D: As agent instructions
 Copy the relevant `SKILL.md` into your coding agent context.
 
+## Browser inspection policy
+
+Browser inspection is optional, not assumed.
+
+- Skills such as `ui-inspector` should detect whether Playwright is available in the current repository before attempting live browser checks.
+- If browser tooling is unavailable, the skill should continue in static-source mode and explicitly mark runtime-only checks as deferred.
+- Skills should not silently install Playwright, edit package files, or download browser binaries. Setup is optional and should happen only with explicit user approval.
+- Acceptance criteria should use explicit automation labels such as `[A:playwright]`, `[A:axe]`, `[A:lint]`, `[A:unit]`, and `[M]` rather than a generic `[A]`.
+
+Typical Playwright setup for an existing JavaScript or TypeScript frontend repository:
+
+```bash
+npm install -D @playwright/test
+npx playwright install
+```
+
 ### Distribution support matrix
 
 | Install mode        | Script                              | Target               | Best for                          |

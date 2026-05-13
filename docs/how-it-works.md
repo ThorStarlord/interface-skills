@@ -43,6 +43,8 @@ Every decision that is left out of the spec will be decided by the model. The mo
 
 The acceptance criteria section at the end of each skill's output template is a checklist of verifiable claims about the spec itself. If the acceptance criteria pass, the spec is complete enough to build from. If they fail, the spec has gaps that will become implementation bugs.
 
+Inspection and validation follow the same rule: claim only the evidence you actually have. Static source analysis is useful, but it cannot honestly verify runtime states such as focus order, hover behavior, responsive drawer transitions, console errors, or live accessibility tree output. When browser tooling such as Playwright is available, skills can promote those checks from deferred to verified. When it is not available, the correct behavior is to fall back to static evidence, mark runtime checks as deferred, and avoid pretending that a live inspection happened.
+
 The discipline the pipeline enforces is: decide everything that can be decided before code runs. Accept that some things will be discovered late. But do not pretend to have decided things you haven't decided — that is where silent assumptions live, and silent assumptions are the root cause of most UI rework.
 
 ## Draft vs stable skills
