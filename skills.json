@@ -485,6 +485,78 @@
       "output": "N/A",
       "workflow_position": "external",
       "next": []
+    },
+    {
+      "name": "handoff",
+      "status": "stable",
+      "description": "External skill: handoff",
+      "input": "N/A",
+      "output": "N/A",
+      "workflow_position": "external",
+      "next": []
+    },
+    {
+      "name": "problem-framer",
+      "status": "stable",
+      "description": "External skill: problem-framer",
+      "input": "N/A",
+      "output": "N/A",
+      "workflow_position": "external",
+      "next": []
+    },
+    {
+      "name": "prompt-handoff",
+      "status": "stable",
+      "description": "External skill: prompt-handoff",
+      "input": "N/A",
+      "output": "N/A",
+      "workflow_position": "external",
+      "next": []
+    },
+    {
+      "name": "repo-sensemaker",
+      "status": "stable",
+      "description": "External skill: repo-sensemaker",
+      "input": "N/A",
+      "output": "N/A",
+      "workflow_position": "external",
+      "next": []
+    },
+    {
+      "name": "sensemaking-docs-reconciler",
+      "status": "stable",
+      "description": "External skill: sensemaking-docs-reconciler",
+      "input": "N/A",
+      "output": "N/A",
+      "workflow_position": "external",
+      "next": []
+    },
+    {
+      "name": "setup-sensemaking-skills",
+      "status": "stable",
+      "description": "External skill: setup-sensemaking-skills",
+      "input": "N/A",
+      "output": "N/A",
+      "workflow_position": "external",
+      "next": []
+    },
+    {
+      "name": "unknowns-mapper",
+      "status": "stable",
+      "description": "External skill: unknowns-mapper",
+      "input": "N/A",
+      "output": "N/A",
+      "workflow_position": "external",
+      "next": []
+    },
+    {
+      "name": "workflow-orchestrator",
+      "status": "stable",
+      "description": "External skill: workflow-orchestrator",
+      "input": "N/A",
+      "output": "N/A",
+      "workflow_position": "external",
+      "next": []
     }
   ]
 }

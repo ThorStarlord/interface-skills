@@ -1,0 +1,176 @@
+ecosystems:
+  sensemaking:
+    name: Sensemaking Pipeline
+    skills:
+      - id: problem-framer
+        purpose: capture fog and identify root pressure
+        artifact: problem_frame
+        availability: { type: local, executable_by_orchestrator: true, requires_installed_skill: true }
+      - id: unknowns-mapper
+        purpose: map knowledge gaps and research paths
+        artifact: unknowns_map
+        availability: { type: local, executable_by_orchestrator: true, requires_installed_skill: true }
+      - id: repo-sensemaker
+        purpose: diagnostic focus on finding the weakest boundary
+        artifact: repository_sensemaking_brief
+        availability: { type: local, executable_by_orchestrator: true, requires_installed_skill: true }
+      - id: prompt-handoff
+        purpose: bridge the sensemaking gap to specialized tools
+        artifact: prompt_handoff
+        availability: { type: local, executable_by_orchestrator: true, requires_installed_skill: true }
+
+  engineering:
+    name: Engineering & Implementation
+    skills:
+      - id: grill-with-docs
+        purpose: challenge proposal based on existing docs
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/grill-with-docs", input_artifact: workflow_orchestration_plan, output_artifact: domain_alignment_report, can_write_files: true }
+      - id: tdd
+        purpose: implement minimal code to pass failing tests
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/tdd", input_artifact: agent_brief, output_artifact: code_patch, can_write_files: true }
+      - id: diagnose
+        purpose: find the root cause of a technical failure
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/diagnose", input_artifact: failure_report, output_artifact: root_cause_analysis, can_write_files: false }
+
+  interface:
+    name: Interface Skills
+    skills:
+      - id: ui-brief
+        purpose: create a high-fidelity UI specification
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/ui-brief", input_artifact: prd, output_artifact: ui_specification, can_write_files: false }
+
+  product:
+    name: Product Management
+    skills:
+      - id: persona
+        purpose: define target user and player fantasy
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/persona", input_artifact: repository_sensemaking_brief, output_artifact: persona_definition }
+      - id: discovery
+        purpose: investigate problem space and user needs
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/discovery", input_artifact: persona_definition, output_artifact: discovery_findings }
+      - id: interview-synthesis
+        purpose: extract patterns from customer interviews
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/interview-synthesis", input_artifact: discovery_findings, output_artifact: synthesis_report }
+      - id: competitive-analysis
+        purpose: audit market alternatives and positioning
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/competitive-analysis", input_artifact: repository_sensemaking_brief, output_artifact: market_analysis }
+      - id: opportunity-tree
+        purpose: map problems to desired outcomes
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/opportunity-tree", input_artifact: synthesis_report, output_artifact: opportunity_map }
+      - id: hypothesis
+        purpose: define testable product bets
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/hypothesis", input_artifact: opportunity_map, output_artifact: hypothesis_statement }
+      - id: customer-journey
+        purpose: map user flow and friction points
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/customer-journey", input_artifact: persona_definition, output_artifact: journey_map }
+      - id: prd
+        purpose: synthesize requirements into a spec
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/prd", input_artifact: hypothesis_statement, output_artifact: prd }
+      - id: user-stories
+        purpose: define feature slices from user perspective
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/user-stories", input_artifact: prd, output_artifact: story_list }
+      - id: acceptance-criteria
+        purpose: define done states for features
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/acceptance-criteria", input_artifact: story_list, output_artifact: criteria_list }
+      - id: prioritize
+        purpose: rank work by impact and feasibility
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/prioritize", input_artifact: story_list, output_artifact: priority_list }
+      - id: strategy
+        purpose: define long-term product direction
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/strategy", input_artifact: market_analysis, output_artifact: strategy_doc }
+      - id: roadmap
+        purpose: sequence feature delivery over time
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/roadmap", input_artifact: strategy_doc, output_artifact: sequencing_roadmap }
+      - id: okr
+        purpose: define goals and key results
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/okr", input_artifact: strategy_doc, output_artifact: okr_list }
+      - id: lean-canvas
+        purpose: summarize business model on one page
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/lean-canvas", input_artifact: strategy_doc, output_artifact: business_canvas }
+      - id: pricing
+        purpose: design monetization and packaging
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/pricing", input_artifact: market_analysis, output_artifact: pricing_model }
+      - id: north-star
+        purpose: identify core leading metric
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/north-star", input_artifact: strategy_doc, output_artifact: north_star_metric }
+      - id: experiment-design
+        purpose: plan validation tests for hypotheses
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/experiment-design", input_artifact: hypothesis_statement, output_artifact: experiment_plan }
+      - id: measure-pmf
+        purpose: audit product-market fit signals
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/measure-pmf", input_artifact: okr_list, output_artifact: pmf_report }
+      - id: ab-test-analysis
+        purpose: evaluate results of split tests
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/ab-test-analysis", input_artifact: experiment_plan, output_artifact: test_results }
+      - id: pre-mortem
+        purpose: identify failure modes before launch
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/pre-mortem", input_artifact: prd, output_artifact: risk_analysis }
+      - id: launch-checklist
+        purpose: verify operational readiness for release
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/launch-checklist", input_artifact: prd, output_artifact: readiness_report }
+      - id: release-notes
+        purpose: communicate value to users and stakeholders
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/release-notes", input_artifact: prd, output_artifact: feature_announcement }
+      - id: stakeholder-update
+        purpose: communicate progress and blockers
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/stakeholder-update", input_artifact: okr_list, output_artifact: progress_report }
+      - id: gtm
+        purpose: define go-to-market execution plan
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/gtm", input_artifact: strategy_doc, output_artifact: gtm_plan }
+      - id: battlecard
+        purpose: summarize competitive talk tracks
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/battlecard", input_artifact: market_analysis, output_artifact: talk_tracks }
+      - id: ideal-customer-profile
+        purpose: define highest-value user segments
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/ideal-customer-profile", input_artifact: persona_definition, output_artifact: icp_definition }
+
+  flagship:
+    name: Flagship Orchestration
+    skills:
+      - id: workflow-orchestrator
+        purpose: procedural focus on selecting and running gated workflows
+        artifact: workflow_orchestration_plan
+        availability: { type: local, executable_by_orchestrator: true, requires_installed_skill: true }
+
+  support:
+    name: Support & Governance
+    skills:
+      - id: setup-sensemaking-skills
+        purpose: configure a repository for sensemaking operation
+        availability: { type: local, executable_by_orchestrator: true, requires_installed_skill: true }
+        capabilities: [write_files]
+      - id: sensemaking-docs-reconciler
+        purpose: align repository docs, registries, and contracts
+        availability: { type: local, executable_by_orchestrator: true, requires_installed_skill: true }
+        capabilities: [write_files]
