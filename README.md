@@ -7,11 +7,13 @@
 
 > **Visual contracts for AI-built interfaces.**
 
-Interface Skills is a collection of reusable AI skills for turning fuzzy UI intent into precise, testable interface specifications. It helps transform vague requests like “make this dashboard cleaner” into structured briefs, visual calibration sheets, screen blueprints, design tokens, component specs, acceptance criteria, implementation plans, and redline audits.
+Interface Skills is a collection of reusable AI skills for building and maintaining **Spec Packages**—visual contracts that turn fuzzy UI intent into precise, testable interface specifications.
 
-The goal is simple: reduce the gap between the interface you imagine and the interface an AI model builds.
+The goal is to reduce the gap between the interface you imagine and the interface an AI model builds by treating the specification as the primary source of truth.
 
 ## Why Interface Skills exists
+
+The fundamental unit of work in Interface Skills is the **Spec Package**. Skills are simply the producers and maintainers of the artifacts within that package.
 
 AI can produce UI quickly, but speed creates new failure modes:
 

@@ -1,6 +1,6 @@
 # Skill Reference
 
-Detailed technical reference for all Interface Skills, including their inputs, outputs, and recommended next steps in the workflow.
+Detailed technical reference for all Interface Skills. Skills are the producers and maintainers of artifacts within a **Spec Package**.
 
 | Skill                     | Input                          | Output                            | Next                                    |
 | ------------------------- | ------------------------------ | --------------------------------- | --------------------------------------- |
