@@ -141,7 +141,7 @@ Grouped by the UI lifecycle. For a detailed technical reference with inputs and 
 ### Maintenance & Planning
 | Skill               | Use when                  | Produces               |
 | ------------------- | ------------------------- | ---------------------- |
-| `ui-spec-linter` ⚠️    | Validate spec package     | Lint report            |
+| `ui-spec-linter` ⚠️    | Validate Spec Package     | Lint report            |
 | `ui-spec-reconcile` ⚠️ | Code/spec changed         | Reconciled spec        |
 | `ui-docs-sync`         | Docs may be stale         | Sync report            |
 | `ui-agent-routing`     | Agents cannot find specs  | Routing report/patches |
@@ -198,7 +198,7 @@ Use this when a UI already exists but no specification was created first ("Spec 
 8. Run `ui-component-spec` for each non-trivial component.
 9. Run `ui-microcopy` to extract and approve existing UI text.
 10. Run `ui-acceptance` to create the target checklist.
-11. Run `ui-spec-linter` to check the recovered spec package.
+11. Run `ui-spec-linter` to check the recovered Spec Package.
 12. Optionally run `ui-redline` to compare against the recovered target.
 13. Run `ui-spec-reconcile` to stabilize the spec.
 14. Run `ui-docs-sync` to confirm repository docs agreement.

@@ -14,7 +14,7 @@ When an AI-built UI misses the mark, improve the contract:
 - explicit states
 - evidence-based inspection
 - testable acceptance
-- routed documentation that agents actually discover
+- routed documentation agents can find
 
 ## Core vocabulary
 

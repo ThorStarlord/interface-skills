@@ -14,14 +14,14 @@ Detailed technical reference for all Interface Skills. Skills are the producers 
 | `ui-component-spec`       | screen/component context       | anatomy/state/a11y spec           | `ui-acceptance`, `ui-generate-code`     |
 | `ui-microcopy`            | brief/spec                     | approved copy                     | `ui-acceptance`, `ui-generate-code`     |
 | `ui-acceptance`           | approved specs                 | testable checklist                | `ui-redline`                            |
-| `ui-spec-linter`  ⚠️         | full spec package              | completeness + consistency report | `ui-generate-code`                      |
+| `ui-spec-linter`  ⚠️         | full Spec Package              | completeness + consistency report | `ui-generate-code`                      |
 | `ui-generate-code`        | approved specs                 | implementation                    | `ui-inspector`, `ui-redline`            |
 | `ui-inspector`  ⚠️           | live or static implementation  | DOM/a11y evidence report          | `ui-redline`                            |
 | `ui-redline`              | spec + implementation          | mismatch report + refactor prompt | code refactor                           |
-| `ui-docs-sync`            | repo docs + spec packages      | link and consistency report       | `ui-agent-routing`                      |
+| `ui-docs-sync`            | repo docs + Spec Packages      | link and consistency report       | `ui-agent-routing`                      |
 | `ui-agent-routing`        | accepted spec + routing files  | routing patches + routing report  | —                                       |
 | `setup-interface-skills`  ⚠️  | new or existing repository     | INTERFACE_SKILLS.md + folders     | `ui-surface-inventory`, `ui-brief`      |
-| `ui-spec-reconcile`  ⚠️       | spec package + redline/code    | updated spec package + report     | `ui-to-issues`, `ui-docs-sync`          |
+| `ui-spec-reconcile`  ⚠️       | Spec Package + redline/code    | updated Spec Package + report     | `ui-to-issues`, `ui-docs-sync`          |
 | `ui-to-issues`  ⚠️            | spec / redline / acceptance    | markdown issue drafts             | `ui-generate-code`                      |
 | `ui-storybook-docs`  ⚠️     | component spec                 | MDX docs, stories, prop tables    | —                                       |
 | `ui-orchestrator`  ⚠️       | current project state          | recommended next skill to run     | any skill                               |

@@ -1,4 +1,4 @@
-# ADR 0001: Interface Skills uses skill chains and spec packages as its system contract
+# ADR 0001: Interface Skills uses skill chains and Spec Packages as its system contract
 
 ## Status
 
@@ -14,9 +14,9 @@ Interface Skills started as individual UI-related skills. As the repository grew
 
 ## Decision
 
-Interface Skills will treat the spec package as the primary system contract.
+Interface Skills will treat the Spec Package as the primary system contract.
 
-A workflow is valid when it produces or updates a spec package with:
+A workflow is valid when it produces or updates a Spec Package with:
 - canonical artifact names
 - `00-index.md` as the entry point
 - active vs historical reports
