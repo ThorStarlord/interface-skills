@@ -13,14 +13,24 @@ except ImportError:
     # If we can't import it, we'll fall back to a simple copy
     export_skill_to_directory = None
 
+# --- CONFIGURATION ---
+# Change this to your fork URL once created: e.g. "https://github.com/ThorStarlord/skills.git"
 REPO_URL = "https://github.com/mattpocock/skills.git"
+
+# List of skills to skip during sync (e.g. because you have a better local version)
+SKIP_LIST = ["handoff"]
+
+# Optional prefix for synced skills. Set to "" if you want original names.
+PREFIX = ""
+# ---------------------
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SKILLS_DIR = REPO_ROOT / "skills"
 
 def sync_skills():
     """
-    Sync skills from Matt Pocock's repository.
-    Skills are prefixed with 'mp-' to avoid collision with local UI skills.
+    Sync skills from an external repository.
+    Handles prefixing and skipping based on configuration.
     """
     with tempfile.TemporaryDirectory() as tmpdir:
         print(f"Cloning {REPO_URL}...")
@@ -36,6 +46,7 @@ def sync_skills():
         categories = ["engineering", "productivity", "misc", "personal"]
         
         synced_count = 0
+        skipped_count = 0
         for category in categories:
             cat_dir = src_skills_root / category
             if not cat_dir.exists():
@@ -49,11 +60,16 @@ def sync_skills():
                 skill_md = skill_path / "SKILL.md"
                 
                 if not skill_md.exists():
-                    # Check for nested skills if necessary, but standard is top-level
                     continue
                 
-                # Prefix to avoid collision
-                target_skill_name = f"mp-{skill_name}"
+                # Check skip list
+                if skill_name in SKIP_LIST:
+                    print(f"Skipping {category}/{skill_name} (in SKIP_LIST)")
+                    skipped_count += 1
+                    continue
+                
+                # Apply prefix
+                target_skill_name = f"{PREFIX}{skill_name}"
                 target_path = SKILLS_DIR / target_skill_name
                 
                 print(f"Syncing {category}/{skill_name} -> {target_skill_name}")
@@ -71,7 +87,7 @@ def sync_skills():
                 except Exception as e:
                     print(f"  Failed to sync {skill_name}: {e}")
 
-        print(f"\nSuccessfully synced {synced_count} skills from Matt Pocock.")
+        print(f"\nSuccessfully synced {synced_count} skills (Skipped {skipped_count}).")
 
 if __name__ == "__main__":
     sync_skills()
