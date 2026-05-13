@@ -77,6 +77,10 @@ Before delivering the brief, check it against the "Acceptance criteria for this 
 
 End with a numbered list of every assumption made and every open question. Ask the user to confirm or correct each one. Do not move on to `ui-blueprint` or any other skill until the user has signed off.
 
+### Step 5 — Update the Run Manifest
+
+Before finishing the turn, create or update the `run-manifest.json` in the spec package folder. Include the skill name (`ui-brief`), the current timestamp, input hashes (if known), and the list of produced artifacts (`brief.md`, `00-index.md`). This ensures the run passes the **Canonical Package Validator**.
+
 ## Output template
 
 Always produce output in this exact structure. Save it as `brief.md` inside a `<feature-name>/` spec package folder. The folder name carries the feature slug — the file name is always `brief.md`. Do not rename it to `brief-<slug>.md`; downstream skills look for the canonical name.
