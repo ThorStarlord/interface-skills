@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Run Manifest",
+  "description": "The concrete record of Run History for a Spec Package",
+  "type": "object",
+  "required": [
+    "skill_name",
+    "timestamp",
+    "input_hashes",
+    "artifact_outputs"
+  ],
+  "properties": {
+    "skill_name": {
+      "type": "string",
+      "description": "The formal name of the skill that ran (e.g., ui-brief)"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp of the execution"
+    },
+    "input_hashes": {
+      "type": "object",
+      "description": "Map of input file paths to their SHA-256 hashes",
+      "additionalProperties": { "type": "string" }
+    },
+    "artifact_outputs": {
+      "type": "array",
+      "description": "List of artifacts produced or updated in this run",
+      "items": { "type": "string" }
+    },
+    "superseded_reports": {
+      "type": "array",
+      "description": "List of report artifacts that are now considered historical",
+      "items": { "type": "string" }
+    }
+  }
+}
