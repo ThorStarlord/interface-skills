@@ -4,12 +4,13 @@ This document tracks the evidence required to promote Interface Skills from `dra
 
 ## Promotion Criteria
 
-A draft skill is ready for stable when:
-1. It has **3–5 real approved fixtures** across different UI types.
-2. It has **1 intentionally messy/failing fixture** testing its failure modes.
-3. It has **1 documented downstream consumption test**.
-4. It has **Human Approval** recorded in the evidence table.
-5. The last 3 realistic runs produce useful outputs without changing the skill’s output format.
+A draft skill is ready for stable when it has:
+1. **3 good fixture runs** (real input, not toy input).
+2. **1 intentionally messy/failing fixture** testing its failure modes.
+3. **1 downstream consumption test**.
+4. **Human Approval** recorded in the evidence table.
+
+A skill is ready for stable when the last three realistic runs produce useful outputs without changing the skill’s output format.
 
 ## Promotion Evidence Table
 
@@ -30,7 +31,7 @@ A draft skill is ready for stable when:
 ## Detailed Evidence Logs
 
 ### `ui-surface-inventory`
-- **2026-05-10**: Renamed to `surface-inventory.md`. Added canonical sections.
+- **2026-05-10**: Added canonical sections. Output usually maps to `01-inspector-evidence.md` or dedicated inventory file.
 - **Fixtures**: `/kanban`, `admin-nav`, `/create`.
 - **Status**: Ready for final human review.
 
