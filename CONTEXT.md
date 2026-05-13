@@ -38,7 +38,10 @@ A single tracked output produced or updated by a skill inside a spec package (e.
 _Avoid_: "random output," "loose document," "untracked file."
 
 ### Report
-An artifact that audits, compares, reconciles, or routes work (e.g., `SPEC-LINT-REPORT.md`). Reports can be current or historical; historical reports must be clearly superseded or marked as pre-fix/pre-reconcile.
+An artifact that audits, compares, reconciles, or routes work (e.g., `SPEC-LINT-REPORT.md`). Reports are classified as **Active**, **Historical**, or **Superseded** in the Run Manifest to prevent agents from acting on stale data.
+
+### Run Manifest
+A convention within `00-index.md` (or a standalone `RUN-MANIFEST.md`) that tracks the lifecycle of reports and the sequence of skill executions. It is the primary defense against "stale report" bugs.
 
 ### Redline
 A report that compares implementation evidence against a target spec and identifies mismatches, severity, verification status, and recommended fixes.

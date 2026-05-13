@@ -47,6 +47,24 @@ This package is the active UI source of truth for `<scope>`.
 
 1. [List any unresolved product or technical questions.]
 
+## Run history
+
+| Date | Skill | Actor | Result | Artifacts |
+|------|-------|-------|--------|-----------|
+| <YYYY-MM-DD> | `ui-brief` | human | created | `02-brief.md` |
+
+## Active reports
+
+- [ ] None
+
+## Historical reports
+
+- [ ] None
+
+## Superseded reports
+
+- [ ] None
+
 ## Change log
 
 | Date | Change |

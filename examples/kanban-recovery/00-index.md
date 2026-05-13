@@ -34,6 +34,29 @@ This fixture captures a realistic retrospective-specification run for a `/kanban
 | 18 | [expected/rubric.md](expected/rubric.md) | scoring rubric | approved |
 | 19 | [notes.md](notes.md) | human-review markers | current |
 
+## Run history
+
+| Date | Skill | Actor | Result | Artifacts |
+|------|-------|-------|--------|-----------|
+| 2024-03-20 | `ui-spec-linter` | agent | v1 lint | `reports/SPEC-LINT-REPORT.md` |
+| 2024-03-21 | `ui-spec-linter` | agent | v2 lint | `reports/SPEC-LINT-REPORT-V2.md` |
+| 2024-03-21 | `ui-spec-reconcile` | agent | complete | `reports/SPEC-RECONCILE-SUMMARY.md` |
+| 2024-03-21 | `ui-docs-sync` | agent | sync ok | `reports/DOCS-SYNC-REPORT.md` |
+
+## Active reports
+
+- [`reports/SPEC-LINT-REPORT-V2.md`](reports/SPEC-LINT-REPORT-V2.md) - Current package lint findings.
+- [`reports/SPEC-RECONCILE-SUMMARY.md`](reports/SPEC-RECONCILE-SUMMARY.md) - Summary of spec vs implementation reconciliation.
+- [`reports/DOCS-SYNC-REPORT.md`](reports/DOCS-SYNC-REPORT.md) - Confirmation of sync with repo docs.
+
+## Historical reports
+
+- [`reports/GITHUB-ISSUES-PLAN.md`](reports/GITHUB-ISSUES-PLAN.md) - Plan for GitHub issues (kept for reference).
+
+## Superseded reports
+
+- [`reports/SPEC-LINT-REPORT.md`](reports/SPEC-LINT-REPORT.md) - Replaced by V2.
+
 ## Fixture layout contract
 
 - `source-docs/`: frozen copy of selected source package documents from `ViralFactory` for provenance and offline review. These files are treated as snapshot inputs and are **not** considered generated current-state output by default.
