@@ -4,6 +4,15 @@ spec_id: admin-sidebar-nav
 based_on: none — no linked spec
 created: 2025-05-22
 inspection_method: static source-code
+inspection_mode: static-source
+runtime_verified: false
+browser_access: unavailable
+deferred_checks:
+	- keyboard focus order
+	- hover and focus states
+	- computed runtime layout
+	- responsive drawer behavior
+	- console errors
 status: draft
 ---
 
@@ -14,6 +23,11 @@ status: draft
 **Spec package linked:** none
 **Inspection method:** static source-code
 **Primary breakpoint tested:** Desktop (implied by `lg:block w-[420px]` in `PortalShell`)
+
+Confidence breakdown:
+- Verified by source: 14 findings
+- Inferred from source: 11 findings
+- Requires live DOM: 5 findings (not verified)
 
 ---
 
@@ -97,10 +111,11 @@ status: draft
 
 ## 6. Inspector notes
 
-- **CRITICAL FINDING**: Individual module tabs (e.g., "Atendimento", "Inbox") currently **lack active state logic** in `AdminSidebar`. Only the "Painel de Gestão" top-level link has a conditional class for `props.currentPath === "/admin"`.
-- **Finance Path Inconsistency**: The sidebar uses `item.href` from the registry. In `admin-product-surface.ts`, the "final" href for Finance is `/admin/financeiro`. The target canonical path `/admin/finance` is currently listed as `legacyHref`.
-- **Icon Set**: The sidebar uses `lucide-react`. Icons are mapped via `iconForKey` helper.
-- **Section Expansion**: Managed by `expandedSectionIds` state, initialized by `getInitialAdminExpandedSections`. It expands all sections if on the dashboard (`/admin`) or the specific section containing the current path.
-- **Deep-linking Expansion**: `sectionContainsPath` uses `.startsWith(item.href + "/")`, which is correct for module sub-pages.
+- Module tab active styling is not derived from `item.href` in the same way as the top-level `"Painel de Gestão"` link. In source, only the top-level link has a conditional class tied to `props.currentPath === "/admin"`.
+- The sidebar uses `item.href` from the registry. In `admin-product-surface.ts`, Finance resolves to `/admin/financeiro`; the canonical `/admin/finance` path is represented as `legacyHref`.
+- The sidebar uses `lucide-react` icons mapped via the `iconForKey` helper.
+- Section expansion is managed by `expandedSectionIds`, initialized by `getInitialAdminExpandedSections`. In source it expands all sections on `/admin` or the section containing the current path.
+- Deep-link section matching uses `.startsWith(item.href + "/")`, which indicates support for module sub-pages in static source.
+- Keyboard traversal order, drawer behavior below `lg`, hover or focus-visible styling, and console behavior require live runtime verification.
 
 **This report contains evidence only. No judgments about correctness or severity are made here. Pass this report to `ui-redline` for evaluation against the spec.**

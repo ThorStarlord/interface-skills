@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 	- `ui-inspector` — added static source-code inspection as a first-class path with confidence labels (`exact — source`, `inferred — source`, `deferred — needs live DOM`). Previously only supported live DOM inspection.
+- `ui-inspector`, `ui-redline`, `ui-acceptance`, and `setup-interface-skills` — added explicit browser-access policy: detect Playwright first, fall back to static mode with deferred runtime checks when unavailable, and never install browser tooling silently.
+- `ui-acceptance` — replaced generic `[A]` automation tags with explicit labels (`[A:playwright]`, `[A:axe]`, `[A:lint]`, `[A:unit]`) and propagated the same convention into example acceptance artifacts.
+- `README.md`, `docs/how-it-works.md`, and `docs/skill-authoring-guide.md` — documented the detect-first browser tooling policy and the requirement to label static-only evidence honestly.
 - `ui-redline` — added explicit redline modes: live authenticated, live unauthenticated, and static partial. Consumers now declare which mode applies before running the audit.
 - `ui-orchestrator` — now routes ambiguous or large-scale Spec Recovery to `ui-surface-inventory` first; added `current` as a recognised status value alongside `draft`, `approved`, and `complete`.
 - `shared/references/spec-package-format.md` — `00-index.md` is now the canonical package index; `manifest.md` is legacy-compatible (read if no `00-index.md` exists).

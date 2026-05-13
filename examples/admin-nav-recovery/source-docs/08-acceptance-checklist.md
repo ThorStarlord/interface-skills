@@ -13,6 +13,12 @@ status: draft
 
 # Acceptance checklist: Admin Sidebar Navigation
 
+## How to use this checklist
+
+- Each item has a severity: **blocker** (must fix before ship), **major** (should fix before ship), **minor** (fix before next milestone), **polish** (fix when time permits).
+- Each item is marked with an explicit automation source: **[A:playwright]**, **[A:axe]**, **[A:lint]**, **[A:unit]**, or **[M]**.
+- Where a criterion traces back to a specific spec section, the source is noted in `[source]`.
+
 ## 1. Layout
 
 | | Severity | Criterion | Source |
@@ -33,24 +39,24 @@ status: draft
 | | Severity | Criterion | Source |
 |---|---|---|---|
 | ☐ | blocker | [M] Active tab highlight: `bg-[#28346c]` and white text. | blueprint §4 |
-| ☐ | blocker | [A] Active state maps to `/admin/finance` even when on legacy `/admin/financeiro`. | brief §6 |
+| ☐ | blocker | [A:unit] Active state maps to `/admin/finance` even when on legacy `/admin/financeiro`. | brief §6 |
 | ☐ | blocker | [M] Deep-link: Correct parent section expands automatically based on path. | screen-spec §2 |
-| ☐ | major | [A] `aria-expanded` correctly reflects expansion state on toggles. | component §7 |
+| ☐ | major | [A:unit] `aria-expanded` correctly reflects expansion state on toggles. | component §7 |
 
 ## 4. Behavior
 
 | | Severity | Criterion | Source |
 |---|---|---|---|
-| ☐ | blocker | [A] Clicking a ModuleTab navigates immediately. | screen-spec §2 |
-| ☐ | blocker | [A] Clicking the Brand Link navigates to `/admin`. | brief §4 |
+| ☐ | blocker | [A:playwright] Clicking a ModuleTab navigates immediately. | screen-spec §2 |
+| ☐ | blocker | [A:playwright] Clicking the Brand Link navigates to `/admin`. | brief §4 |
 
 ## 5. Accessibility
 
 | | Severity | Criterion | Source |
 |---|---|---|---|
-| ☐ | blocker | [A] All links and toggles are keyboard reachable (Tab). | component §7 |
-| ☐ | blocker | [A] Active links use `aria-current="page"`. | component §7 |
-| ☐ | major | [A] Icons are marked `aria-hidden="true"`. | component §7 |
+| ☐ | blocker | [A:playwright] All links and toggles are keyboard reachable (Tab). | component §7 |
+| ☐ | blocker | [A:lint] Active links use `aria-current="page"`. | component §7 |
+| ☐ | major | [A:lint] Icons are marked `aria-hidden="true"`. | component §7 |
 
 ## 6. Microcopy
 
