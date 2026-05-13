@@ -67,7 +67,7 @@ Recommend a recovery or specification order. Generally, the order should be:
 
 ### Step 4 — Produce the surface-inventory.md
 
-Use the template below. Save as `surface-inventory.md` in the root of the spec package directory (or the project root if mapping a whole app).
+Use the template below. The canonical filename is strictly `surface-inventory.md`. Save as `surface-inventory.md` in the root of the spec package directory (or the project root if mapping a whole app).
 
 ## Output template
 
@@ -127,6 +127,7 @@ surface_type: multi-surface-map
 
 ## Acceptance criteria for this skill's output
 
+- [ ] The output file is strictly named `surface-inventory.md`.
 - [ ] All four layers (App Shell, Journey, Route, Sub-surface) are evaluated, and each sub-surface includes a `Component candidates` field where applicable.
 - [ ] Every listed scope passes the "Smallest Coherent Scope" test.
 - [ ] A prioritized specification order is provided with reasoning.

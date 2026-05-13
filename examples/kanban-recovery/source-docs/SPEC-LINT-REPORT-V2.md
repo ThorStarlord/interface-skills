@@ -1,7 +1,7 @@
 ---
 spec_type: lint-report
 spec_id: kanban-spec-package-lint-v2
-based_on:
+# based_on:
   - docs/saas-frontend/specs/kanban/00-index.md
   - docs/saas-frontend/specs/kanban/01-inspector-evidence.md
   - docs/saas-frontend/specs/kanban/02-brief.md

@@ -2,7 +2,7 @@ fixture_id: spec-recovery-create
 fixture_type: rubric
 source_repo: ThorStarlord/Pulse
 source_repo_local_hint: H:/GithubRepositories/Pulse
-source_commit: a3f9c12
+# source_commit: a3f9c12
 surface: /create
 workflow: retrospective-specification
 primary_skills_tested:
