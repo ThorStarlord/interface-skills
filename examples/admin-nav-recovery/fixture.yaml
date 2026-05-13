@@ -3,7 +3,7 @@ fixture_id: admin-nav-recovery
 fixture_type: rubric
 source_repo: ThorStarlord/metamorfose-edutech
 source_repo_local_hint: H:/GithubRepositories/metamorfose-edutech
-source_commit: d7a8b9c0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6
+# source_commit: d7a8b9c0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6
 surface: admin-sidebar-nav
 workflow: retrospective-specification
 source_files:

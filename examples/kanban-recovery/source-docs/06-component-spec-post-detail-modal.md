@@ -1,7 +1,7 @@
 ---
 spec_type: component
 spec_id: post-detail-modal
-based_on: kanban-approval-screen
+# based_on: kanban-approval-screen
 created: 2026-05-10
 status: draft
 source_evidence:

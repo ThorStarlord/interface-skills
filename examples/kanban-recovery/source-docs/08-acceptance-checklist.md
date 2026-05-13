@@ -3,7 +3,7 @@ spec_type: acceptance-checklist
 spec_id: kanban-acceptance
 created: 2026-05-10
 status: current
-based_on:
+# based_on:
   - 03-visual-calibration.md
   - 04-blueprint.md
   - 05-screen-spec.md
