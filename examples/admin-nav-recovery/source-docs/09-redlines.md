@@ -1,7 +1,7 @@
 ---
 spec_type: redline
 spec_id: admin-sidebar-nav-redline-1
-based_on:
+based_on: none
   - 02-brief.md
   - 04-blueprint.md
   - 05-screen-spec.md

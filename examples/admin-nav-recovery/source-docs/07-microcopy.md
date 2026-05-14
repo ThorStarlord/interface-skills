@@ -1,7 +1,7 @@
 ---
 spec_type: microcopy
 spec_id: admin-sidebar-nav
-based_on: 02-brief.md, 04-blueprint.md, 05-screen-spec.md
+based_on: none
 voice: plain
 created: 2025-05-22
 status: draft

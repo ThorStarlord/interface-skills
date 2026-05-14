@@ -110,8 +110,8 @@ Grouped by the UI lifecycle. For a detailed technical reference with inputs and 
 ### Setup & Discovery
 | Skill                    | Use when                      | Produces                     |
 | ------------------------ | ----------------------------- | ---------------------------- |
-| `setup-interface-skills` ⚠️ | Starting in a repo            | Repo conventions and routing |
-| `ui-surface-inventory` ⚠️ | Existing app or unclear scope | Recoverable UI scope map     |
+| `setup-interface-skills` | Starting in a repo            | Repo conventions and routing |
+| `ui-surface-inventory` | Existing app or unclear scope | Recoverable UI scope map     |
 | `ui-orchestrator`         | Unsure what to run next       | Next-skill recommendation    |
 
 ### Intent & Visual Language

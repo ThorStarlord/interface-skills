@@ -1,0 +1,46 @@
+{
+  "fixture": "admin-nav-recovery",
+  "classification": "fail",
+  "classification_msg": "Clean fixture failed unexpectedly",
+  "evidence_level": "promotion_candidate_run",
+  "generated_fresh_output": true,
+  "skill_structural_valid": true,
+  "package_structural_valid": false,
+  "rubric_passed": false,
+  "rubric_details": [
+    {
+      "item": "Identifies app-shell/navigation-map scope.",
+      "section": "ui-surface-inventory",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Identifies route registry as relevant evidence.",
+      "section": "ui-surface-inventory",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Flags route contradiction risk.",
+      "section": "ui-surface-inventory",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Accounts for nested or monorepo agent docs.",
+      "section": "ui-surface-inventory",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Does not treat the surface as a simple standalone screen.",
+      "section": "ui-surface-inventory",
+      "passed": false,
+      "automation": "pending_manual"
+    }
+  ],
+  "logs": {
+    "skill_validation": "[shared/references/accessibility-baseline.md] [OK] Valid\n[shared/references/responsive-patterns.md] [OK] Valid\n[shared/references/severity-scale.md] [OK] Valid\n[shared/references/spec-package-format.md] [OK] Valid\n[shared/references/state-taxonomy.md] [OK] Valid\n[shared/references/token-schema.md] [OK] Valid\n[shared/references/vague-language-translator.md] [OK] Valid\n[shared/references/visual-vocabulary.md] [OK] Valid\n[skills.json] [OK] distribution registry valid\n[ui-surface-inventory] [OK] Valid\n\nValidation passed! [SUCCESS]\n",
+    "package_validation": "# Spec Package Validation: FAILED\n- [ERROR] source-docs\\01-inspector-evidence.md: Malformed YAML frontmatter: while scanning for the next token\nfound character '\\t' that cannot start any token\n  in \"<unicode string>\", line 11, column 1:\n    \t- keyboard focus order\n    ^\n- [ERROR] source-docs\\03-visual-calibration.md: `based_on` reference `brief-admin-sidebar-nav` does not exist\n- [ERROR] source-docs\\04-blueprint.md: `based_on` reference `brief-admin-sidebar-nav` does not exist\n- [ERROR] source-docs\\05-screen-spec.md: `based_on` reference `blueprint.md` does not exist\n- [ERROR] source-docs\\06-component-spec-admin-sidebar.md: `based_on` reference `screen-spec-admin-sidebar-nav` does not exist\n- [ERROR] source-docs\\06-component-spec-module-tab.md: `based_on` reference `screen-spec-admin-sidebar-nav` does not exist\n- [ERROR] source-docs\\07-microcopy.md: `based_on` reference `02-brief.md, 04-blueprint.md, 05-screen-spec.md` does not exist\n- [ERROR] source-docs\\SPEC-LINT-REPORT-V2.md: `based_on` reference `All docs in docs/saas-frontend/specs/admin-nav/ (Post-reconciliation)` does not exist\n- [ERROR] source-docs\\SPEC-LINT-REPORT.md: `based_on` reference `All docs in docs/saas-frontend/specs/admin-nav/` does not exist\n"
+  }
+}

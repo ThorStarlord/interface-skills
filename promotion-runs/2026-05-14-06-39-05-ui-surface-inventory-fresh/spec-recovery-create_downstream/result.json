@@ -1,0 +1,8 @@
+{
+  "fixture": "spec-recovery-create_downstream",
+  "classification": "pass",
+  "classification_msg": "Downstream skill correctly consumed the inventory",
+  "evidence_level": "harness_validation",
+  "generated_fresh_output": false,
+  "downstream_chain": "ui-surface-inventory -> ui-inspector"
+}

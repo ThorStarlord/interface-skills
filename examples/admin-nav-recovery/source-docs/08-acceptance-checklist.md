@@ -1,7 +1,7 @@
 ---
 spec_type: acceptance
 spec_id: admin-sidebar-nav
-based_on:
+based_on: none
   - 02-brief.md
   - 04-blueprint.md
   - 05-screen-spec.md

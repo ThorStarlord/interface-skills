@@ -257,3 +257,10 @@ A fixture passes if:
 - **ui-redline:** partial redlines must document what is unverifiable
 - **ui-to-issues:** every redline item must have a fate (covered, deferred, or justification)
 
+
+## ui-surface-inventory
+- [ ] Identifies app-shell/navigation-map scope.
+- [ ] Identifies route registry as relevant evidence.
+- [ ] Flags route contradiction risk.
+- [ ] Accounts for nested or monorepo agent docs.
+- [ ] Does not treat the surface as a simple standalone screen.

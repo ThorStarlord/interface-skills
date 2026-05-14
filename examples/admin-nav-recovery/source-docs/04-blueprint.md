@@ -1,7 +1,7 @@
 ---
 spec_type: blueprint
 spec_id: admin-sidebar-nav
-based_on: brief-admin-sidebar-nav
+based_on: none
 created: 2025-05-22
 status: draft
 ---

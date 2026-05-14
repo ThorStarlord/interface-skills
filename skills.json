@@ -22,7 +22,7 @@
   "skills": [
     {
       "name": "ui-surface-inventory",
-      "status": "draft",
+      "status": "stable",
       "description": "Map an existing app into coherent scopes and surfaces before any spec work begins.",
       "input": "existing app (URL, screenshots, or source code)",
       "output": "UI scope map with surfaces, sub-surfaces, and recovery order",

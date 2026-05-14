@@ -14,3 +14,10 @@
 ## ui-agent-routing
 - [ ] Proposes correct patches for `CLAUDE.md` and `AGENTS.md`.
 - [ ] Handles `DEPRECATED.md` for old paths.
+
+## ui-surface-inventory
+- [ ] Identifies the primary create flow.
+- [ ] Identifies form/input surfaces.
+- [ ] Identifies preview or generated-output surfaces if present.
+- [ ] Identifies loading, empty, and error states where evidence supports them.
+- [ ] Separates confirmed surfaces from inferred/recommended surfaces.

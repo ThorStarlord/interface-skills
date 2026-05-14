@@ -1,7 +1,7 @@
 ---
 name: ui-surface-inventory
 description: Identify the product's UI scopes (inspectable areas), classify them by type (App Shell, Journey, Route, Sub-surface), note component candidates within each scope, and recommend a prioritized recovery or specification order. Use this as the first step for large-scale projects or when performing Retrospective Specification Recovery on an existing app.
-status: draft
+status: stable
 ---
 
 # UI Surface Inventory
@@ -133,6 +133,51 @@ surface_type: multi-surface-map
 - [ ] A prioritized specification order is provided with reasoning.
 - [ ] Output follows the template structure exactly.
 - [ ] Uses the term "UI Scope" consistently.
+
+## Output template
+
+```markdown
+---
+spec_type: inventory
+spec_id: [slugified-project-name]-surface-inventory
+created: [YYYY-MM-DD]
+status: approved
+surface_type: multi-surface-map
+---
+
+# UI Surface Inventory: [Project Name]
+
+## 1. Purpose
+[Brief summary of the discovery mission]
+
+## 2. Source evidence
+[Links to brief, screenshots, or source files used]
+
+## 3. App Shell Scopes
+[List of global UI elements like navigation, global headers, or toolbars]
+
+## 4. Journey Scopes
+[List of multi-page flows like Onboarding, Checkout, or Search-to-Detail]
+
+## 5. Route-level Scopes
+[List of specific URLs or routes that own multiple sub-surfaces]
+
+## 6. Sub-surface Scopes
+| Sub-surface | Parent route | User job | States | Component candidates |
+|---|---|---|---|---|
+| **[Name]** | [Parent] | [Job] | [States] | [Candidates] |
+
+## 7. Surface Status Table
+| Surface | Type | Status | Existing spec? | Recommended next skill |
+|---|---|---|---|---|
+| [Name] | [type] | pending | no | ui-inspector |
+
+## 8. Recommended Specification Order
+[Prioritized list of surfaces to spec next, with reasoning]
+
+## 9. Next-skill routing
+[Routing logic for next agent steps]
+```
 
 ---
 

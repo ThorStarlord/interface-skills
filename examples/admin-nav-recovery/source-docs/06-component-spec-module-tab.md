@@ -1,7 +1,7 @@
 ---
 spec_type: component
 spec_id: module-tab
-based_on: screen-spec-admin-sidebar-nav
+based_on: none
 created: 2025-05-22
 status: draft
 ---

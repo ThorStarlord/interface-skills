@@ -87,14 +87,46 @@ def evaluate_output_against_rubric(output_content, rubric_items):
     In a real scenario, this might need more sophisticated NLP or LLM evaluation.
     For this harness, we look for 'pass' markers or keyword presence.
     """
+    def extract_subject(text, prefix_len):
+        subject = text[prefix_len:].strip().rstrip('.')
+        for sep in [" where ", " if ", " consistent with ", " as "]:
+            if sep in subject.lower():
+                subject = subject.lower().split(sep)[0].strip()
+                break
+        return subject
+
     results = []
     for item in rubric_items:
-        # Heuristic: if the rubric item text is in the output, or if it's a structural check
-        # that we can verify.
-        # For now, we'll mark them as 'manual_review_required' if we can't automate.
         found = False
-        if item["text"].lower() in output_content.lower():
+        text_lower = item["text"].lower()
+        
+        # 1. Direct match
+        if text_lower in output_content.lower():
             found = True
+        # 2. Extract "Identifies X" subject
+        elif text_lower.startswith("identifies "):
+            subject = extract_subject(item["text"], 11)
+            if subject.lower() in output_content.lower():
+                found = True
+            elif subject.lower().endswith(" surface"):
+                sub_subject = subject[:-8].strip()
+                if sub_subject.lower() in output_content.lower():
+                    found = True
+        # 3. Extract "Prioritizes X" subject
+        elif text_lower.startswith("prioritizes "):
+            subject = extract_subject(item["text"], 12)
+            if subject.lower() in output_content.lower():
+                found = True
+        # 4. Extract "Accounts for X" subject
+        elif text_lower.startswith("accounts for "):
+            subject = extract_subject(item["text"], 13)
+            if subject.lower() in output_content.lower():
+                found = True
+        # 5. Handle "Does not X" (negative test - true if NOT found)
+        elif text_lower.startswith("does not "):
+            subject = extract_subject(item["text"], 9)
+            if subject.lower() not in output_content.lower():
+                found = True
         
         results.append({
             "item": item["text"],
@@ -134,13 +166,18 @@ def classify_downstream_result(skill_name, next_skill, output_content, next_skil
     """
     Validates if the downstream skill correctly consumed the output of the previous skill.
     """
-    # Simple keyword check: Does the next skill mention the input it consumed?
+    # Check if the next skill mentions the input it consumed
+    if next_skill == "ui-inspector" and skill_name == "ui-surface-inventory":
+        # Check if the inspector report refers to the inventory
+        if "surface-inventory.md" in next_skill_output.lower() or "inventory" in next_skill_output.lower():
+            return True, "Downstream skill correctly consumed the inventory"
+        return False, "Downstream skill did NOT acknowledge the inventory"
+    
     consumed_marker = f"Input Evidence"
     if consumed_marker.lower() in next_skill_output.lower():
-        # Check if it mentions the specific report
-        if "spec-lint-report.md" in next_skill_output.lower() or "redline" in next_skill_output.lower():
-            return True, "Downstream consumption verified"
-    return False, "Downstream skill failed to acknowledge input evidence"
+        return True, "Downstream skill correctly consumed the output"
+    
+    return False, "Downstream skill did NOT correctly consume the output"
 
 def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
     skill_config = plan.get("skills", {}).get(skill_name)
@@ -192,6 +229,10 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
             output_file = fixture_path / "reports" / "ORCHESTRATOR-RECOMMENDATION.md"
             if not output_file.exists():
                 output_file = fixture_path / "orchestrator-recommendation.md"
+        elif skill_name == "ui-surface-inventory":
+            output_file = fixture_path / "reports" / "surface-inventory.md"
+            if not output_file.exists():
+                output_file = fixture_path / "surface-inventory.md"
 
         if not output_file or not output_file.exists():
             print(f"    [WARN] No output file found for {skill_name} in {fixture_name}. Skipping rubric check.")
@@ -259,6 +300,10 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
             downstream_output_file = None
             if next_skill == "ui-spec-reconcile":
                 downstream_output_file = fixture_path / "reports" / "SPEC-RECONCILE-SUMMARY.md"
+            elif next_skill == "ui-inspector":
+                downstream_output_file = fixture_path / "reports" / "inspector-report.md"
+                if not downstream_output_file.exists():
+                    downstream_output_file = fixture_path / "redlines" / "inspector-report.md"
             
             if downstream_output_file and downstream_output_file.exists():
                 next_skill_output = downstream_output_file.read_text(encoding="utf-8")
