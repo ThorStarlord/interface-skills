@@ -1,0 +1,22 @@
+{
+  "fixture": "failing-spec-package",
+  "classification": "expected_fail",
+  "classification_msg": "Messy fixture defects correctly detected",
+  "evidence_level": "promotion_candidate_run",
+  "generated_fresh_output": true,
+  "skill_structural_valid": true,
+  "package_structural_valid": false,
+  "rubric_passed": true,
+  "rubric_details": [
+    {
+      "item": "Does not generate brief from invalid package",
+      "section": "ui-brief",
+      "passed": true,
+      "automation": "keyword_match"
+    }
+  ],
+  "logs": {
+    "skill_validation": "[shared/references/accessibility-baseline.md] [OK] Valid\n[shared/references/responsive-patterns.md] [OK] Valid\n[shared/references/severity-scale.md] [OK] Valid\n[shared/references/spec-package-format.md] [OK] Valid\n[shared/references/state-taxonomy.md] [OK] Valid\n[shared/references/token-schema.md] [OK] Valid\n[shared/references/vague-language-translator.md] [OK] Valid\n[shared/references/visual-vocabulary.md] [OK] Valid\n[skills.json] [OK] distribution registry valid\n[ui-brief] [OK] Valid\n\nValidation passed! [SUCCESS]\n",
+    "package_validation": "# Spec Package Validation: FAILED\n- [ERROR] reports\\surface-inventory.md: Malformed YAML frontmatter: while scanning a simple key\n  in \"<unicode string>\", line 7, column 1:\n    [MALFORMED YAML - MISSING CLOSIN ... \n    ^\ncould not find expected ':'\n  in \"<unicode string>\", line 8, column 1:\n    \n    ^\n"
+  }
+}

@@ -30,6 +30,15 @@ This rubric defines what constitutes a "good" output for each skill in the admin
 
 ---
 
+## ui-brief
+- [ ] Identifies app-shell/navigation-map as the UI Scope.
+- [ ] Captures route registry contradiction risk.
+- [ ] Mentions nested or monorepo agent documentation as relevant context.
+- [ ] Does not reduce the scope to a single page.
+- [ ] Separates confirmed evidence from assumptions.
+
+---
+
 ## 2. ui-inspector
 
 ### Static-Only Report Requirements

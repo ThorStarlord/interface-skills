@@ -15,3 +15,6 @@
 - [ ] Identifies Missing Loading State
 - [ ] Identifies Vague Language
 - [ ] Identifies Uncovered Success Criterion
+
+## ui-brief
+- [ ] Does not generate brief from invalid package

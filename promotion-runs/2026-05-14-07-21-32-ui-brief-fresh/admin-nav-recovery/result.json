@@ -1,0 +1,46 @@
+{
+  "fixture": "admin-nav-recovery",
+  "classification": "fail",
+  "classification_msg": "Clean fixture failed unexpectedly",
+  "evidence_level": "promotion_candidate_run",
+  "generated_fresh_output": true,
+  "skill_structural_valid": true,
+  "package_structural_valid": true,
+  "rubric_passed": false,
+  "rubric_details": [
+    {
+      "item": "Identifies app-shell/navigation-map as the UI Scope.",
+      "section": "ui-brief",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Captures route registry contradiction risk.",
+      "section": "ui-brief",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Mentions nested or monorepo agent documentation as relevant context.",
+      "section": "ui-brief",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Does not reduce the scope to a single page.",
+      "section": "ui-brief",
+      "passed": true,
+      "automation": "keyword_match"
+    },
+    {
+      "item": "Separates confirmed evidence from assumptions.",
+      "section": "ui-brief",
+      "passed": false,
+      "automation": "pending_manual"
+    }
+  ],
+  "logs": {
+    "skill_validation": "[shared/references/accessibility-baseline.md] [OK] Valid\n[shared/references/responsive-patterns.md] [OK] Valid\n[shared/references/severity-scale.md] [OK] Valid\n[shared/references/spec-package-format.md] [OK] Valid\n[shared/references/state-taxonomy.md] [OK] Valid\n[shared/references/token-schema.md] [OK] Valid\n[shared/references/vague-language-translator.md] [OK] Valid\n[shared/references/visual-vocabulary.md] [OK] Valid\n[skills.json] [OK] distribution registry valid\n[ui-brief] [OK] Valid\n\nValidation passed! [SUCCESS]\n",
+    "package_validation": "N/A"
+  }
+}

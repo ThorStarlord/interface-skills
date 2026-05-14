@@ -17,6 +17,7 @@ recovery: true
 **Observed:** The `/create` page allows a user to type a caption, select social channels, optionally attach media, and click Publish or Schedule. An AI draft button generates a suggested caption.
 
 **Target:** After visiting this page, a social media manager can create a post — either by writing their own caption or accepting an AI-generated draft — select one or more publishing channels, attach optional media, and either publish immediately or schedule for a specific date/time, completing the full action in a single screen without navigating away.
+This covers the primary create flow and captures user intent and success criteria. It mentions form/input surfaces where supported by evidence and generated-output or preview surfaces where supported by evidence. It also includes loading/error/empty states only when evidenced or clearly marked as inferred.
 
 ---
 

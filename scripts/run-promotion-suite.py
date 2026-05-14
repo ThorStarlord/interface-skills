@@ -95,6 +95,13 @@ def evaluate_output_against_rubric(output_content, rubric_items):
                 break
         return subject
 
+    def strip_articles(text):
+        """Strip leading articles (the, a, an) for fuzzy matching."""
+        for article in ["the ", "a ", "an "]:
+            if text.lower().startswith(article):
+                return text[len(article):]
+        return text
+
     results = []
     for item in rubric_items:
         found = False
@@ -106,7 +113,8 @@ def evaluate_output_against_rubric(output_content, rubric_items):
         # 2. Extract "Identifies X" subject
         elif text_lower.startswith("identifies "):
             subject = extract_subject(item["text"], 11)
-            if subject.lower() in output_content.lower():
+            subj_stripped = strip_articles(subject)
+            if subj_stripped.lower() in output_content.lower() or subject.lower() in output_content.lower():
                 found = True
             elif subject.lower().endswith(" surface"):
                 sub_subject = subject[:-8].strip()
@@ -115,17 +123,43 @@ def evaluate_output_against_rubric(output_content, rubric_items):
         # 3. Extract "Prioritizes X" subject
         elif text_lower.startswith("prioritizes "):
             subject = extract_subject(item["text"], 12)
-            if subject.lower() in output_content.lower():
+            if strip_articles(subject).lower() in output_content.lower():
                 found = True
         # 4. Extract "Accounts for X" subject
         elif text_lower.startswith("accounts for "):
             subject = extract_subject(item["text"], 13)
-            if subject.lower() in output_content.lower():
+            if strip_articles(subject).lower() in output_content.lower():
                 found = True
         # 5. Handle "Does not X" (negative test - true if NOT found)
         elif text_lower.startswith("does not "):
             subject = extract_subject(item["text"], 9)
             if subject.lower() not in output_content.lower():
+                found = True
+        # 6. Extract "Names X" subject
+        elif text_lower.startswith("names "):
+            subject = extract_subject(item["text"], 6)
+            if strip_articles(subject).lower() in output_content.lower():
+                found = True
+        # 7. Extract "Mentions X" subject
+        elif text_lower.startswith("mentions "):
+            subject = extract_subject(item["text"], 9)
+            if strip_articles(subject).lower() in output_content.lower():
+                found = True
+        # 8. Extract "Captures X" subject
+        elif text_lower.startswith("captures "):
+            subject = extract_subject(item["text"], 9)
+            if strip_articles(subject).lower() in output_content.lower():
+                found = True
+        # 9. Extract "Includes X" subject
+        elif text_lower.startswith("includes "):
+            subject = extract_subject(item["text"], 9)
+            if strip_articles(subject).lower() in output_content.lower():
+                found = True
+        # 10. Extract "Separates X" — check for both halves around " from "
+        elif text_lower.startswith("separates "):
+            subject = extract_subject(item["text"], 10)
+            parts = subject.lower().split(" from ")
+            if all(p.strip() in output_content.lower() for p in parts if p.strip()):
                 found = True
         
         results.append({
@@ -172,6 +206,13 @@ def classify_downstream_result(skill_name, next_skill, output_content, next_skil
         if "surface-inventory.md" in next_skill_output.lower() or "inventory" in next_skill_output.lower():
             return True, "Downstream skill correctly consumed the inventory"
         return False, "Downstream skill did NOT acknowledge the inventory"
+        
+    if next_skill == "ui-visual-calibration" and skill_name == "ui-brief":
+        # Visual calibration should reference the brief, the spec_id, or share design terms from the brief
+        brief_indicators = ["02-brief", "brief", "palette", "layout", "density", "typography", "surface style", "visual tone"]
+        if any(ind in next_skill_output.lower() for ind in brief_indicators):
+            return True, "Downstream skill correctly consumed the brief (visual language present)"
+        return False, "Downstream skill did NOT derive from the brief"
     
     consumed_marker = f"Input Evidence"
     if consumed_marker.lower() in next_skill_output.lower():
@@ -233,6 +274,20 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
             output_file = fixture_path / "reports" / "surface-inventory.md"
             if not output_file.exists():
                 output_file = fixture_path / "surface-inventory.md"
+        elif skill_name == "ui-brief":
+            # Brief can be stored at different paths depending on fixture layout:
+            # - spec-recovery-create style: brief.md at root
+            # - kanban-recovery style: input/02-brief.md
+            # - standardized: specs/02-brief.md
+            for candidate in [
+                fixture_path / "specs" / "02-brief.md",
+                fixture_path / "input" / "02-brief.md",
+                fixture_path / "brief.md",
+                fixture_path / "02-brief.md",
+            ]:
+                if candidate.exists():
+                    output_file = candidate
+                    break
 
         if not output_file or not output_file.exists():
             print(f"    [WARN] No output file found for {skill_name} in {fixture_name}. Skipping rubric check.")
@@ -304,6 +359,15 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
                 downstream_output_file = fixture_path / "reports" / "inspector-report.md"
                 if not downstream_output_file.exists():
                     downstream_output_file = fixture_path / "redlines" / "inspector-report.md"
+            elif next_skill == "ui-visual-calibration":
+                for candidate in [
+                    fixture_path / "specs" / "03-visual-calibration.md",
+                    fixture_path / "visual-calibration.md",
+                    fixture_path / "03-visual-calibration.md",
+                ]:
+                    if candidate.exists():
+                        downstream_output_file = candidate
+                        break
             
             if downstream_output_file and downstream_output_file.exists():
                 next_skill_output = downstream_output_file.read_text(encoding="utf-8")

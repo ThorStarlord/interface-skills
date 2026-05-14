@@ -57,7 +57,7 @@ Ask your agent to run:
 
 ### Existing UI with no spec
 Ask your agent to run:
-1. `ui-surface-inventory` ⚠️
+1. `ui-surface-inventory`
 2. `ui-inspector` ⚠️
 3. `ui-brief`
 4. `ui-blueprint`

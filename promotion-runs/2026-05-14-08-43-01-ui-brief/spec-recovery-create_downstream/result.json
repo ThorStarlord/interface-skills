@@ -1,0 +1,8 @@
+{
+  "fixture": "spec-recovery-create_downstream",
+  "classification": "pass",
+  "classification_msg": "Downstream skill correctly consumed the brief (visual language present)",
+  "evidence_level": "harness_validation",
+  "generated_fresh_output": false,
+  "downstream_chain": "ui-brief -> ui-visual-calibration"
+}
