@@ -21,20 +21,6 @@ agent_routing: missing
 | 5 | [`05-screen-spec.md`](05-screen-spec.md) | `ui-screen-spec` | draft | <YYYY-MM-DD> |
 | 6 | [`08-acceptance-checklist.md`](08-acceptance-checklist.md) | `ui-acceptance` | draft | <YYYY-MM-DD> |
 | 7 | [`09-redlines.md`](09-redlines.md) | `ui-redline` | draft | <YYYY-MM-DD> |
-| 8 | [`RUN-MANIFEST.md`](RUN-MANIFEST.md) | (system) | draft | <YYYY-MM-DD> |
-
-## Active reports
-
-| Report type | Active file | Phase | Generated from |
-|---|---|---|---|
-| Redline | `09-redlines.md` | pre-fix | <commit> |
-| Lint | `SPEC-LINT-REPORT.md` | current | <commit> |
-
-## Historical reports
-
-| File | Status | Superseded by |
-|---|---|---|
-| (none) | | |
 
 ## How agents find this package
 

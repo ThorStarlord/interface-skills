@@ -17,7 +17,7 @@ Implement a **Run Manifest** convention, integrated into the `00-index.md` of ev
 
 ## Implementation Decisions
 
-- **Location**: Primary location is `00-index.md`. A standalone `RUN-MANIFEST.md` is an acceptable alternative for very busy packages.
+- **Location**: Required location is `00-index.md` (canonical package index). The convention does not use a standalone `RUN-MANIFEST.md`.
 - **Required Sections**:
   - `## Run history`: A table of skill executions.
   - `## Active reports`: Links to currently valid report artifacts.
@@ -30,7 +30,7 @@ Implement a **Run Manifest** convention, integrated into the `00-index.md` of ev
 
 - **Template Verification**: Ensure the template renders correctly and includes the new sections.
 - **Example Migration**: Update an existing example and verify it passes structural validation (if any).
-- **Linter Check**: Add a rule to `ui-spec-linter` (or equivalent) to warn if these sections are missing or empty in a package that contains reports.
+- **Linter Check**: Add a rule to `ui-spec-linter` (or equivalent) to validate these sections in `00-index.md`, and warn if they are missing or empty in any package that contains reports.
 
 ## Out of Scope
 

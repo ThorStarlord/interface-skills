@@ -29,6 +29,12 @@ feature-name/
 - Use the canonical file names above. Downstream skills look for these exact names — renaming `blueprint.md` to `layout.md` will cause the next skill in the pipeline to fail to find it.
 - The package index is `00-index.md`. It sorts first alphabetically, is obvious to humans, and is the preferred discovery signal used by `ui-docs-sync` and `ui-orchestrator`.
 - `00-index.md` must contain a `## How agents find this package` section and an `agent_routing` frontmatter field to support automated routing and discovery.
+- `00-index.md` must include a Run Manifest with these section headings:
+  - `## Run history`
+  - `## Active reports`
+  - `## Historical reports`
+  - `## Superseded reports`
+- If any report artifact exists in the package (for example, `*-REPORT.md` or `*-SUMMARY.md`), it must be listed under one report section (`Active`, `Historical`, or `Superseded`).
 - If you are migrating an older package that uses `manifest.md`, rename it to `00-index.md`. Tools will still read `manifest.md` as a fallback, but `00-index.md` is authoritative when both are present.
 - Component specs live in `component-specs/` (with the hyphen). One file per component, named after the component (`ProfileForm.md`, `MetricCard.md`).
 - A feature that is single-screen does not need `flow.md`.
