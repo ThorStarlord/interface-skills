@@ -1,0 +1,46 @@
+# Skill Promotion Plan
+# This file defines the test matrix for skills in interface-skills.
+# The runner script (scripts/run-promotion-suite.py) uses this to execute tests.
+
+target_repo_fallback: ../metamorfose-edutech
+
+skills:
+  ui-spec-linter:
+    fixtures:
+      - examples/kanban-recovery
+      - examples/admin-nav-recovery
+      - examples/spec-recovery-create
+    messy_fixture: examples/failing-spec-package
+    downstream:
+      next_skill: ui-spec-reconcile
+      fixture: examples/kanban-recovery
+    promotion_criteria:
+      min_good_runs: 3
+      require_messy_fail: true
+      require_downstream: true
+
+  ui-surface-inventory:
+    fixtures:
+      - examples/kanban-recovery
+      - examples/admin-nav-recovery
+      - examples/spec-recovery-create
+    messy_fixture: examples/failing-spec-package  # Needs a dedicated messy fixture later
+    downstream:
+      next_skill: ui-inspector
+      fixture: examples/spec-recovery-create
+    promotion_criteria:
+      min_good_runs: 3
+      require_messy_fail: true
+      require_downstream: true
+
+  ui-orchestrator:
+    fixtures:
+      - examples/orchestrator-states
+    messy_fixture: examples/failing-spec-package
+    downstream:
+      next_skill: ui-brief
+      fixture: examples/orchestrator-states
+    promotion_criteria:
+      min_good_runs: 1 # Simpler router
+      require_messy_fail: true
+      require_downstream: false

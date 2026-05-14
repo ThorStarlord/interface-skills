@@ -1,0 +1,11 @@
+{
+  "fixture": "failing-spec-package",
+  "skill_structural_valid": false,
+  "package_structural_valid": true,
+  "rubric_passed": "N/A",
+  "rubric_details": [],
+  "logs": {
+    "skill_validation": "[shared/references/accessibility-baseline.md] [OK] Valid\n[shared/references/responsive-patterns.md] [OK] Valid\n[shared/references/severity-scale.md] [OK] Valid\n[shared/references/spec-package-format.md] [OK] Valid\n[shared/references/state-taxonomy.md] [OK] Valid\n[shared/references/token-schema.md] [OK] Valid\n[shared/references/vague-language-translator.md] [OK] Valid\n[shared/references/visual-vocabulary.md] [OK] Valid\n[skills.json] [OK] distribution registry valid\nTraceback (most recent call last):\n  File \"H:\\GithubRepositories\\interface-skills\\scripts\\validate-skill.py\", line 279, in <module>\n    if validate_skills():\n       ~~~~~~~~~~~~~~~^^\n  File \"H:\\GithubRepositories\\interface-skills\\scripts\\validate-skill.py\", line 162, in validate_skills\n    if not validate_readme_skill_map(repo_root, skill_folders):\n           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"H:\\GithubRepositories\\interface-skills\\scripts\\validate-skill.py\", line 86, in validate_readme_skill_map\n    print(f\"[{name}] [WARN] Registry status={status} but README row has '\\u26a0\\ufe0f' draft marker\")\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Python314\\Lib\\encodings\\cp1252.py\", line 19, in encode\n    return codecs.charmap_encode(input,self.errors,encoding_table)[0]\n           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'charmap' codec can't encode characters in position 63-64: character maps to <undefined>\n",
+    "package_validation": "N/A"
+  }
+}
