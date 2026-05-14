@@ -165,7 +165,7 @@
     },
     {
       "name": "ui-spec-linter",
-      "status": "draft",
+      "status": "stable",
       "description": "Validate a complete spec package for completeness, vocabulary, and state coverage before code generation.",
       "input": "full spec package (brief through acceptance)",
       "output": "spec-linter-report.md \u2014 ranked issues with fixes",

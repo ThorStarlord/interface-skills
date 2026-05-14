@@ -1,7 +1,7 @@
 ---
 name: ui-spec-linter
 description: Validate a complete spec package for completeness, vocabulary, consistency, and state coverage before code generation begins. Run this as the final quality gate after all spec files exist and before invoking ui-generate-code. It produces a lint report with severity-ranked issues and suggested fixes — it does not auto-fix.
-status: draft
+status: stable
 promotion_candidate: true
 ---
 

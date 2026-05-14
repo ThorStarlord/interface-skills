@@ -38,6 +38,18 @@ def classify_result(fixture_name, skill_config, skill_valid, pkg_valid, rubric_p
         
     return "pass", "Clean fixture passed"
 
+def classify_downstream_result(skill_name, next_skill, output_content, next_skill_output):
+    """
+    Validates if the downstream skill correctly consumed the output of the previous skill.
+    """
+    # Simple keyword check: Does the next skill mention the input it consumed?
+    consumed_marker = f"Input Evidence"
+    if consumed_marker.lower() in next_skill_output.lower():
+        # Check if it mentions the specific report
+        if "spec-lint-report.md" in next_skill_output.lower() or "redline" in next_skill_output.lower():
+            return True, "Downstream consumption verified"
+    return False, "Downstream skill failed to acknowledge input evidence"
+
 class TestPromotionHarness(unittest.TestCase):
     def test_expected_failure_fixture_is_not_counted_as_unexpected_failure(self):
         skill_config = {
@@ -71,6 +83,28 @@ class TestPromotionHarness(unittest.TestCase):
         res, msg = classify_result("failing-fixture", skill_config, False, False, True)
         self.assertEqual(res, "fail")
         self.assertIn("Skill structural validation failed", msg)
+
+    def test_downstream_consumption_verified(self):
+        # Case: Next skill consumes the output
+        skill_name = "ui-spec-linter"
+        next_skill = "ui-spec-reconcile"
+        output_content = "Lint Report: defects found"
+        next_skill_output = "# Reconciliation Report\n## 1. Input Evidence\n- spec-lint-report.md"
+        
+        passed, msg = classify_downstream_result(skill_name, next_skill, output_content, next_skill_output)
+        self.assertTrue(passed)
+        self.assertIn("verified", msg)
+
+    def test_downstream_consumption_failed(self):
+        # Case: Next skill ignores the input
+        skill_name = "ui-spec-linter"
+        next_skill = "ui-spec-reconcile"
+        output_content = "Lint Report: defects found"
+        next_skill_output = "# Reconciliation Report\nSome other content"
+        
+        passed, msg = classify_downstream_result(skill_name, next_skill, output_content, next_skill_output)
+        self.assertFalse(passed)
+        self.assertIn("failed to acknowledge", msg)
 
 if __name__ == "__main__":
     unittest.main()

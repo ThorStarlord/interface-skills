@@ -130,16 +130,28 @@ def classify_result(fixture_name, skill_config, skill_valid, pkg_valid, rubric_p
         
     return "pass", "Clean fixture passed"
 
-def run_promotion_for_skill(skill_name, plan, dry_run=False):
+def classify_downstream_result(skill_name, next_skill, output_content, next_skill_output):
+    """
+    Validates if the downstream skill correctly consumed the output of the previous skill.
+    """
+    # Simple keyword check: Does the next skill mention the input it consumed?
+    consumed_marker = f"Input Evidence"
+    if consumed_marker.lower() in next_skill_output.lower():
+        # Check if it mentions the specific report
+        if "spec-lint-report.md" in next_skill_output.lower() or "redline" in next_skill_output.lower():
+            return True, "Downstream consumption verified"
+    return False, "Downstream skill failed to acknowledge input evidence"
+
+def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
     skill_config = plan.get("skills", {}).get(skill_name)
     if not skill_config:
         print(f"Error: Skill {skill_name} not found in promotion-plan.yaml")
         return False
 
-    print(f"\n>>> Running Promotion Suite for: {skill_name}")
+    print(f"\n>>> Running Promotion Suite for: {skill_name} {'[FRESH RUN]' if fresh else ''}")
     
     timestamp = time.strftime("%Y-%m-%d-%H-%M-%S")
-    run_id = f"{timestamp}-{skill_name}"
+    run_id = f"{timestamp}-{skill_name}{'-fresh' if fresh else ''}"
     run_dir = PROMOTION_RUNS_DIR / run_id
     
     if not dry_run:
@@ -211,11 +223,17 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False):
         # 5. Classification
         classification, classification_msg = classify_result(fixture_name, skill_config, skill_valid, pkg_valid, rubric_passed)
 
+        # 5.5 Evidence Level
+        evidence_level = "promotion_candidate_run" if fresh else "harness_validation"
+        generated_fresh_output = fresh
+        
         # 6. Record Result
         fixture_result = {
             "fixture": fixture_name,
             "classification": classification,
             "classification_msg": classification_msg,
+            "evidence_level": evidence_level,
+            "generated_fresh_output": generated_fresh_output,
             "skill_structural_valid": skill_valid,
             "package_structural_valid": pkg_valid,
             "rubric_passed": rubric_passed,
@@ -226,6 +244,46 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False):
             }
         }
         all_results.append(fixture_result)
+
+        # 7. Downstream Test (if configured for this skill and fixture)
+        downstream_config = skill_config.get("downstream")
+        if downstream_config and fixture_rel_path == downstream_config.get("fixture"):
+            next_skill = downstream_config.get("next_skill")
+            print(f"    - Running downstream test: {skill_name} -> {next_skill}")
+            
+            # Look for downstream output
+            downstream_output_file = None
+            if next_skill == "ui-spec-reconcile":
+                downstream_output_file = fixture_path / "reports" / "SPEC-RECONCILE-SUMMARY.md"
+            
+            if downstream_output_file and downstream_output_file.exists():
+                next_skill_output = downstream_output_file.read_text(encoding="utf-8")
+                ds_passed, ds_msg = classify_downstream_result(skill_name, next_skill, output_content, next_skill_output)
+                
+                ds_result = {
+                    "fixture": f"{fixture_name}_downstream",
+                    "classification": "pass" if ds_passed else "fail",
+                    "classification_msg": ds_msg,
+                    "evidence_level": "harness_validation",
+                    "generated_fresh_output": False,
+                    "downstream_chain": f"{skill_name} -> {next_skill}"
+                }
+                all_results.append(ds_result)
+                print(f"      [{'OK' if ds_passed else 'FAIL'}] {ds_msg}")
+                
+                if not dry_run:
+                    ds_run_dir = run_dir / f"{fixture_name}_downstream"
+                    ds_run_dir.mkdir(exist_ok=True)
+                    with open(ds_run_dir / "result.json", "w", encoding="utf-8") as f:
+                        json.dump(ds_result, f, indent=2)
+                    with open(ds_run_dir / "review.md", "w", encoding="utf-8") as f:
+                        f.write(f"# Downstream Review: {skill_name} -> {next_skill}\n\n")
+                        f.write(f"- **Classification:** `{ds_result['classification']}`\n")
+                        f.write(f"- **Message:** {ds_result['classification_msg']}\n")
+                        f.write(f"- **Evidence Level:** `{ds_result['evidence_level']}`\n")
+                        f.write(f"- **Chain:** {ds_result['downstream_chain']}\n")
+            else:
+                print(f"      [WARN] No downstream output found at {downstream_output_file}")
         
         if not dry_run:
             with open(fixture_run_dir / "result.json", "w", encoding="utf-8") as f:
@@ -236,6 +294,7 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False):
                 f.write(f"# Review: {skill_name} on {fixture_name}\n\n")
                 f.write(f"- **Classification:** `{fixture_result['classification']}`\n")
                 f.write(f"- **Message:** {fixture_result['classification_msg']}\n")
+                f.write(f"- **Evidence Level:** `{fixture_result.get('evidence_level', 'unknown')}`\n")
                 f.write(f"- **Skill Valid:** {'✅' if skill_valid else '❌'}\n")
                 f.write(f"- **Package Valid:** {'✅' if pkg_valid else '❌'}\n")
                 f.write(f"- **Rubric Pass:** {fixture_result['rubric_passed']}\n\n")
@@ -243,6 +302,19 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False):
                 if fixture_result['classification'] == "needs_human_review" or fixture_result['classification'] == "expected_fail":
                     f.write("> [!IMPORTANT]\n")
                     f.write("> **Human Review Required:** This result needs manual verification to confirm the skill's judgment matches reality.\n\n")
+
+                f.write("## Human Review Checklist\n\n")
+                f.write("- [ ] The clean fixtures are not incorrectly classified as failures.\n")
+                f.write("- [ ] The messy fixture is correctly classified as `expected_fail`.\n")
+                f.write("- [ ] The lint report catches the expected defects.\n")
+                f.write("- [ ] The lint report does not invent major false positives.\n")
+                f.write("- [ ] The severity levels are useful.\n")
+                f.write("- [ ] The output format remained stable.\n")
+                f.write("- [ ] A downstream skill can consume the output.\n")
+                f.write("- [ ] The reviewer agrees the output is useful and not misleading.\n\n")
+                f.write("Decision: approved | rejected | needs_revision\n")
+                f.write("Reviewer:\n")
+                f.write("Review date:\n\n")
 
                 f.write("## Rubric Details\n\n")
                 if rubric_results:
@@ -252,7 +324,7 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False):
                     f.write("No rubric items found.\n")
 
     # 6. Generate Improvement Brief if needed
-    total_failures = sum(1 for r in all_results if not r["skill_structural_valid"] or not r["package_structural_valid"] or r["rubric_passed"] is False)
+    total_failures = sum(1 for r in all_results if r.get("classification") == "fail")
     
     if total_failures > 0 and not dry_run:
         brief_path = run_dir / "improvement-brief.md"
@@ -261,7 +333,7 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False):
             f.write(f"Detected {total_failures} failures across fixtures.\n\n")
             f.write("## Recommended Edits\n\n")
             f.write("- [ ] Check why rubric items failed (see review.md in each fixture folder).\n")
-            if any(not r["skill_structural_valid"] for r in all_results):
+            if any(not r.get("skill_structural_valid", True) for r in all_results):
                 f.write("- [ ] Resolve structural issues in SKILL.md (missing sections or TODOs).\n")
             f.write("\n## Do Not Change\n\n")
             f.write("- Output template (unless explicitly required)\n")
@@ -275,6 +347,7 @@ def main():
     parser = argparse.ArgumentParser(description="Skill Promotion Harness Runner")
     parser.add_argument("--skill", help="Run promotion suite for a specific skill")
     parser.add_argument("--all", action="store_true", help="Run promotion suite for all skills in plan")
+    parser.add_argument("--fresh", action="store_true", help="Mark run as fresh skill output (promotion candidate)")
     parser.add_argument("--dry-run", action="store_true", help="Don't write any files")
     args = parser.parse_args()
 
@@ -295,7 +368,7 @@ def main():
 
     success = True
     for skill in skills_to_run:
-        if not run_promotion_for_skill(skill, plan, dry_run=args.dry_run):
+        if not run_promotion_for_skill(skill, plan, dry_run=args.dry_run, fresh=args.fresh):
             success = False
     
     if not success:

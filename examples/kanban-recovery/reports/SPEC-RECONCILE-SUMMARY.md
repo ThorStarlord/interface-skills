@@ -1,25 +1,23 @@
----
-spec_type: reconcile-report
-spec_id: kanban
-status: current
----
+# UI Spec Reconciliation Report: kanban-recovery
 
-# Spec Reconcile Summary: /kanban
+## 1. Input Evidence
+- **Lint Report:** `reports/SPEC-LINT-REPORT.md` (ID: LINT-2026-05-14-001)
+- **Implementation:** `src/components/kanban/...`
 
-## Decision taxonomy
+## 2. Reconciliation Summary
+| Spec File | Changes Made | Resolved Items | Confidence |
+|---|---|---|---|
+| `acceptance.md` | Added criterion for "Archive Card" | #1 (Blocking) | High |
+| `brief.md` | Replaced "intuitive" with "spatial grid" | #2 (Warning) | Medium |
+| `system.md` | None (Historical item preserved) | #3 (Superseded) | N/A |
 
-### Spec wrong, implementation correct
-- Drag preview scale `1.04` retained as canonical.
-- Coarse-pointer-first default mode retained.
+## 3. Design Decisions Promoted
+- [x] Standardized card archival flow confirmed in implementation.
 
-### Implementation wrong, spec correct
-- Regenerate metadata retention must be fixed in implementation.
+## 4. Remaining Gaps
+- [ ] None.
 
-### Both need product decision
-- Final breakpoint ownership for compact mode.
+## 5. Result
+**Status:** fully reconciled
 
-### No change needed
-- Campaign association preservation rule already aligned.
-
-### Promote to issue
-- K-001, K-002, K-003, K-004
+**Note:** This report correctly distinguishes between the active blocking issue (#1) and the historical/superseded issue (#3) from the input lint report.
