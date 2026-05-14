@@ -51,7 +51,7 @@ This package is the active UI source of truth for `<scope>`.
 
 | Date | Skill | Actor | Result | Artifacts |
 |------|-------|-------|--------|-----------|
-| <YYYY-MM-DD> | `ui-brief` | human | created | `02-brief.md` |
+| <YYYY-MM-DD> | `ui-brief` | human | created | `brief.md` |
 
 ## Active reports
 
