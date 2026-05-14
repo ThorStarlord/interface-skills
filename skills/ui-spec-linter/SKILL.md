@@ -39,12 +39,23 @@ Check that the minimum required files are present and that each file is fully po
 
 | File | Required? |
 |---|---|
+| `00-index.md` | Required (must include **Run Manifest**) |
 | `brief.md` | Required |
 | `blueprint.md` | Required |
 | `system.md` | Required |
 | At least one file under `component-specs/` | Required |
 | `acceptance.md` | Required before code generation |
 | `microcopy.md` | Required if any user-visible copy exists |
+
+**Run Manifest Check:**
+
+The `00-index.md` MUST include the following sections to prevent stale report bugs:
+- `## Run history`
+- `## Active reports`
+- `## Historical reports`
+- `## Superseded reports`
+
+If any report artifact exists in the package (e.g., `*-REPORT.md` or `*-SUMMARY.md`), it MUST be listed in one of the report sections (Active, Historical, or Superseded). An active report that has not been updated after a corresponding code or spec change is a **blocker**.
 
 **Required sections per file type:**
 
