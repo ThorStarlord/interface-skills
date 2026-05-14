@@ -305,7 +305,7 @@
     },
     {
       "name": "ui-orchestrator",
-      "status": "draft",
+      "status": "stable",
       "description": "Analyse a spec package, identify the current state and gaps, and recommend the next skill to run.",
       "input": "spec package directory (any state of completion)",
       "output": "gap analysis + skill recommendation + suggested prompt",

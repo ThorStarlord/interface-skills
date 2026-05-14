@@ -59,6 +59,10 @@ def validate_spec_package(package_path):
                 if based_on_val is not None:
                     based_on_files = [based_on_val] if isinstance(based_on_val, str) else based_on_val
                     for b_file in based_on_files:
+                        # Allow 'none' as a special value meaning no reference
+                        if b_file.lower().startswith("none"):
+                            continue
+                            
                         # References are relative to the file containing them, or the package root?
                         # Standard Interface Skills logic: references are relative to the file's directory
                         b_path = os.path.join(root, b_file)

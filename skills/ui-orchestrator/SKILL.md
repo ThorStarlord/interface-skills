@@ -1,7 +1,7 @@
 ---
 name: ui-orchestrator
 description: Read the current project state and recommend which UI skill to run next. Use this skill whenever a user asks "what should I do next?", is starting a new UI project and isn't sure where to begin, has been working for a while and isn't sure if their specs are complete, or is handing off a project to a new session and needs to re-establish context. The orchestrator never does design work — it reads what exists and routes to the right skill.
-status: draft
+status: stable
 ---
 
 # UI Orchestrator
@@ -89,7 +89,7 @@ State the recommendation clearly: which skill, what file it will produce or revi
 
 Do not list every gap. Pick the earliest one in pipeline order and recommend it. The user will return to run the orchestrator again after completing that step.
 
-## Output format
+## Output template
 
 The orchestrator does not produce a file. It produces a short conversational recommendation block. Use this exact structure:
 

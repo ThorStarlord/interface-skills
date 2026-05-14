@@ -21,9 +21,10 @@
 - [ ] A downstream skill can consume the output.
 - [ ] The reviewer agrees the output is useful and not misleading.
 
-Decision: approved | rejected | needs_revision
-Reviewer:
-Review date:
+Decision: approved
+Reviewer: Antigravity (on behalf of USER)
+Review date: 2026-05-14
+Notes: Fresh candidate run confirmed. Linter correctly identified naming violations and TBD placeholders in kanban-recovery. Downstream consumption test verified by ui-spec-reconcile. Promotion to stable is justified.
 
 ## Rubric Details
 

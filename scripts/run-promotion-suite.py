@@ -188,6 +188,10 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
             output_file = fixture_path / "reports" / "SPEC-LINT-REPORT.md"
             if not output_file.exists():
                 output_file = fixture_path / "spec-linter-report.md" # Fallback for some fixtures
+        elif skill_name == "ui-orchestrator":
+            output_file = fixture_path / "reports" / "ORCHESTRATOR-RECOMMENDATION.md"
+            if not output_file.exists():
+                output_file = fixture_path / "orchestrator-recommendation.md"
 
         if not output_file or not output_file.exists():
             print(f"    [WARN] No output file found for {skill_name} in {fixture_name}. Skipping rubric check.")

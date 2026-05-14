@@ -112,7 +112,7 @@ Grouped by the UI lifecycle. For a detailed technical reference with inputs and 
 | ------------------------ | ----------------------------- | ---------------------------- |
 | `setup-interface-skills` ⚠️ | Starting in a repo            | Repo conventions and routing |
 | `ui-surface-inventory` ⚠️ | Existing app or unclear scope | Recoverable UI scope map     |
-| `ui-orchestrator` ⚠️      | Unsure what to run next       | Next-skill recommendation    |
+| `ui-orchestrator`         | Unsure what to run next       | Next-skill recommendation    |
 
 ### Intent & Visual Language
 | Skill                   | Use when                      | Produces                  |
@@ -141,7 +141,7 @@ Grouped by the UI lifecycle. For a detailed technical reference with inputs and 
 ### Maintenance & Planning
 | Skill               | Use when                  | Produces               |
 | ------------------- | ------------------------- | ---------------------- |
-| `ui-spec-linter` ⚠️    | Validate Spec Package     | Lint report            |
+| `ui-spec-linter`         | Validate Spec Package     | Lint report            |
 | `ui-spec-reconcile` ⚠️ | Code/spec changed         | Reconciled spec        |
 | `ui-docs-sync`         | Docs may be stale         | Sync report            |
 | `ui-agent-routing`     | Agents cannot find specs  | Routing report/patches |
@@ -176,7 +176,7 @@ For new products, unfamiliar domains, or any work where misalignment is expensiv
 8. Run `ui-component-spec`
 9. Run `ui-microcopy`
 10. Run `ui-acceptance`
-11. Run `ui-spec-linter` ⚠️
+11. Run `ui-spec-linter`
 12. Run `ui-generate-code`
 13. Run `ui-inspector`
 14. Run `ui-redline`

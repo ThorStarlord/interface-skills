@@ -1,0 +1,15 @@
+{
+  "fixture": "failing-spec-package",
+  "classification": "fail",
+  "classification_msg": "Messy fixture defects NOT correctly detected",
+  "evidence_level": "promotion_candidate_run",
+  "generated_fresh_output": true,
+  "skill_structural_valid": true,
+  "package_structural_valid": true,
+  "rubric_passed": "N/A",
+  "rubric_details": [],
+  "logs": {
+    "skill_validation": "[shared/references/accessibility-baseline.md] [OK] Valid\n[shared/references/responsive-patterns.md] [OK] Valid\n[shared/references/severity-scale.md] [OK] Valid\n[shared/references/spec-package-format.md] [OK] Valid\n[shared/references/state-taxonomy.md] [OK] Valid\n[shared/references/token-schema.md] [OK] Valid\n[shared/references/vague-language-translator.md] [OK] Valid\n[shared/references/visual-vocabulary.md] [OK] Valid\n[skills.json] [OK] distribution registry valid\n[ui-orchestrator] [WARN] Missing recommended section '## Output template' in draft skill\n[ui-orchestrator] [OK] Valid\n\nValidation passed! [SUCCESS]\n",
+    "package_validation": "N/A"
+  }
+}
