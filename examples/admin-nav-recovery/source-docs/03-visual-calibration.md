@@ -2,7 +2,7 @@
 spec_type: visual-calibration
 spec_id: admin-sidebar-nav
 created: 2025-05-22
-based_on: brief-admin-sidebar-nav
+based_on: none
 status: draft
 ---
 

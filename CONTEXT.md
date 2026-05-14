@@ -27,7 +27,12 @@ A reusable instruction package that performs one step, such as `ui-brief` or `ui
 _Avoid_: "just a prompt," "one-off agent task."
 
 ### Workflow
-An ordered chain of skills for a common situation (e.g., Spec Recovery).
+An ordered sequence of Skill Steps for a common situation (e.g., Spec Recovery).
+_Avoid_: "Skill Chain" as formal terminology.
+
+### Skill Step
+One skill invocation inside a Workflow.
+_Avoid_: "mini skill," "sub-agent," "chain link."
 
 ### UI Scope
 The surface being specified or inspected (e.g., `/kanban` route or `Sidebar` component).
@@ -51,6 +56,9 @@ _Avoid_: "bug list," "design critique," "QA notes."
 A record of which skills ran, what inputs they used, what artifacts they produced, and which reports supersede earlier reports.
 _Avoid_: "chat history," "misc notes."
 
+### Run Manifest
+The concrete artifact/file that records Run History for a Spec Package.
+
 ### Fixture
 A frozen example case used to validate draft skills.
 _Avoid_: "live product docs," "current source of truth."
@@ -62,6 +70,10 @@ _Avoid_: "reviewer," "judge," "quality oracle."
 ### Human Review
 The judgment step that decides whether a structurally valid output is actually useful and not misleading.
 
+### Canonical Package Format
+The current expected structure/template for a Spec Package.
+_Avoid_: "canonical spec package" unless referring to a Spec Package that conforms to this format.
+
 ### Agent Routing
 The process of wiring spec packages into agent discovery files (e.g., `CLAUDE.md`).
 
@@ -71,7 +83,7 @@ The process of moving a skill from draft to stable after enough fixture evidence
 ## Relationships
 
 - A **UI Scope** is the target for one **Spec Package**.
-- A **Workflow** is an ordered chain of **Skills**.
+- A **Workflow** is an ordered sequence of **Skill Steps**.
 - A **Skill** produces or updates **Artifacts** within a **Spec Package**.
 - A **Report** audits, compares, reconciles, or routes a **Spec Package**.
 - A **Redline** compares implementation against the **Spec Package**.

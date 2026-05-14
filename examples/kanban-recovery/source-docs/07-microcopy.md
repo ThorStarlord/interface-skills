@@ -2,8 +2,8 @@
 spec_type: microcopy
 spec_id: kanban-microcopy
 based_on:
-  - docs/saas-frontend/specs/kanban/01-inspector-evidence.md
-  - docs/saas-frontend/specs/kanban/02-brief.md
+  - 01-inspector-evidence.md
+  - 02-brief.md
   - llm-docs/GLOSSARY.md
 created: 2026-05-10
 status: draft

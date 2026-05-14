@@ -22,7 +22,7 @@
   "skills": [
     {
       "name": "ui-surface-inventory",
-      "status": "draft",
+      "status": "stable",
       "description": "Map an existing app into coherent scopes and surfaces before any spec work begins.",
       "input": "existing app (URL, screenshots, or source code)",
       "output": "UI scope map with surfaces, sub-surfaces, and recovery order",
@@ -165,7 +165,7 @@
     },
     {
       "name": "ui-spec-linter",
-      "status": "draft",
+      "status": "stable",
       "description": "Validate a complete spec package for completeness, vocabulary, and state coverage before code generation.",
       "input": "full spec package (brief through acceptance)",
       "output": "spec-linter-report.md \u2014 ranked issues with fixes",
@@ -305,7 +305,7 @@
     },
     {
       "name": "ui-orchestrator",
-      "status": "draft",
+      "status": "stable",
       "description": "Analyse a spec package, identify the current state and gaps, and recommend the next skill to run.",
       "input": "spec package directory (any state of completion)",
       "output": "gap analysis + skill recommendation + suggested prompt",
@@ -481,6 +481,78 @@
       "name": "zoom-out",
       "status": "stable",
       "description": "External skill: zoom-out",
+      "input": "N/A",
+      "output": "N/A",
+      "workflow_position": "external",
+      "next": []
+    },
+    {
+      "name": "handoff",
+      "status": "stable",
+      "description": "External skill: handoff",
+      "input": "N/A",
+      "output": "N/A",
+      "workflow_position": "external",
+      "next": []
+    },
+    {
+      "name": "problem-framer",
+      "status": "stable",
+      "description": "External skill: problem-framer",
+      "input": "N/A",
+      "output": "N/A",
+      "workflow_position": "external",
+      "next": []
+    },
+    {
+      "name": "prompt-handoff",
+      "status": "stable",
+      "description": "External skill: prompt-handoff",
+      "input": "N/A",
+      "output": "N/A",
+      "workflow_position": "external",
+      "next": []
+    },
+    {
+      "name": "repo-sensemaker",
+      "status": "stable",
+      "description": "External skill: repo-sensemaker",
+      "input": "N/A",
+      "output": "N/A",
+      "workflow_position": "external",
+      "next": []
+    },
+    {
+      "name": "sensemaking-docs-reconciler",
+      "status": "stable",
+      "description": "External skill: sensemaking-docs-reconciler",
+      "input": "N/A",
+      "output": "N/A",
+      "workflow_position": "external",
+      "next": []
+    },
+    {
+      "name": "setup-sensemaking-skills",
+      "status": "stable",
+      "description": "External skill: setup-sensemaking-skills",
+      "input": "N/A",
+      "output": "N/A",
+      "workflow_position": "external",
+      "next": []
+    },
+    {
+      "name": "unknowns-mapper",
+      "status": "stable",
+      "description": "External skill: unknowns-mapper",
+      "input": "N/A",
+      "output": "N/A",
+      "workflow_position": "external",
+      "next": []
+    },
+    {
+      "name": "workflow-orchestrator",
+      "status": "stable",
+      "description": "External skill: workflow-orchestrator",
       "input": "N/A",
       "output": "N/A",
       "workflow_position": "external",

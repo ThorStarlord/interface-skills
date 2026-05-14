@@ -1,7 +1,7 @@
 ---
 name: ui-orchestrator
 description: Read the current project state and recommend which UI skill to run next. Use this skill whenever a user asks "what should I do next?", is starting a new UI project and isn't sure where to begin, has been working for a while and isn't sure if their specs are complete, or is handing off a project to a new session and needs to re-establish context. The orchestrator never does design work — it reads what exists and routes to the right skill.
-status: draft
+status: stable
 ---
 
 # UI Orchestrator
@@ -89,7 +89,7 @@ State the recommendation clearly: which skill, what file it will produce or revi
 
 Do not list every gap. Pick the earliest one in pipeline order and recommend it. The user will return to run the orchestrator again after completing that step.
 
-## Output format
+## Output template
 
 The orchestrator does not produce a file. It produces a short conversational recommendation block. Use this exact structure:
 
@@ -201,9 +201,10 @@ The current state list should show only the files that have been scanned up to a
 
 1. **Never recommend skipping a step.** Even if the user asks — "can we just go straight to blueprint?" — the answer is to check what's missing and explain why skipping creates downstream risk. The orchestrator does not override the pipeline order.
 2. **Never do the design work yourself.** If the orchestrator finds a missing brief and starts drafting one, it has broken its own rule. State the recommendation and stop. The design work belongs to the appropriate skill.
-3. **Don't recommend multiple skills at once.** One gap, one recommendation, one skill. Giving the user a list of three things to do introduces ambiguity about what to do first — that is exactly what the orchestrator exists to prevent.
-4. **Don't count a draft file as approved.** A file with `status: draft` is not done. It is a gap. Treat it the same as a missing file for routing purposes.
-5. **Don't invent files that don't exist.** If no spec files are found, the pipeline starts at `ui-brief`. Do not assume files exist elsewhere or in a different format.
+3. **Never modify files or run skills.** The orchestrator is a pure routing skill (gap analyzer). It must not mutate the run manifest, modify files, or execute the skills it recommends. It delegates entirely to the user or an execution agent.
+4. **Don't recommend multiple skills at once.** One gap, one recommendation, one skill. Giving the user a list of three things to do introduces ambiguity about what to do first — that is exactly what the orchestrator exists to prevent.
+5. **Don't count a draft file as approved.** A file with `status: draft` is not done. It is a gap. Treat it the same as a missing file for routing purposes.
+6. **Don't invent files that don't exist.** If no spec files are found, the pipeline starts at `ui-brief`. Do not assume files exist elsewhere or in a different format.
 
 ## Acceptance criteria for this skill's own output
 

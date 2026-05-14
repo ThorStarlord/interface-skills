@@ -1,7 +1,7 @@
 ---
 spec_type: reconcile-summary
 spec_id: admin-sidebar-nav
-based_on: 09-redlines.md
+based_on: none
 created: 2025-05-22
 status: draft
 ---

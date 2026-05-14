@@ -1,0 +1,84 @@
+version: 1
+artifacts:
+  - id: problem_frame
+    produced_by: problem-framer
+    consumed_by:
+      - unknowns-mapper
+      - prompt-handoff
+    required_sections:
+      - raw_fog
+      - problem_under_the_problem
+      - object_under_pressure
+      - failure_mode
+      - success_condition
+      - what_must_be_true
+      - next_artifact
+
+  - id: unknowns_map
+    produced_by: unknowns-mapper
+    consumed_by:
+      - repo-sensemaker
+      - prompt-handoff
+    required_sections:
+      - knowns
+      - unknowns
+      - assumptions
+      - risks
+      - research_paths
+      - stopping_rule
+
+  - id: repository_sensemaking_brief
+    produced_by: repo-sensemaker
+    consumed_by:
+      - workflow-orchestrator
+      - prompt-handoff
+      - sensemaking-docs-reconciler
+    required_sections:
+      - repository_goal
+      - current_shape
+      - strong_signals
+      - missing_pieces
+      - improvement_opportunities
+      - weakest_boundary
+      - evidence
+      - why_this_boundary_matters
+      - candidate_next_steps
+      - recommended_next_step
+      - recommended_workflow
+      - machine_readable_handoff
+      - ready_to_copy_prompt
+    required_machine_fields:
+      - recommended_workflow_id
+      - recommended_execution_mode
+      - weakest_boundary
+      - required_inputs
+
+  - id: workflow_orchestration_plan
+    produced_by: workflow-orchestrator
+    consumed_by:
+      - prompt-handoff
+    required_sections:
+      - brief_consumed
+      - chosen_workflow
+      - why_this_workflow
+      - skills_in_sequence
+      - inputs_and_outputs
+      - approval_gates
+      - stop_conditions
+      - execution_mode
+      - prompt_chain
+      - run_log_template
+
+  - id: prompt_handoff
+    produced_by: prompt-handoff
+    consumed_by:
+      - downstream_skill
+    required_sections:
+      - target_skill
+      - context_to_preserve
+      - task
+      - constraints
+      - inputs
+      - expected_output
+      - stop_condition
+      - ready_to_copy_prompt

@@ -1,0 +1,11 @@
+{
+  "fixture": "spec-recovery-create",
+  "skill_structural_valid": false,
+  "package_structural_valid": false,
+  "rubric_passed": "N/A",
+  "rubric_details": [],
+  "logs": {
+    "skill_validation": "unsupported operand type(s) for +: 'NoneType' and 'str'",
+    "package_validation": "# Spec Package Validation: FAILED\n- [ERROR] redlines\\inspector-report.md: `based_on` reference `none \u00e2\u20ac\u201d no linked spec (recovery run)` does not exist\n"
+  }
+}

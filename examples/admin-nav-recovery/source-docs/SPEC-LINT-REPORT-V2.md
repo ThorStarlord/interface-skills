@@ -1,7 +1,7 @@
 ---
 spec_type: lint-report
 spec_id: admin-sidebar-nav-v2
-based_on: All docs in docs/saas-frontend/specs/admin-nav/ (Post-reconciliation)
+based_on: none
 created: 2025-05-22
 status: draft
 ---

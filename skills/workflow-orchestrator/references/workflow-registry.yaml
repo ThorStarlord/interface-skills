@@ -1,0 +1,288 @@
+workflows:
+  - id: setup-sensemaking-repo
+    display_name: Setup Sensemaking Repo
+    purpose: Configure repository agent docs, artifact contracts, execution mode defaults, and downstream skill mappings.
+    allowed_execution_modes:
+      - plan_only
+      - prompt_chain
+      - guided_execution
+    steps:
+      - id: 1
+        skill: setup-sensemaking-skills
+        step_type: local_execution
+        gate: review_setup_plan
+      - id: 2
+        skill: repo-sensemaker
+        step_type: local_execution
+        gate: review_repo_brief
+      - id: 3
+        skill: prompt-handoff
+        step_type: local_execution
+        gate: review_handoff_prompt
+
+  - id: docs-contract-reconciliation
+    display_name: Docs & Contract Reconciliation
+    purpose: Resolve drift between documentation, registries, artifact contracts, templates, and validator rules.
+    allowed_execution_modes:
+      - plan_only
+      - prompt_chain
+      - guided_execution
+    steps:
+      - id: 1
+        skill: repo-sensemaker
+        step_type: local_execution
+        gate: review_drift_diagnosis
+      - id: 2
+        skill: sensemaking-docs-reconciler
+        step_type: local_execution
+        gate: review_reconciliation_patch
+      - id: 3
+        skill: prompt-handoff
+        step_type: local_execution
+        gate: review_next_prompt
+
+  - id: autonomous-sprint-preflight
+    display_name: Autonomous Sprint Preflight
+    purpose: Verify that a repository is ready for Autonomous Sprint before selecting the sprint workflow.
+    allowed_execution_modes:
+      - plan_only
+      - prompt_chain
+      - guided_execution
+    steps:
+      - id: 1
+        skill: repo-sensemaker
+        step_type: local_execution
+        gate: review_execution_readiness
+      - id: 2
+        skill: prompt-handoff
+        step_type: local_execution
+        gate: review_sprint_prompt
+
+  - id: implementation-prompt-chain
+    display_name: Implementation Prompt Chain
+    purpose: Turn an approved brief or PRD into copy-paste prompts for external implementation skills.
+    allowed_execution_modes:
+      - plan_only
+      - prompt_chain
+    steps:
+      - id: 1
+        skill: prompt-handoff
+        step_type: local_execution
+        gate: review_prompt_chain
+
+  - id: product-discovery-sprint
+    display_name: Product Discovery Sprint
+    purpose: Move from vague product fog to a validated opportunity and testable hypothesis.
+    allowed_execution_modes:
+      - plan_only
+      - prompt_chain
+      - guided_execution
+    steps:
+      - id: 1
+        skill: persona
+        step_type: external_routing
+        gate: review_persona
+      - id: 2
+        skill: discovery
+        step_type: external_routing
+        gate: review_discovery
+      - id: 3
+        skill: interview-synthesis
+        step_type: external_routing
+        gate: review_patterns
+      - id: 4
+        skill: opportunity-tree
+        step_type: external_routing
+        gate: review_opportunity_tree
+      - id: 5
+        skill: hypothesis
+        step_type: external_routing
+        gate: review_hypothesis
+
+  - id: feature-kickoff-sprint
+    display_name: Feature Kickoff Sprint
+    purpose: Turn a validated hypothesis into requirements, stories, and acceptance criteria.
+    allowed_execution_modes:
+      - plan_only
+      - prompt_chain
+      - guided_execution
+    steps:
+      - id: 1
+        skill: hypothesis
+        step_type: external_routing
+        gate: review_hypothesis
+      - id: 2
+        skill: prd
+        step_type: external_routing
+        gate: review_prd
+      - id: 3
+        skill: user-stories
+        step_type: external_routing
+        gate: review_user_stories
+      - id: 4
+        skill: acceptance-criteria
+        step_type: external_routing
+        gate: review_acceptance_criteria
+
+  - id: product-strategy-sprint
+    display_name: Product Strategy Sprint
+    purpose: Turn market and product context into strategy, OKRs, roadmap, and stakeholder update.
+    allowed_execution_modes:
+      - plan_only
+      - prompt_chain
+      - guided_execution
+    steps:
+      - id: 1
+        skill: competitive-analysis
+        step_type: external_routing
+        gate: review_competitive_analysis
+      - id: 2
+        skill: strategy
+        step_type: external_routing
+        gate: review_strategy
+      - id: 3
+        skill: okr
+        step_type: external_routing
+        gate: review_okrs
+      - id: 4
+        skill: roadmap
+        step_type: external_routing
+        gate: review_roadmap
+      - id: 5
+        skill: stakeholder-update
+        step_type: external_routing
+        gate: review_stakeholder_update
+
+  - id: product-autonomous-sprint
+    display_name: Product Autonomous Sprint (Drafting)
+    purpose: Generate a full proposed product artifact chain from product fog to implementation-ready handoff.
+    allowed_execution_modes:
+      - plan_only
+      - prompt_chain
+      - guided_execution
+      - autonomous_execution
+    decision_policy:
+      business_decisions_are: proposed_until_approved
+    requires_run_log: true
+    steps:
+      - id: 1
+        skill: persona
+        step_type: local_execution
+        gate: review_persona
+      - id: 2
+        skill: discovery
+        step_type: local_execution
+        gate: review_discovery
+      - id: 3
+        skill: opportunity-tree
+        step_type: local_execution
+        gate: review_opportunity_tree
+      - id: 4
+        skill: hypothesis
+        step_type: local_execution
+        gate: review_hypothesis
+      - id: 5
+        skill: prd
+        step_type: local_execution
+        gate: review_prd
+      - id: 6
+        skill: user-stories
+        step_type: local_execution
+        gate: review_user_stories
+      - id: 7
+        skill: acceptance-criteria
+        step_type: local_execution
+        gate: review_acceptance_criteria
+      - id: 8
+        skill: prompt-handoff
+        step_type: local_execution
+        gate: review_implementation_handoff
+
+  - id: full-local-sensemaking
+    display_name: Full Local Sensemaking
+    purpose: Convert raw fog into a repository diagnosis and downstream handoff using only local executable skills.
+    allowed_execution_modes:
+      - plan_only
+      - prompt_chain
+      - guided_execution
+      - autonomous_execution
+      - yolo_execution
+    requires_clean_worktree: true
+    requires_run_log: true
+    branch_policy:
+      required: true
+      pattern: "yolo/{workflow_id}/{timestamp}"
+    steps:
+      - id: 1
+        skill: problem-framer
+        step_type: local_execution
+        gate: review_problem_frame
+      - id: 2
+        skill: unknowns-mapper
+        step_type: local_execution
+        gate: review_unknowns_map
+      - id: 3
+        skill: repo-sensemaker
+        step_type: local_execution
+        gate: review_sensemaking_brief
+      - id: 4
+        skill: prompt-handoff
+        step_type: local_execution
+        gate: review_final_prompt
+
+  - id: fast-local-diagnostic
+    display_name: Fast Local Diagnostic
+    purpose: Quickly identify the weakest boundary and produce a handoff prompt.
+    allowed_execution_modes:
+      - plan_only
+      - prompt_chain
+      - guided_execution
+      - autonomous_execution
+      - yolo_execution
+    requires_run_log: true
+    branch_policy:
+      required: true
+      pattern: "yolo/{workflow_id}/{timestamp}"
+    steps:
+      - id: 1
+        skill: repo-sensemaker
+        step_type: local_execution
+        gate: review_sensemaking_brief
+      - id: 2
+        skill: prompt-handoff
+        step_type: local_execution
+        gate: review_handoff_prompt
+
+  - id: experimental-autonomous-sprint
+    display_name: Autonomous Sprint (Experimental)
+    purpose: High-velocity execution using Matt Pocock skills.
+    allowed_execution_modes:
+      - plan_only
+      - prompt_chain
+      - guided_execution
+      - autonomous_execution
+    steps:
+      - id: 1
+        skill: grill-with-docs
+        step_type: local_execution
+        gate: review_domain_alignment
+      - id: 2
+        skill: to-prd
+        step_type: local_execution
+        gate: review_prd
+      - id: 3
+        skill: to-issues
+        step_type: local_execution
+        gate: review_issue_list
+      - id: 4
+        skill: triage
+        step_type: local_execution
+        gate: review_agent_briefs
+      - id: 5
+        skill: tdd
+        step_type: local_execution
+        gate: verify_tests
+      - id: 6
+        skill: handoff
+        step_type: local_execution
+        gate: session_close

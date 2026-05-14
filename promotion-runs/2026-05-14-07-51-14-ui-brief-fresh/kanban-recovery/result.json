@@ -1,0 +1,58 @@
+{
+  "fixture": "kanban-recovery",
+  "classification": "fail",
+  "classification_msg": "Clean fixture failed unexpectedly",
+  "evidence_level": "promotion_candidate_run",
+  "generated_fresh_output": true,
+  "skill_structural_valid": true,
+  "package_structural_valid": true,
+  "rubric_passed": false,
+  "rubric_details": [
+    {
+      "item": "Identifies the approval queue as the primary UI intent.",
+      "section": "ui-brief",
+      "passed": true,
+      "automation": "keyword_match"
+    },
+    {
+      "item": "Names review/deck mode toggle as part of the user workflow.",
+      "section": "ui-brief",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Mentions status columns as the organizing model.",
+      "section": "ui-brief",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Includes post detail modal as a supporting surface.",
+      "section": "ui-brief",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Includes empty queue state.",
+      "section": "ui-brief",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Separates goals from non-goals.",
+      "section": "ui-brief",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Does not invent unrelated product requirements.",
+      "section": "ui-brief",
+      "passed": true,
+      "automation": "keyword_match"
+    }
+  ],
+  "logs": {
+    "skill_validation": "[shared/references/accessibility-baseline.md] [OK] Valid\n[shared/references/responsive-patterns.md] [OK] Valid\n[shared/references/severity-scale.md] [OK] Valid\n[shared/references/spec-package-format.md] [OK] Valid\n[shared/references/state-taxonomy.md] [OK] Valid\n[shared/references/token-schema.md] [OK] Valid\n[shared/references/vague-language-translator.md] [OK] Valid\n[shared/references/visual-vocabulary.md] [OK] Valid\n[skills.json] [OK] distribution registry valid\n[ui-brief] [OK] Valid\n\nValidation passed! [SUCCESS]\n",
+    "package_validation": "# Spec Package Validation: SUCCESS\n"
+  }
+}

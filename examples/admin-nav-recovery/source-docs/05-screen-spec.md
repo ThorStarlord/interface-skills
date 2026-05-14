@@ -1,7 +1,7 @@
 ---
 spec_type: screen-spec
 spec_id: admin-sidebar-nav
-based_on: blueprint.md
+based_on: none
 created: 2025-05-22
 status: draft
 ---

@@ -1,4 +1,4 @@
-# ADR 0001: Interface Skills uses skill chains and Spec Packages as its system contract
+# ADR 0001: Interface Skills uses Workflows and Spec Packages as its system contract
 
 ## Status
 

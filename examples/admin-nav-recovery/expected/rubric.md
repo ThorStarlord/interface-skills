@@ -30,6 +30,15 @@ This rubric defines what constitutes a "good" output for each skill in the admin
 
 ---
 
+## ui-brief
+- [ ] Identifies app-shell/navigation-map as the UI Scope.
+- [ ] Captures route registry contradiction risk.
+- [ ] Mentions nested or monorepo agent documentation as relevant context.
+- [ ] Does not reduce the scope to a single page.
+- [ ] Separates confirmed evidence from assumptions.
+
+---
+
 ## 2. ui-inspector
 
 ### Static-Only Report Requirements
@@ -257,3 +266,10 @@ A fixture passes if:
 - **ui-redline:** partial redlines must document what is unverifiable
 - **ui-to-issues:** every redline item must have a fate (covered, deferred, or justification)
 
+
+## ui-surface-inventory
+- [ ] Identifies app-shell/navigation-map scope.
+- [ ] Identifies route registry as relevant evidence.
+- [ ] Flags route contradiction risk.
+- [ ] Accounts for nested or monorepo agent docs.
+- [ ] Does not treat the surface as a simple standalone screen.

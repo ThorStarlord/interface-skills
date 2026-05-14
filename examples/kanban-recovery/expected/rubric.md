@@ -14,3 +14,21 @@ status: approved
 - Docs sync ability to detect missing package routing.
 - Agent routing ability to repair direct index links.
 - Issue slicing ability to cover critical redlines.
+
+## ui-surface-inventory
+- [ ] Identifies approval queue surface.
+- [ ] Identifies review/deck mode toggle.
+- [ ] Identifies kanban status columns.
+- [ ] Identifies post detail modal.
+- [ ] Identifies empty queue state.
+- [ ] Does not collapse modal, list, and column surfaces into one vague page.
+- [ ] Does not invent unrelated surfaces.
+
+## ui-brief
+- [ ] Identifies the approval queue as the primary UI intent.
+- [ ] Names review/deck mode toggle as part of the user workflow.
+- [ ] Mentions status columns as the organizing model.
+- [ ] Includes post detail modal as a supporting surface.
+- [ ] Includes empty queue state.
+- [ ] Separates goals from non-goals.
+- [ ] Does not invent unrelated product requirements.

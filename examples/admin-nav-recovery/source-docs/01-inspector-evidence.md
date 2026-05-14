@@ -1,18 +1,18 @@
 ---
 spec_type: inspector-evidence
 spec_id: admin-sidebar-nav
-based_on: none — no linked spec
+based_on: none
 created: 2025-05-22
 inspection_method: static source-code
 inspection_mode: static-source
 runtime_verified: false
 browser_access: unavailable
 deferred_checks:
-	- keyboard focus order
-	- hover and focus states
-	- computed runtime layout
-	- responsive drawer behavior
-	- console errors
+  - keyboard focus order
+  - hover and focus states
+  - computed runtime layout
+  - responsive drawer behavior
+  - console errors
 status: draft
 ---
 

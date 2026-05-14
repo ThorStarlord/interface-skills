@@ -1,0 +1,46 @@
+{
+  "fixture": "admin-nav-recovery",
+  "classification": "pass",
+  "classification_msg": "Clean fixture passed",
+  "evidence_level": "harness_validation",
+  "generated_fresh_output": false,
+  "skill_structural_valid": true,
+  "package_structural_valid": true,
+  "rubric_passed": true,
+  "rubric_details": [
+    {
+      "item": "Identifies app-shell/navigation-map scope.",
+      "section": "ui-surface-inventory",
+      "passed": true,
+      "automation": "keyword_match"
+    },
+    {
+      "item": "Identifies route registry as relevant evidence.",
+      "section": "ui-surface-inventory",
+      "passed": true,
+      "automation": "keyword_match"
+    },
+    {
+      "item": "Flags route contradiction risk.",
+      "section": "ui-surface-inventory",
+      "passed": true,
+      "automation": "keyword_match"
+    },
+    {
+      "item": "Accounts for nested or monorepo agent docs.",
+      "section": "ui-surface-inventory",
+      "passed": true,
+      "automation": "keyword_match"
+    },
+    {
+      "item": "Does not treat the surface as a simple standalone screen.",
+      "section": "ui-surface-inventory",
+      "passed": true,
+      "automation": "keyword_match"
+    }
+  ],
+  "logs": {
+    "skill_validation": "[shared/references/accessibility-baseline.md] [OK] Valid\n[shared/references/responsive-patterns.md] [OK] Valid\n[shared/references/severity-scale.md] [OK] Valid\n[shared/references/spec-package-format.md] [OK] Valid\n[shared/references/state-taxonomy.md] [OK] Valid\n[shared/references/token-schema.md] [OK] Valid\n[shared/references/vague-language-translator.md] [OK] Valid\n[shared/references/visual-vocabulary.md] [OK] Valid\n[skills.json] [OK] distribution registry valid\n[ui-surface-inventory] [WARN] Registry status=stable but README row has '[DRAFT]' marker\n[ui-surface-inventory] [OK] Valid\n\nValidation passed! [SUCCESS]\n",
+    "package_validation": "# Spec Package Validation: SUCCESS\n"
+  }
+}
