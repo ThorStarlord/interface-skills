@@ -53,7 +53,7 @@ def parse_rubric(rubric_path):
             })
     return items
 
-def run_validator(script_name, target_path):
+def run_validator(script_name, target_path, skill_name=None):
     """Runs a validator script and returns (passed, output)."""
     script_path = REPO_ROOT / "scripts" / script_name
     if not script_path.exists():
@@ -62,8 +62,15 @@ def run_validator(script_name, target_path):
     try:
         env = os.environ.copy()
         env["PYTHONIOENCODING"] = "utf-8"
+        
+        args = [sys.executable, str(script_path)]
+        if script_name == "validate-skill.py" and skill_name:
+            args.extend(["--skill", skill_name])
+        else:
+            args.append(str(target_path))
+            
         result = subprocess.run(
-            [sys.executable, str(script_path), str(target_path)],
+            args,
             capture_output=True,
             text=True,
             encoding='utf-8',
@@ -96,6 +103,32 @@ def evaluate_output_against_rubric(output_content, rubric_items):
             "automation": "keyword_match" if found else "pending_manual"
         })
     return results
+
+def classify_result(fixture_name, skill_config, skill_valid, pkg_valid, rubric_passed):
+    """
+    Classifies the result based on whether the fixture was expected to fail.
+    """
+    messy_fixture_rel = skill_config.get("messy_fixture", "")
+    is_messy = (fixture_name == Path(messy_fixture_rel).name)
+    
+    if not skill_valid:
+        return "fail", "Skill structural validation failed unexpectedly"
+        
+    if is_messy:
+        # For messy fixtures, we EXPECT the package to be invalid or rubric to fail
+        # if the skill correctly detects it.
+        if rubric_passed is True:
+            return "expected_fail", "Messy fixture defects correctly detected"
+        else:
+            return "fail", "Messy fixture defects NOT correctly detected"
+            
+    if not pkg_valid or rubric_passed is False:
+        return "fail", "Clean fixture failed unexpectedly"
+        
+    if rubric_passed == "N/A":
+        return "needs_human_review", "No rubric found for evaluation"
+        
+    return "pass", "Clean fixture passed"
 
 def run_promotion_for_skill(skill_name, plan, dry_run=False):
     skill_config = plan.get("skills", {}).get(skill_name)
@@ -151,7 +184,7 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False):
             output_content = output_file.read_text(encoding="utf-8")
 
         # 3. Structural Validation
-        skill_valid, skill_log = run_validator("validate-skill.py", REPO_ROOT / "skills" / skill_name)
+        skill_valid, skill_log = run_validator("validate-skill.py", REPO_ROOT / "skills" / skill_name, skill_name=skill_name)
         
         # If the output is a spec package (or part of one), validate it
         pkg_valid = True
@@ -162,23 +195,30 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False):
         # 4. Rubric Evaluation
         rubric_path = fixture_path / "expected" / "rubric.md"
         rubric_results = []
+        rubric_passed = "N/A"
         if rubric_path.exists():
             rubric_items = parse_rubric(rubric_path)
             # Filter rubric items for this specific skill
             skill_rubric_items = [item for item in rubric_items if item["section"].lower() in (skill_name.lower(), "general")]
             if skill_rubric_items:
                 rubric_results = evaluate_output_against_rubric(output_content, skill_rubric_items)
+                rubric_passed = all(r["passed"] for r in rubric_results)
             else:
                  print(f"    [INFO] No rubric section found for {skill_name} in {fixture_name}")
         else:
             print(f"    [INFO] No rubric.md found for {fixture_name}")
 
-        # 5. Record Result
+        # 5. Classification
+        classification, classification_msg = classify_result(fixture_name, skill_config, skill_valid, pkg_valid, rubric_passed)
+
+        # 6. Record Result
         fixture_result = {
             "fixture": fixture_name,
+            "classification": classification,
+            "classification_msg": classification_msg,
             "skill_structural_valid": skill_valid,
             "package_structural_valid": pkg_valid,
-            "rubric_passed": all(r["passed"] for r in rubric_results) if rubric_results else "N/A",
+            "rubric_passed": rubric_passed,
             "rubric_details": rubric_results,
             "logs": {
                 "skill_validation": skill_log,
@@ -194,9 +234,16 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False):
             # Write human-readable review
             with open(fixture_run_dir / "review.md", "w", encoding="utf-8") as f:
                 f.write(f"# Review: {skill_name} on {fixture_name}\n\n")
+                f.write(f"- **Classification:** `{fixture_result['classification']}`\n")
+                f.write(f"- **Message:** {fixture_result['classification_msg']}\n")
                 f.write(f"- **Skill Valid:** {'✅' if skill_valid else '❌'}\n")
                 f.write(f"- **Package Valid:** {'✅' if pkg_valid else '❌'}\n")
                 f.write(f"- **Rubric Pass:** {fixture_result['rubric_passed']}\n\n")
+                
+                if fixture_result['classification'] == "needs_human_review" or fixture_result['classification'] == "expected_fail":
+                    f.write("> [!IMPORTANT]\n")
+                    f.write("> **Human Review Required:** This result needs manual verification to confirm the skill's judgment matches reality.\n\n")
+
                 f.write("## Rubric Details\n\n")
                 if rubric_results:
                     for r in rubric_results:

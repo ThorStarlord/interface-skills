@@ -38,7 +38,7 @@ def validate_shared_references(repo_root):
     return passed
 
 
-def validate_readme_skill_map(repo_root, skill_folders):
+def validate_readme_skill_map(repo_root, skill_folders, target_skill=None):
     """Check that every skill folder has a row in the README Skill Map table."""
     readme_path = os.path.join(repo_root, 'README.md')
     if not os.path.exists(readme_path):
@@ -66,6 +66,11 @@ def validate_readme_skill_map(repo_root, skill_folders):
             if not name:
                 print("[skills.json] [WARN] Skill entry without a name")
                 continue
+            
+            # Filter by target_skill if provided
+            if target_skill and name != target_skill:
+                continue
+
             if f'`{name}`' not in readme_content:
                 print(f"[{name}] [FAIL] Not found in README Skill Map table (registry expects this skill)")
                 passed = False
@@ -78,12 +83,12 @@ def validate_readme_skill_map(repo_root, skill_folders):
                     row_line = line
                     break
 
-            # README uses a ⚠️ marker to indicate draft items in the human-readable map.
-            has_draft_marker = '⚠️' in row_line
+            # README uses a [DRAFT] marker to indicate draft items in the human-readable map.
+            has_draft_marker = '[DRAFT]' in row_line or '⚠️' in row_line
             if status == 'draft' and not has_draft_marker:
-                print(f"[{name}] [WARN] Registry status=draft but README row lacks '⚠️' draft marker")
+                print(f"[{name}] [WARN] Registry status=draft but README row lacks '[DRAFT]' marker")
             if status != 'draft' and has_draft_marker:
-                print(f"[{name}] [WARN] Registry status={status} but README row has '⚠️' draft marker")
+                print(f"[{name}] [WARN] Registry status={status} but README row has '[DRAFT]' marker")
 
         return passed
 
@@ -140,7 +145,7 @@ def validate_distribution_registry(repo_root):
     return passed
 
 
-def validate_skills():
+def validate_skills(target_skill=None):
     repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     skills_dir = os.path.join(repo_root, 'skills')
 
@@ -158,8 +163,15 @@ def validate_skills():
         if os.path.isdir(os.path.join(skills_dir, f))
     )
 
+    if target_skill:
+        if target_skill in skill_folders:
+            skill_folders = [target_skill]
+        else:
+            print(f"Error: Skill '{target_skill}' not found in {skills_dir}")
+            return False
+
     # Check README skill map coverage (prefer registry-driven validation)
-    if not validate_readme_skill_map(repo_root, skill_folders):
+    if not validate_readme_skill_map(repo_root, skill_folders, target_skill=target_skill):
         all_passed = False
 
     for skill_folder in skill_folders:
@@ -276,9 +288,14 @@ def validate_skills():
     return all_passed
 
 if __name__ == '__main__':
-    if validate_skills():
-        print("\nAll skills passed validation! [SUCCESS]")
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--skill', help='Validate a specific skill folder')
+    args = parser.parse_args()
+
+    if validate_skills(args.skill):
+        print("\nValidation passed! [SUCCESS]")
         exit(0)
     else:
-        print("\nSome skills failed validation. [ERROR]")
+        print("\nValidation failed. [ERROR]")
         exit(1)
