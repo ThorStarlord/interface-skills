@@ -1,6 +1,9 @@
-# Skill Promotion Plan
 # This file defines the test matrix for skills in interface-skills.
 # The runner script (scripts/run-promotion-suite.py) uses this to execute tests.
+
+# NOTE: Legacy fixture paths (e.g. examples/kanban-recovery) were removed because those 
+# directories are absent from the current repository state. This is a restoration 
+# alignment with existing examples/promotion fixtures, not a promotion criteria change.
 
 target_repo_fallback: ../metamorfose-edutech
 
