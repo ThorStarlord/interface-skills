@@ -1,0 +1,22 @@
+{
+  "fixture": "ui-flow",
+  "classification": "needs_human_review",
+  "classification_msg": "Evidence requires human judgment",
+  "behavioral_status": "needs_review",
+  "evidence_level": "harness_validation",
+  "generated_fresh_output": false,
+  "skill_structural_valid": true,
+  "package_structural_valid": true,
+  "rubric_passed": "N/A",
+  "rubric_details": [],
+  "pointers": {
+    "fixture_input": "examples/promotion/ui-flow",
+    "output_artifact": null,
+    "narrative_review": "promotion-runs\\2026-05-15-20-42-58-ui-flow\\ui-flow\\review.md",
+    "invocation_file": null
+  },
+  "logs": {
+    "skill_validation": "[shared/references/accessibility-baseline.md] [OK] Valid\n[shared/references/responsive-patterns.md] [OK] Valid\n[shared/references/severity-scale.md] [OK] Valid\n[shared/references/spec-package-format.md] [OK] Valid\n[shared/references/state-taxonomy.md] [OK] Valid\n[shared/references/token-schema.md] [OK] Valid\n[shared/references/vague-language-translator.md] [OK] Valid\n[shared/references/visual-vocabulary.md] [OK] Valid\n[skills.json] [OK] distribution registry valid\n[ui-flow] [OK] Valid\n\nValidation passed! [SUCCESS]\n",
+    "package_validation": "N/A"
+  }
+}

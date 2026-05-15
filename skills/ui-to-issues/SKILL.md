@@ -1,7 +1,7 @@
 ---
 name: ui-to-issues
 description: Slice a UI spec package, redline audit, or acceptance checklist into independently implementable GitHub issues or markdown drafts. This skill ensures that UI work is broken down into vertical slices that deliver observable user outcomes.
-status: draft
+status: stable
 ---
 
 # UI to Issues

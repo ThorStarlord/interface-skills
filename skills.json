@@ -275,7 +275,7 @@
     },
     {
       "name": "ui-to-issues",
-      "status": "draft",
+      "status": "stable",
       "description": "Slice a UI spec package or redline audit into independently implementable issues.",
       "input": "spec package, redline audit, or acceptance checklist",
       "output": "markdown issue drafts grouped by vertical UI slices",

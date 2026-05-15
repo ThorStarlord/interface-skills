@@ -1,0 +1,71 @@
+{
+  "fixture": "ui-surface-inventory",
+  "classification": "needs_human_review",
+  "classification_msg": "Evidence requires human judgment",
+  "behavioral_status": "needs_review",
+  "evidence_level": "harness_validation",
+  "generated_fresh_output": false,
+  "skill_structural_valid": true,
+  "package_structural_valid": true,
+  "rubric_passed": "pending",
+  "rubric_details": [
+    {
+      "item": "Identifies Global Navigation",
+      "section": "General",
+      "passed": true,
+      "automation": "keyword_match"
+    },
+    {
+      "item": "Identifies Data Grid",
+      "section": "General",
+      "passed": true,
+      "automation": "keyword_match"
+    },
+    {
+      "item": "Identifies Contextual Filter Bar",
+      "section": "General",
+      "passed": true,
+      "automation": "keyword_match"
+    },
+    {
+      "item": "Identifies Notification Toast",
+      "section": "General",
+      "passed": true,
+      "automation": "keyword_match"
+    },
+    {
+      "item": "Distinguishes between sidebar and content area",
+      "section": "ui-surface-inventory",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Captures transient states (toast)",
+      "section": "ui-surface-inventory",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Identifies interactive sorting in the data grid",
+      "section": "ui-surface-inventory",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Correctly identifies Material Design visual vocabulary",
+      "section": "ui-surface-inventory",
+      "passed": false,
+      "automation": "pending_manual"
+    }
+  ],
+  "pointers": {
+    "fixture_input": "examples/promotion/ui-surface-inventory",
+    "output_artifact": "examples\\promotion\\ui-surface-inventory\\surface-inventory.md",
+    "narrative_review": "promotion-runs\\2026-05-15-20-29-12-ui-surface-inventory\\ui-surface-inventory\\review.md",
+    "invocation_file": null
+  },
+  "logs": {
+    "skill_validation": "[shared/references/accessibility-baseline.md] [OK] Valid\n[shared/references/responsive-patterns.md] [OK] Valid\n[shared/references/severity-scale.md] [OK] Valid\n[shared/references/spec-package-format.md] [OK] Valid\n[shared/references/state-taxonomy.md] [OK] Valid\n[shared/references/token-schema.md] [OK] Valid\n[shared/references/vague-language-translator.md] [OK] Valid\n[shared/references/visual-vocabulary.md] [OK] Valid\n[skills.json] [OK] distribution registry valid\n[ui-surface-inventory] [OK] Valid\n\nValidation passed! [SUCCESS]\n",
+    "package_validation": "# Spec Package Validation: SUCCESS\n"
+  }
+}

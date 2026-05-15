@@ -43,7 +43,7 @@ If an AI-built UI misses the mark, the fix is not to blame the model or the deve
 - **Compare implementation to spec** → Use `ui-inspector` ⚠️ + `ui-redline`
 - **Reconcile specs after fixes** → Use `ui-spec-reconcile` ⚠️
 - **Route agents to the right docs** → Use `ui-docs-sync` + `ui-agent-routing`
-- **Turn redlines into work** → Use `ui-to-issues` ⚠️
+- **Turn redlines into work** → Use `ui-to-issues`
 
 ## Quickstart
 
@@ -145,7 +145,7 @@ Grouped by the UI lifecycle. For a detailed technical reference with inputs and 
 | `ui-spec-reconcile` ⚠️ | Code/spec changed         | Reconciled spec        |
 | `ui-docs-sync`         | Docs may be stale         | Sync report            |
 | `ui-agent-routing`     | Agents cannot find specs  | Routing report/patches |
-| `ui-to-issues` ⚠️      | Need implementation tasks | Issue drafts           |
+| `ui-to-issues`         | Need implementation tasks | Markdown issues        |
 | `ui-storybook-docs` ⚠️ | Component spec exists     | MDX docs and stories   |
 
 > ⚠️ = currently a **draft** skill.

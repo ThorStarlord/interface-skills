@@ -22,7 +22,7 @@ Detailed technical reference for all Interface Skills. Skills are the producers 
 | `ui-agent-routing`        | accepted spec + routing files  | routing patches + routing report  | —                                       |
 | `setup-interface-skills`  ⚠️  | new or existing repository     | INTERFACE_SKILLS.md + folders     | `ui-surface-inventory`, `ui-brief`      |
 | `ui-spec-reconcile`  ⚠️       | Spec Package + redline/code    | updated Spec Package + report     | `ui-to-issues`, `ui-docs-sync`          |
-| `ui-to-issues`  ⚠️            | spec / redline / acceptance    | markdown issue drafts             | `ui-generate-code`                      |
+| `ui-to-issues`                | spec / redline / acceptance    | markdown issues                   | `ui-generate-code`                      |
 | `ui-storybook-docs`  ⚠️     | component spec                 | MDX docs, stories, prop tables    | —                                       |
 | `ui-orchestrator`         | current project state          | recommended next skill to run     | any skill                               |
 
