@@ -1,30 +1,32 @@
-# Human Review
+﻿# Human Review
 
 ## Skill
-`ui-brief`
+$skill
 
 ## Evidence Reviewed
-- `promotion-runs/2026-05-15-17-21-47-ui-brief/ui-blueprint/result.json`
-- `promotion-runs/2026-05-15-17-21-47-ui-brief/ui-blueprint/review.md`
-- Relevant fixture: `examples/promotion/ui-blueprint`
+- promotion-runs/2026-05-15-17-21-47-ui-brief/ui-blueprint/result.json
+- promotion-runs/2026-05-15-17-21-47-ui-brief/ui-blueprint/review.md
+- Relevant fixture: examples/promotion/ui-blueprint
 
 ## Automated Result
 PASS (Structural/Harness Validation)
 
 ## Promotion Criteria Check
-- Minimum good runs satisfied: yes
-- Required downstream checks satisfied: yes
+- Minimum good runs satisfied: structurally verified only
+- Required downstream checks satisfied: structurally verified only
 - Messy failure check satisfied: N/A
-- Known failures or caveats: None.
+- Known failures or caveats: Behavioral evidence is minimal and based on restoration fixtures.
 
 ## Human Decision
-APPROVED (Restoration Baseline)
+PENDING HUMAN SIGN-OFF
 
 ## Approval Scope
-Approve promotion to:
-- stable
+- restoration_baseline_confirmation
+- no skill status change
+- no promotion authorized
 
 ## Reviewer
-Name: Antigravity
-Date: 2026-05-15
-Notes: Structural integrity confirmed.
+Name: 
+Date: 
+Decision: 
+Notes: 

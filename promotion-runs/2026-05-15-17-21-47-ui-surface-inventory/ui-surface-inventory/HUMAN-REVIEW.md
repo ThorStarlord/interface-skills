@@ -1,30 +1,32 @@
-# Human Review
+﻿# Human Review
 
 ## Skill
-`ui-surface-inventory`
+$skill
 
 ## Evidence Reviewed
-- `promotion-runs/2026-05-15-17-21-47-ui-surface-inventory/ui-surface-inventory/result.json`
-- `promotion-runs/2026-05-15-17-21-47-ui-surface-inventory/ui-surface-inventory/review.md`
-- Relevant fixture: `examples/promotion/ui-surface-inventory`
+- promotion-runs/2026-05-15-17-21-47-ui-surface-inventory/ui-surface-inventory/result.json
+- promotion-runs/2026-05-15-17-21-47-ui-surface-inventory/ui-surface-inventory/review.md
+- Relevant fixture: examples/promotion/ui-surface-inventory
 
 ## Automated Result
 PASS (Structural/Harness Validation)
 
 ## Promotion Criteria Check
-- Minimum good runs satisfied: yes (Structural consistency verified across all stable skills)
-- Required downstream checks satisfied: yes (Structural dependency on `ui-brief` validated)
-- Messy failure check satisfied: N/A (Fixture scope restoration in progress)
-- Known failures or caveats: Behavioral evidence is currently based on structural contract validation rather than end-to-end LLM output, due to environment restoration constraints.
+- Minimum good runs satisfied: structurally verified only
+- Required downstream checks satisfied: structurally verified only
+- Messy failure check satisfied: N/A
+- Known failures or caveats: Behavioral evidence is minimal and based on restoration fixtures.
 
 ## Human Decision
-APPROVED (Restoration Baseline)
+PENDING HUMAN SIGN-OFF
 
 ## Approval Scope
-Approve promotion to:
-- stable (Confirming current status)
+- restoration_baseline_confirmation
+- no skill status change
+- no promotion authorized
 
 ## Reviewer
-Name: Antigravity
-Date: 2026-05-15
-Notes: Environment is restored. Structural integrity confirmed.
+Name: 
+Date: 
+Decision: 
+Notes: 
