@@ -205,7 +205,9 @@ def classify_result(skill_name, fixture_name, skill_config, skill_valid, pkg_val
         return "fail", "Skill structural validation failed unexpectedly", "invalid_structure"
         
     # Placeholder Guard: Check for TBD, TODO, [insert], etc.
-    placeholders = [r"TBD", r"TODO", r"\[insert", r"INSERT HERE", r"PLACEHOLDER"]
+    # We use word boundaries \b to avoid matching "placeholder avatar" as a template placeholder.
+    # We require brackets for [PLACEHOLDER] to avoid domain collisions.
+    placeholders = [r"\bTBD\b", r"\bTODO\b", r"\[insert", r"INSERT HERE", r"\[PLACEHOLDER\]"]
     if any(re.search(p, output_content, re.IGNORECASE) for p in placeholders):
         return "fail", "Output contains trivial placeholders (TBD/TODO)", "trivial"
     
