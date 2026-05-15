@@ -1,0 +1,11 @@
+{
+  "skill": "ui-to-issues",
+  "run_id": "test-ui-to-issues-001",
+  "classification": "pass",
+  "verified_criteria": [
+    "vertical_slices",
+    "contains_verification_step",
+    "acceptance_criteria_mapped",
+    "spec_links_included"
+  ]
+}

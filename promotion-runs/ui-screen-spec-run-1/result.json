@@ -1,0 +1,7 @@
+{
+  "skill": "ui-screen-spec",
+  "status": "failed",
+  "classification": "needs_human_review",
+  "downstream_skill": "ui-component-spec",
+  "error": "scripts/run-promotion-suite.py not found"
+}

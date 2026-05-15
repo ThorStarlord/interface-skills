@@ -1,8 +1,0 @@
-{
-  "fixture": "spec-recovery-create_downstream",
-  "classification": "fail",
-  "classification_msg": "Downstream skill did NOT acknowledge the brief",
-  "evidence_level": "harness_validation",
-  "generated_fresh_output": false,
-  "downstream_chain": "ui-brief -> ui-visual-calibration"
-}

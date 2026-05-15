@@ -1,0 +1,9 @@
+{
+  "skill": "ui-acceptance",
+  "status": "draft",
+  "classification": "needs_human_review",
+  "command": "python scripts/run-promotion-suite.py --skill ui-acceptance --fresh",
+  "error": "scripts/run-promotion-suite.py not found",
+  "reason": "Test runner scripts/run-promotion-suite.py is missing. Cannot verify ui-acceptance skill against fixtures or downstream skill ui-inspector.",
+  "recommendation": "Restore or implement scripts/run-promotion-suite.py for automated promotion runs"
+}

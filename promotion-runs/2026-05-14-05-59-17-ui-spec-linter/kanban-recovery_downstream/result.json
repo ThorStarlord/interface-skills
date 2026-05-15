@@ -1,8 +1,0 @@
-{
-  "fixture": "kanban-recovery_downstream",
-  "classification": "pass",
-  "classification_msg": "Downstream consumption verified",
-  "evidence_level": "harness_validation",
-  "generated_fresh_output": false,
-  "downstream_chain": "ui-spec-linter -> ui-spec-reconcile"
-}

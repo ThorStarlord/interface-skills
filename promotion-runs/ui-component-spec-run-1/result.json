@@ -1,0 +1,6 @@
+{
+  "skill": "ui-component-spec",
+  "classification": "needs_human_review",
+  "downstream_verified": true,
+  "notes": "run-promotion-suite.py was missing, performed manual evaluation"
+}

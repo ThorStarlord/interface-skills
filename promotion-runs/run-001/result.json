@@ -1,0 +1,11 @@
+{
+  "status": "needs_human_review",
+  "reason": "Test runner scripts/run-promotion-suite.py is missing. Cannot verify ui-flow skill against fixtures or downstream skill ui-blueprint."
+  "skill": "ui-system",
+  "status": "needs_human_review",
+  "reason": "Missing testing infrastructure (run-promotion-suite.py) and unstable downstream skill (ui-screen-spec).",
+  "recommendation": "do_not_promote",
+  "verified_contracts": {
+    "downstream_ui_screen_spec": "needs_human_review"
+  }
+}

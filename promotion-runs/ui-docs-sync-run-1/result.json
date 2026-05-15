@@ -1,0 +1,8 @@
+{
+  "skill": "ui-docs-sync",
+  "status": "blocked",
+  "reason": "Missing testing infrastructure: scripts/run-promotion-suite.py not found.",
+  "downstream_skill": "ui-agent-routing",
+  "downstream_status": "stable",
+  "recommendation": "Do not promote. Awaiting infrastructure to complete the test suite."
+}

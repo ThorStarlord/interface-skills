@@ -1,0 +1,8 @@
+{
+  "skill": "ui-visual-calibration",
+  "run_id": "ui-visual-calibration-001",
+  "status": "needs_human_review",
+  "reason": "scripts/run-promotion-suite.py missing",
+  "downstream_check": "needs_human_review",
+  "recommendation": "do not promote"
+}

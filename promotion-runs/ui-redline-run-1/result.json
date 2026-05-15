@@ -1,0 +1,14 @@
+{
+  "skill": "ui-redline",
+  "status": "failed",
+  "classification": "needs_human_review",
+  "downstream_contract": "ui-spec-reconcile",
+  "downstream_status": "draft",
+  "reason": "Required promotion command `python scripts/run-promotion-suite.py --skill ui-redline --fresh` could not be executed because `scripts/run-promotion-suite.py` is absent in this repository. Downstream skill ui-spec-reconcile is also currently in draft status, so promotion requires human review.",
+  "promoted_to_stable": false,
+  "fixtures_used": [
+    "examples/promotion/ui-redline/profile-form.md",
+    "examples/promotion/ui-redline/profile-form.tsx",
+    "examples/promotion/ui-redline/SOURCE.md"
+  ]
+}

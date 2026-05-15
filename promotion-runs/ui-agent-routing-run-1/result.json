@@ -1,0 +1,9 @@
+{
+  "skill": "ui-agent-routing",
+  "status": "failed",
+  "reason": "Missing testing infrastructure (scripts/run-promotion-suite.py).",
+  "classification": "needs_human_review",
+  "downstream_skill": "ui-to-issues",
+  "downstream_verification": "needs_human_review",
+  "recommendation": "Do not promote. Await implementation of scripts/run-promotion-suite.py."
+}

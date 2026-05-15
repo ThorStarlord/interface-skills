@@ -1,0 +1,30 @@
+{
+  "skill": "ui-system",
+  "risk_rating": "medium",
+  "status": "needs_human_review",
+  "recommendation": "do_not_promote",
+  "command": "python scripts/run-promotion-suite.py --skill ui-system --fresh",
+  "command_result": {
+    "exit_code": 1,
+    "error": "python.exe: can't open file 'H:\\GithubRepositories\\ViralFactory\\scripts\\run-promotion-suite.py': [Errno 2] No such file or directory"
+  },
+  "verified_contracts": {
+    "downstream_skill": "ui-screen-spec",
+    "downstream_status": "draft",
+    "downstream_verification": "needs_human_review"
+  },
+  "summary": {
+    "passed": [
+      "Isolated fixture package exists and is self-contained for referenced files",
+      "Required evidence artifacts were generated"
+    ],
+    "failed": [
+      "Promotion suite harness script is missing"
+    ],
+    "human_review_needed": true
+  },
+  "shared_file_recommendations": [
+    "Restore or implement scripts/run-promotion-suite.py for automated promotion runs",
+    "Promote ui-screen-spec from draft before downstream auto-verification"
+  ]
+}

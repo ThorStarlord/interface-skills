@@ -1,0 +1,8 @@
+{
+  "skill": "ui-inspector",
+  "run_id": "ui-inspector-run-1",
+  "classification": "needs_human_review",
+  "reason": "Missing testing infrastructure (scripts/run-promotion-suite.py). Cannot verify ui-inspector skill against fixtures or downstream skill ui-redline.",
+  "downstream_skill": "ui-redline",
+  "downstream_verified": false
+}

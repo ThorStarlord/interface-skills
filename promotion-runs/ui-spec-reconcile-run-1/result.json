@@ -1,0 +1,13 @@
+{
+  "skill": "ui-spec-reconcile",
+  "status": "needs_human_review",
+  "skill_status": "draft",
+  "classification": "needs_human_review",
+  "reason": "Test runner scripts/run-promotion-suite.py is missing. Cannot verify ui-spec-reconcile against fixtures.",
+  "downstream_skill": "ui-docs-sync",
+  "downstream_skill_status": "stable",
+  "recommendation": "do_not_promote",
+  "action_items": [
+    "Restore or implement scripts/run-promotion-suite.py for automated promotion runs"
+  ]
+}
