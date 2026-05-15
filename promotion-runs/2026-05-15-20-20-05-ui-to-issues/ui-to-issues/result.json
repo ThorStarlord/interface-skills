@@ -1,0 +1,70 @@
+{
+  "fixture": "ui-to-issues",
+  "classification": "fail",
+  "classification_msg": "Clean fixture failed automated rubric check",
+  "evidence_level": "harness_validation",
+  "generated_fresh_output": false,
+  "skill_structural_valid": true,
+  "package_structural_valid": true,
+  "rubric_passed": false,
+  "rubric_details": [
+    {
+      "item": "Identifies Color Contrast Violation",
+      "section": "General",
+      "passed": true,
+      "automation": "keyword_match"
+    },
+    {
+      "item": "Identifies Inconsistent Grid Spacing",
+      "section": "General",
+      "passed": true,
+      "automation": "keyword_match"
+    },
+    {
+      "item": "Identifies Ambiguous Button Labels",
+      "section": "General",
+      "passed": true,
+      "automation": "keyword_match"
+    },
+    {
+      "item": "Identifies Missing ARIA Labels",
+      "section": "General",
+      "passed": true,
+      "automation": "keyword_match"
+    },
+    {
+      "item": "Correctly classifies severity (Contrast = High)",
+      "section": "ui-to-issues",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Detects semantic inconsistency in grid gutters",
+      "section": "ui-to-issues",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Identifies labeling friction",
+      "section": "ui-to-issues",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Catches missing accessibility attributes (ARIA)",
+      "section": "ui-to-issues",
+      "passed": false,
+      "automation": "pending_manual"
+    }
+  ],
+  "pointers": {
+    "fixture_input": "examples/promotion/ui-to-issues",
+    "output_artifact": "examples\\promotion\\ui-to-issues\\reports\\issues.md",
+    "narrative_review": "promotion-runs\\2026-05-15-20-20-05-ui-to-issues\\ui-to-issues\\review.md",
+    "invocation_file": null
+  },
+  "logs": {
+    "skill_validation": "[shared/references/accessibility-baseline.md] [OK] Valid\n[shared/references/responsive-patterns.md] [OK] Valid\n[shared/references/severity-scale.md] [OK] Valid\n[shared/references/spec-package-format.md] [OK] Valid\n[shared/references/state-taxonomy.md] [OK] Valid\n[shared/references/token-schema.md] [OK] Valid\n[shared/references/vague-language-translator.md] [OK] Valid\n[shared/references/visual-vocabulary.md] [OK] Valid\n[skills.json] [OK] distribution registry valid\n[ui-to-issues] [OK] Valid\n\nValidation passed! [SUCCESS]\n",
+    "package_validation": "# Spec Package Validation: SUCCESS\n"
+  }
+}

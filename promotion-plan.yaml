@@ -14,7 +14,22 @@ skills:
     promotion_criteria:
       min_good_runs: 3
       require_messy_fail: false
-      require_downstream: false
+      require_downstream: true
+    downstream:
+      fixture: examples/promotion/ui-surface-inventory
+      next_skill: ui-inspector
+    behavioral_criteria:
+      fixture_family: inventory
+      minimum_behavioral_complexity:
+        min_surface_candidates: 3
+        require_ambiguous_boundary: true
+      blocking_failure_modes:
+        - hallucination
+        - scope_drift
+        - label_friction
+        - incomplete_context
+        - handoff_failure
+        - evidence_gap
 
   ui-brief:
     fixtures:
@@ -119,3 +134,24 @@ skills:
       min_good_runs: 7
       require_messy_fail: false
       require_downstream: false
+
+  ui-to-issues:
+    fixtures:
+      - examples/promotion/ui-to-issues
+    promotion_criteria:
+      min_good_runs: 3
+      require_messy_fail: false
+      require_downstream: false
+    behavioral_criteria:
+      fixture_family: issue_generation
+      minimum_behavioral_complexity:
+        min_findings: 5
+        require_mixed_severity: true
+        require_prioritization_conflict: true
+      blocking_failure_modes:
+        - hallucination
+        - scope_drift
+        - label_friction
+        - incomplete_context
+        - handoff_failure
+        - evidence_gap

@@ -169,32 +169,71 @@ def evaluate_output_against_rubric(output_content, rubric_items):
             "automation": "keyword_match" if found else "pending_manual"
         })
     return results
+ 
+def check_complexity(skill_name, output_content, thresholds):
+    """
+    Checks if the output content meets the minimum behavioral complexity.
+    """
+    if not thresholds:
+        return True, "No complexity thresholds defined"
+        
+    if skill_name == "ui-surface-inventory":
+        min_surfaces = thresholds.get("min_surface_candidates", 0)
+        # Count headers like "## Surface", "### Surface", or "Surface 1:"
+        surface_count = len(re.findall(r"(?:##|###|####)\s+Surface|Surface\s+\d+", output_content, re.IGNORECASE))
+        if surface_count < min_surfaces:
+            return False, f"Low behavioral complexity: {surface_count} surfaces found, need {min_surfaces}"
+            
+    if skill_name == "ui-to-issues":
+        min_findings = thresholds.get("min_findings", 0)
+        # Count list items or headers that look like issues
+        finding_count = len(re.findall(r"^\s*-\s+\[ \]|(?:##|###)\s+Issue|Finding\s+\d+", output_content, re.MULTILINE | re.IGNORECASE))
+        if finding_count < min_findings:
+            return False, f"Low behavioral complexity: {finding_count} findings found, need {min_findings}"
+            
+    return True, "Complexity thresholds met"
 
-def classify_result(fixture_name, skill_config, skill_valid, pkg_valid, rubric_passed):
+def classify_result(skill_name, fixture_name, skill_config, skill_valid, pkg_valid, rubric_passed, rubric_results, output_content):
     """
     Classifies the result based on whether the fixture was expected to fail.
+    Returns (classification, classification_msg, behavioral_status)
     """
     messy_fixture_rel = skill_config.get("messy_fixture", "")
     is_messy = (fixture_name == Path(messy_fixture_rel).name)
     
     if not skill_valid:
-        return "fail", "Skill structural validation failed unexpectedly"
+        return "fail", "Skill structural validation failed unexpectedly", "invalid_structure"
         
+    # Placeholder Guard: Check for TBD, TODO, [insert], etc.
+    placeholders = [r"TBD", r"TODO", r"\[insert", r"INSERT HERE", r"PLACEHOLDER"]
+    if any(re.search(p, output_content, re.IGNORECASE) for p in placeholders):
+        return "fail", "Output contains trivial placeholders (TBD/TODO)", "trivial"
+    
+    # Complexity Check
+    behavioral_criteria = skill_config.get("behavioral_criteria")
+    if behavioral_criteria:
+        complexity_thresholds = behavioral_criteria.get("minimum_behavioral_complexity")
+        comp_valid, comp_msg = check_complexity(skill_name, output_content, complexity_thresholds)
+        if not comp_valid:
+            return "fail", comp_msg, "low_complexity"
+
     if is_messy:
         # For messy fixtures, we EXPECT the package to be invalid or rubric to fail
-        # if the skill correctly detects it.
         if rubric_passed is True:
-            return "expected_fail", "Messy fixture defects correctly detected"
+            return "expected_fail", "Messy fixture defects correctly detected", "valid"
         else:
-            return "fail", "Messy fixture defects NOT correctly detected"
+            return "fail", "Messy fixture defects NOT correctly detected", "adversarial_failure"
             
-    if not pkg_valid or rubric_passed is False:
-        return "fail", "Clean fixture failed unexpectedly"
+    if not pkg_valid:
+        return "fail", "Clean fixture package validation failed", "invalid_package"
+
+    if rubric_passed is False:
+        return "fail", "Clean fixture failed automated rubric check", "rubric_failure"
         
-    if rubric_passed == "N/A":
-        return "needs_human_review", "No rubric found for evaluation"
+    if rubric_passed == "N/A" or rubric_passed == "pending" or any(r.get("automation") == "pending_manual" for r in rubric_results):
+        return "needs_human_review", "Evidence requires human judgment", "needs_review"
         
-    return "pass", "Clean fixture passed"
+    return "pass", "Clean fixture passed", "valid"
 
 def classify_downstream_result(skill_name, next_skill, output_content, next_skill_output):
     """
@@ -274,6 +313,16 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
             output_file = fixture_path / "reports" / "surface-inventory.md"
             if not output_file.exists():
                 output_file = fixture_path / "surface-inventory.md"
+        elif skill_name == "ui-to-issues":
+            # ui-to-issues often generates issues.md or SOURCE.md in the fixture
+            for candidate in [
+                fixture_path / "reports" / "issues.md",
+                fixture_path / "issues.md",
+                fixture_path / "SOURCE.md",
+            ]:
+                if candidate.exists():
+                    output_file = candidate
+                    break
         elif skill_name == "ui-brief":
             # Brief can be stored at different paths depending on fixture layout:
             # - spec-recovery-create style: brief.md at root
@@ -314,14 +363,25 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
             skill_rubric_items = [item for item in rubric_items if item["section"].lower() in (skill_name.lower(), "general")]
             if skill_rubric_items:
                 rubric_results = evaluate_output_against_rubric(output_content, skill_rubric_items)
-                rubric_passed = all(r["passed"] for r in rubric_results)
+                # True if ALL passed (no pending_manual)
+                # False if ANY automated FAILED
+                # "pending" if some are pending_manual but none of the automated failed
+                automated_fail = any(r["passed"] is False and r["automation"] != "pending_manual" for r in rubric_results)
+                all_passed = all(r["passed"] for r in rubric_results)
+                
+                if automated_fail:
+                    rubric_passed = False
+                elif all_passed:
+                    rubric_passed = True
+                else:
+                    rubric_passed = "pending"
             else:
                  print(f"    [INFO] No rubric section found for {skill_name} in {fixture_name}")
         else:
             print(f"    [INFO] No rubric.md found for {fixture_name}")
 
         # 5. Classification
-        classification, classification_msg = classify_result(fixture_name, skill_config, skill_valid, pkg_valid, rubric_passed)
+        classification, classification_msg, behavioral_status = classify_result(skill_name, fixture_name, skill_config, skill_valid, pkg_valid, rubric_passed, rubric_results, output_content)
 
         # 5.5 Evidence Level
         evidence_level = "promotion_candidate_run" if fresh else "harness_validation"
@@ -332,12 +392,19 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
             "fixture": fixture_name,
             "classification": classification,
             "classification_msg": classification_msg,
+            "behavioral_status": behavioral_status,
             "evidence_level": evidence_level,
             "generated_fresh_output": generated_fresh_output,
             "skill_structural_valid": skill_valid,
             "package_structural_valid": pkg_valid,
             "rubric_passed": rubric_passed,
             "rubric_details": rubric_results,
+            "pointers": {
+                "fixture_input": str(fixture_rel_path),
+                "output_artifact": str(output_file.relative_to(REPO_ROOT)) if output_file and output_file.exists() else None,
+                "narrative_review": str((fixture_run_dir / "review.md").relative_to(REPO_ROOT)),
+                "invocation_file": None # Placeholder for future invocation tracking
+            },
             "logs": {
                 "skill_validation": skill_log,
                 "package_validation": pkg_log
@@ -429,6 +496,20 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
                 f.write("Reviewer:\n")
                 f.write("Review date:\n\n")
 
+                behavioral_criteria = skill_config.get("behavioral_criteria")
+                if behavioral_criteria:
+                    f.write("## Behavioral Scrutiny\n\n")
+                    f.write("Verify that none of the following blocking failure modes occurred:\n\n")
+                    for mode in behavioral_criteria.get("blocking_failure_modes", []):
+                        f.write(f"- [ ] {mode}\n")
+                    f.write("\n")
+                    
+                    f.write("## Judgment Fidelity Assessment\n\n")
+                    f.write("- [ ] Judgment matches ground truth exactly.\n")
+                    f.write("- [ ] Ambiguous boundaries handled with correct trade-offs.\n")
+                    f.write("- [ ] No hallucination of artifacts or attributes.\n")
+                    f.write("- [ ] Scope correctly bounded to the fixture domain.\n\n")
+
                 f.write("## Rubric Details\n\n")
                 if rubric_results:
                     for r in rubric_results:
@@ -436,21 +517,41 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
                 else:
                     f.write("No rubric items found.\n")
 
-    # 6. Generate Improvement Brief if needed
+    # 6. Generate Improvement or Fixture Repair Brief if needed
     total_failures = sum(1 for r in all_results if r.get("classification") == "fail")
     
     if total_failures > 0 and not dry_run:
-        brief_path = run_dir / "improvement-brief.md"
-        with open(brief_path, "w", encoding="utf-8") as f:
-            f.write(f"# Skill Improvement Brief: {skill_name}\n\n")
-            f.write(f"Detected {total_failures} failures across fixtures.\n\n")
-            f.write("## Recommended Edits\n\n")
-            f.write("- [ ] Check why rubric items failed (see review.md in each fixture folder).\n")
-            if any(not r.get("skill_structural_valid", True) for r in all_results):
-                f.write("- [ ] Resolve structural issues in SKILL.md (missing sections or TODOs).\n")
-            f.write("\n## Do Not Change\n\n")
-            f.write("- Output template (unless explicitly required)\n")
-            f.write("- Core workflow steps\n")
+        # Check if any failures were due to trivial or low complexity (fixture issues)
+        fixture_issues = [r for r in all_results if r.get("behavioral_status") in ("trivial", "low_complexity")]
+        skill_issues = [r for r in all_results if r.get("classification") == "fail" and r not in fixture_issues]
+        
+        if skill_issues:
+            brief_path = run_dir / "improvement-brief.md"
+            with open(brief_path, "w", encoding="utf-8") as f:
+                f.write(f"# Skill Improvement Brief: {skill_name}\n\n")
+                f.write(f"Detected {len(skill_issues)} logic failures across fixtures.\n\n")
+                f.write("## Recommended Edits\n\n")
+                f.write("- [ ] Check why rubric items failed.\n")
+                if any(not r.get("skill_structural_valid", True) for r in skill_issues):
+                    f.write("- [ ] Resolve structural issues in SKILL.md.\n")
+                f.write("\n## Do Not Change\n\n")
+                f.write("- Output template (unless explicitly required)\n")
+                f.write("- Core workflow steps\n")
+
+        if fixture_issues:
+            repair_path = run_dir / "fixture-repair-brief.md"
+            with open(repair_path, "w", encoding="utf-8") as f:
+                f.write(f"# Fixture Repair Brief: {skill_name}\n\n")
+                f.write(f"Detected {len(fixture_issues)} behavioral integrity issues (trivial or low complexity).\n\n")
+                f.write("## Required Repairs\n\n")
+                for issue in fixture_issues:
+                    f.write(f"### Fixture: {issue['fixture']}\n")
+                    f.write(f"- **Problem**: {issue['classification_msg']}\n")
+                    if issue['behavioral_status'] == "trivial":
+                        f.write("- [ ] Remove placeholders (TBD/TODO) and replace with realistic domain content.\n")
+                    elif issue['behavioral_status'] == "low_complexity":
+                        f.write("- [ ] Increase domain pressure (more surfaces/findings) to meet the minimum complexity threshold.\n")
+                    f.write("\n")
 
     print(f"\n>>> Run complete. ID: {run_id}")
     print(f"    Results saved to promotion-runs/{run_id}/")
@@ -470,6 +571,23 @@ def main():
 
     with open(PLAN_FILE, "r") as f:
         plan = yaml.safe_load(f)
+
+    # 1. Validate Promotion Plan Schema
+    print(">>> Validating Promotion Plan Schema...")
+    validator_script = REPO_ROOT / "scripts" / "validate-promotion-plan-schema.py"
+    if validator_script.exists():
+        v_result = subprocess.run(
+            [sys.executable, str(validator_script)],
+            capture_output=True,
+            text=True,
+            encoding='utf-8'
+        )
+        if v_result.returncode != 0:
+            print(f"Error: Promotion Plan schema validation failed:\n{v_result.stdout}{v_result.stderr}")
+            sys.exit(1)
+        print("    Schema OK.")
+    else:
+        print("    [WARN] scripts/validate-promotion-plan-schema.py not found. Skipping schema check.")
 
     if args.all:
         skills_to_run = plan.get("skills", {}).keys()
