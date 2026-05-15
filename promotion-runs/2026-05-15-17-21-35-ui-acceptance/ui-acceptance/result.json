@@ -1,0 +1,15 @@
+{
+  "fixture": "ui-acceptance",
+  "classification": "needs_human_review",
+  "classification_msg": "No rubric found for evaluation",
+  "evidence_level": "harness_validation",
+  "generated_fresh_output": false,
+  "skill_structural_valid": true,
+  "package_structural_valid": true,
+  "rubric_passed": "N/A",
+  "rubric_details": [],
+  "logs": {
+    "skill_validation": "[shared/references/accessibility-baseline.md] [OK] Valid\n[shared/references/responsive-patterns.md] [OK] Valid\n[shared/references/severity-scale.md] [OK] Valid\n[shared/references/spec-package-format.md] [OK] Valid\n[shared/references/state-taxonomy.md] [OK] Valid\n[shared/references/token-schema.md] [OK] Valid\n[shared/references/vague-language-translator.md] [OK] Valid\n[shared/references/visual-vocabulary.md] [OK] Valid\n[skills.json] [OK] distribution registry valid\n[ui-acceptance] [OK] Valid\n\nValidation passed! [SUCCESS]\n",
+    "package_validation": "N/A"
+  }
+}

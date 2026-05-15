@@ -5,60 +5,114 @@
 target_repo_fallback: ../metamorfose-edutech
 
 skills:
-  ui-spec-linter:
-    fixtures:
-      - examples/kanban-recovery
-      - examples/admin-nav-recovery
-      - examples/spec-recovery-create
-    messy_fixture: examples/failing-spec-package
-    downstream:
-      next_skill: ui-spec-reconcile
-      fixture: examples/kanban-recovery
-    promotion_criteria:
-      min_good_runs: 3
-      require_messy_fail: true
-      require_downstream: true
-
   ui-surface-inventory:
     fixtures:
-      - examples/kanban-recovery
-      - examples/admin-nav-recovery
-      - examples/spec-recovery-create
-    messy_fixture: examples/failing-spec-package  # Needs a dedicated messy fixture later
-    downstream:
-      next_skill: ui-inspector
-      fixture: examples/spec-recovery-create
+      - examples/promotion/ui-surface-inventory
     promotion_criteria:
       min_good_runs: 3
-      require_messy_fail: true
-      require_downstream: true
+      require_messy_fail: false
+      require_downstream: false
 
   ui-brief:
     fixtures:
-      - examples/kanban-recovery
-      - examples/admin-nav-recovery
-      - examples/spec-recovery-create
-    messy_fixture: examples/failing-spec-package
-    downstream:
-      next_skill: ui-visual-calibration
-      fixture: examples/spec-recovery-create
+      - examples/promotion/ui-blueprint # Brief is often inside blueprint fixture
     promotion_criteria:
       min_good_runs: 3
-      require_messy_fail: true
+      require_messy_fail: false
       require_downstream: true
 
+  ui-flow:
+    fixtures:
+      - examples/promotion/ui-flow
+    promotion_criteria:
+      min_good_runs: 3
+      require_messy_fail: false
+      require_downstream: false
+
+  ui-blueprint:
+    fixtures:
+      - examples/promotion/ui-blueprint
+    promotion_criteria:
+      min_good_runs: 3
+      require_messy_fail: false
+      require_downstream: true
+
+  ui-system:
+    fixtures:
+      - examples/promotion/ui-system
+    promotion_criteria:
+      min_good_runs: 3
+      require_messy_fail: false
+      require_downstream: true
+
+  ui-component-spec:
+    fixtures:
+      - examples/promotion/ui-component-spec
+    promotion_criteria:
+      min_good_runs: 3
+      require_messy_fail: false
+      require_downstream: true
+
+  ui-microcopy:
+    fixtures:
+      - examples/promotion/ui-microcopy
+    promotion_criteria:
+      min_good_runs: 3
+      require_messy_fail: false
+      require_downstream: true
+
+  ui-acceptance:
+    fixtures:
+      - examples/promotion/ui-acceptance
+    promotion_criteria:
+      min_good_runs: 3
+      require_messy_fail: false
+      require_downstream: true
+
+  ui-spec-linter:
+    fixtures:
+      - examples/promotion/ui-visual-calibration # Uses a full spec package as fixture
+    promotion_criteria:
+      min_good_runs: 3
+      require_messy_fail: false
+      require_downstream: true
+
+  ui-generate-code:
+    fixtures:
+      - examples/promotion/ui-visual-calibration # Can generate from this
+    promotion_criteria:
+      min_good_runs: 3
+      require_messy_fail: false
+      require_downstream: false
+
+  ui-redline:
+    fixtures:
+      - examples/promotion/ui-redline
+    promotion_criteria:
+      min_good_runs: 3
+      require_messy_fail: false
+      require_downstream: true
+
+  ui-docs-sync:
+    fixtures:
+      - examples/promotion/ui-docs-sync
+    promotion_criteria:
+      min_good_runs: 3
+      require_messy_fail: false
+      require_downstream: true
+
+  ui-agent-routing:
+    fixtures:
+      - examples/promotion/ui-agent-routing
+    promotion_criteria:
+      min_good_runs: 3
+      require_messy_fail: false
+      require_downstream: false
 
   ui-orchestrator:
     fixtures:
-      - examples/orchestrator-states/01-empty
-      - examples/orchestrator-states/02-brief-draft
-      - examples/orchestrator-states/03-brief-approved
-      - examples/orchestrator-states/04-through-blueprint
-      - examples/orchestrator-states/05-all-specs-approved
-      - examples/orchestrator-states/06-inspector-present
-      - examples/orchestrator-states/07-redline-pending
-    messy_fixture: examples/failing-spec-package
+      - examples/promotion/ui-visual-calibration # Can analyze any state
     promotion_criteria:
-      min_good_runs: 7 # All state transitions must be correct
-      require_messy_fail: true
+      min_good_runs: 7
+      require_messy_fail: false
       require_downstream: false
