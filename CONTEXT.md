@@ -78,7 +78,19 @@ _Avoid_: "canonical spec package" unless referring to a Spec Package that confor
 The process of wiring spec packages into agent discovery files (e.g., `CLAUDE.md`).
 
 ### Promotion
-The process of moving a skill from draft to stable after enough fixture evidence.
+The process of moving a skill from draft to stable after enough fixture evidence confirms the output format is locked and behavioral judgment is verified.
+
+### Structural Validation
+The automated verification of **Contract Adherence**. Confirms that required files exist, metadata is valid, schemas pass, paths are repo-relative, and the output has the expected shape.
+
+### Behavioral Evidence
+Proof that a skill can apply its intended **Judgment Fidelity** to realistic, non-trivial inputs and produce outputs that are useful, bounded, and handoff-ready. This is the qualitative gate for Promotion.
+
+### Judgment Fidelity
+The ability of a skill to correctly apply domain heuristics and interpret messy or incomplete input without hallucinating or violating project boundaries.
+
+### Handoff Utility
+A dimension of Behavioral Evidence confirming that an artifact contains enough discrete, actionable detail for a downstream human or skill to perform the next step without re-reading source evidence.
 
 ## Relationships
 
@@ -88,8 +100,9 @@ The process of moving a skill from draft to stable after enough fixture evidence
 - A **Report** audits, compares, reconciles, or routes a **Spec Package**.
 - A **Redline** compares implementation against the **Spec Package**.
 - A **Fixture** freezes a real **Spec Package** so draft skills can be validated.
-- A **Validator** checks structure; **Human Review** checks usefulness and intent.
-- **Promotion** moves a **Skill** from draft to stable after fixture evidence confirms the output format is locked.
+- A **Validator** performs **Structural Validation**.
+- **Human Review** evaluates **Behavioral Evidence** to confirm **Judgment Fidelity** and **Handoff Utility**.
+- **Promotion** moves a **Skill** from draft to stable after both structural and behavioral gates are passed.
 
 ## Repository roles
 
@@ -105,11 +118,24 @@ The process of moving a skill from draft to stable after enough fixture evidence
 4. Validated examples and fixtures
 5. README and skill reference docs
 
-## Draft vs stable
+## Skill status levels
 
-Draft means the behavior is defined but still being validated with real fixtures.
+The status of a skill reflects its validation depth and composability.
 
-Stable means the output contract is reliable enough for other skills and agents to depend on.
+| Status | Meaning | Required Evidence |
+|---|---|---|
+| **draft** | Behavior defined, initial shape valid. | None (experimental). |
+| **restoration baseline** | Environment-stable. | **Structural Validation** passes. |
+| **beta / candidate** | Behaviorally promising but unproven in chains. | Happy path runs + **Human Review** + known caveats. |
+| **stable** | Reliable for autonomous composition. | **Stable Promotion Evidence** (Happy path + adversarial + handoff). |
+
+### Stable Promotion Evidence
+
+The qualitative evidence required to move a skill to **stable**. It must prove the skill is safe to compose with other skills without human "repair" turns. It requires:
+1. **Happy Path:** 3+ consecutive successes on standard fixtures.
+2. **Adversarial Fixture:** 1+ run against messy, conflicting, or incomplete input without hallucination.
+3. **Downstream Handoff Verification:** Proof that a downstream skill can consume the output without clarification or label repair.
+4. **Human Review:** Signed approval of the judgment fidelity.
 
 ## Process rule
 
@@ -131,3 +157,53 @@ Humans approve whether the result is useful and not misleading.
 
 - **Skill vs. Spec Package**: While Skills are the visible tools, the Spec Package is the fundamental unit of the system contract. Skills exist to maintain the package, not the other way around.
 - **Audit**: Avoid using "Audit" generically. Use **Validator** for structural checks and **Redline** or **Report** for content-based diagnostics.
+
+### Behavioral Evidence
+
+Evidence that a skill applies its intended judgment to realistic inputs and produces useful, bounded, traceable, handoff-ready artifacts. Behavioral evidence goes beyond structural validation: it evaluates whether the skill made the right distinctions, avoided hallucinated scope, and preserved downstream usability.
+
+### Behavioral Validation
+
+Behavioral Validation is the testing phase where a skill is run against realistic fixtures to generate Behavioral Evidence. It may include automated rubric checks and classifications, but it does not approve promotion by itself. Its purpose is to prepare evidence for Human Review.
+
+### Promotion Reference Evidence
+
+The curated, human-approved snapshot of successful behavioral evidence for a **stable** skill. It lives under `examples/promotion/<skill-name>/reference/` and points back to the original timestamped `promotion-runs/` directory. It is the discoverable "gold-standard" example for maintainers, not the source of truth for historical execution.
+### Blocking Failure Modes
+
+Promotion to **stable** must be blocked if any of these occur:
+1. **Hallucination:** Invention of surfaces, components, or findings not present in the fixture.
+2. **Scope Drift:** Performance of work outside the requested UI scope or skill responsibility.
+3. **Label Friction:** Use of non-canonical terminology that breaks downstream routing.
+4. **Incomplete Context:** Ignoring critical constraints, exclusions, or priorities provided in the fixture.
+5. **Handoff Failure:** Downstream inability to consume the output without manual repair.
+6. **Evidence Gap:** Traceability failures where claims cannot be backed by run artifacts.
+
+### Approved with Caveats
+
+A behavioral review may be marked **APPROVED WITH CAVEATS** only if no blocking failure modes are present and the caveats are minor, documented, and do not affect downstream handoff or judgment fidelity. This status may support **beta** status but should generally block **stable** promotion until resolved.
+
+### Minimum Behavioral Complexity
+
+Behavioral fixtures must include enough ambiguity, conflict, or domain pressure to test judgment fidelity. Defaults:
+- **Inventory skills:** At least 3 UI surfaces/candidates with one ambiguous boundary.
+- **Issue/Audit skills:** At least 5 findings with mixed severity and one prioritization conflict.
+
+### Improvement Brief
+
+A document (improvement-brief.md) required when a skill passes structural validation but fails Behavioral Validation. It records the failed fixture, the blocking mode, evidence excerpts, and recommended next investigation. If the fixture itself is flawed, a **fixture repair brief** is triggered instead.
+
+### Behavioral Result Classifications
+
+| Classification | Meaning | Promotion Eligible? |
+|---|---|---|
+| **pass** | Behavioral evidence is strong and traceable. | Yes (Human Review next). |
+| **approved_with_caveats** | Minor quirks; no blocking modes present. | Maybe (Beta/Candidate only). |
+| **blocked_skill_failure** | Skill judgment failed on a valid fixture. | No (Needs Improvement Brief). |
+| **fixture_repair_required** | Fixture input is flawed/incomplete. | No (Needs Fixture Repair). |
+| **inconclusive** | Evidence is too weak or fuzzy to judge. | No (Needs Investigation). |
+
+
+### Simulated Handoff
+
+A behavioral verification where a reviewer evaluates whether the skill output satisfies the documented input contract of a downstream skill, without requiring the downstream skill itself to be stable. Simulated handoff supports **individual stable promotion** for a skill's own output contract but does not claim full-chain stability.
