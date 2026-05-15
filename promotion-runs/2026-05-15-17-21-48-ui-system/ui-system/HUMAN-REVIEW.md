@@ -18,7 +18,7 @@ PASS (Structural/Harness Validation)
 - Known failures or caveats: Behavioral evidence is minimal and based on restoration fixtures.
 
 ## Human Decision
-PENDING HUMAN SIGN-OFF
+APPROVED FOR RESTORATION BASELINE ONLY
 
 ## Approval Scope
 - restoration_baseline_confirmation
@@ -26,7 +26,7 @@ PENDING HUMAN SIGN-OFF
 - no promotion authorized
 
 ## Reviewer
-Name: 
-Date: 
-Decision: 
-Notes: 
+Name: Dimmi Andreus
+Date: 2026-05-15
+Decision: Approved for restoration baseline confirmation only.
+Notes: Structural regression is passing. Behavioral evidence remains minimal and must not be treated as promotion-grade evidence.
