@@ -4,6 +4,9 @@ import shutil
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.append(str(REPO_ROOT))
+
 PROMOTION_RUNS_DIR = REPO_ROOT / "promotion-runs"
 
 def sync_references():
@@ -36,19 +39,27 @@ def sync_references():
             continue
             
         # 1. Human Approval Gate (ADR 0008 Hardening)
+        from scripts.validators.human_review import validate_human_review
+        from scripts.validators.human_workflow_review import validate_human_workflow_review
+        
         review_path = run_dir / "HUMAN-REVIEW.md"
+        requested_scope = "stable" # Default for skill sync
+        
         if not review_path.exists():
             review_path = run_dir / "HUMAN-WORKFLOW-REVIEW.md"
+            requested_scope = "workflow"
             
         if not review_path.exists():
             print(f"  - [SKIP] {run_dir.name}: No Human Review found.")
             continue
             
-        review_content = review_path.read_text(encoding="utf-8")
-        import re
-        decision_match = re.search(r"\*\*Decision:\*\*\s*approved", review_content)
-        if not decision_match:
-            print(f"  - [SKIP] {run_dir.name}: Human review exists but not 'approved'.")
+        if requested_scope == "workflow":
+            h_result = validate_human_workflow_review(review_path, requested_scope)
+        else:
+            h_result = validate_human_review(review_path, requested_scope)
+            
+        if h_result.status != "pass":
+            print(f"  - [SKIP] {run_dir.name}: Human review not approved or scope mismatch: {', '.join(h_result.findings)}")
             continue
 
         print(f"\n>>> Syncing Approved Gold Standard: {manifest.get('run_id')}")

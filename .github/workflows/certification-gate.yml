@@ -23,13 +23,16 @@ jobs:
           pip install pyyaml
           
       - name: Run Certification Audit
-        run: python scripts/verify_certification_authority.py
+        run: |
+          echo ">>> Starting Certification Authority Audit..."
+          python scripts/verify_certification_authority.py
         
-      - name: Validate Promotion Plan
-        run: python scripts/run_promotion_suite.py --validate-plan
+      - name: Validate Promotion Plan Schema
+        run: python scripts/validate-promotion-plan-schema.py
         
-      - name: Verify Promotion Runs
+      - name: Verify All Active Promotion Evidence
         run: |
           if [ -d "promotion-runs" ]; then
+            echo ">>> Validating existing evidence against authoritative contracts..."
             python scripts/run_promotion_suite.py --validate-all-runs
           fi

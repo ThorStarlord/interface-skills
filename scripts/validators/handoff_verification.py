@@ -88,6 +88,23 @@ def validate_handoff(run_dir, skill_name, next_skill_name, requested_scope="stab
 
     if is_real:
         actual_mode = "real"
+        
+        # Check 4: Deep Semantic Consumption (ADR 0008)
+        # Verify that the downstream doesn't just mention the upstream artifact name,
+        # but also includes content derived from it (more than just IDs).
+        if upstream_artifact:
+            up_content = Path(upstream_artifact).read_text(encoding="utf-8")
+            # Heuristic: Check for unique sentences or phrases from upstream (simplified)
+            # We look for matches of specific findings or surface descriptions
+            potential_data_points = re.findall(r"##\s+(.*)|###\s+(.*)|-\s+(.*)", up_content)
+            data_points = [p[0] or p[1] or p[2] for p in potential_data_points if len(p[0] or p[1] or p[2]) > 20]
+            
+            consumed_points = [p for p in data_points if p.lower()[:30] in content.lower()] # Check first 30 chars
+            if consumed_points:
+                findings.append(f"Deep Consumption Verified: {len(consumed_points)} semantic data points from upstream found in downstream.")
+            elif data_points:
+                findings.append("Deep Consumption Warning: Downstream mentions upstream artifact but lacks evidence of consuming specific semantic data points.")
+                # We don't downgrade actual_mode to simulated yet, but we warn.
     else:
         actual_mode = "simulated"
         findings.append("Actual handoff mode: simulated (lacks sufficient evidence of direct consumption)")

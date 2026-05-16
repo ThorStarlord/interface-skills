@@ -59,12 +59,12 @@ def validate_zero_repair(fixture_path, artifact_path, run_manifest=None, request
         marker_path = fixture_path / ".zero-repair"
         if marker_path.exists():
             if requested_scope in ["stable", "workflow"]:
-                findings.append("Soft Proof Violation: Marker-based proof (.zero-repair) is insufficient for stable/workflow promotion. Hash proof required.")
-                failure_modes.append("insufficient_proof_type")
+                findings.append(f"STRICT PROOF FAILURE: Marker-based proof (.zero-repair) is PROHIBITED for '{requested_scope}' promotion. Hash proof required.")
+                failure_modes.append("insufficient_proof_type_for_scope")
             else:
                 findings.append("Zero-repair marker found (soft verification - allowed for draft scope).")
         else:
-            findings.append("No zero-repair proof found (.zero-repair-hashes.json missing).")
+            findings.append(f"STRICT PROOF FAILURE: No zero-repair proof found for '{requested_scope}' promotion.")
             failure_modes.append("missing_zero_repair_proof")
 
 

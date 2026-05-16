@@ -28,16 +28,9 @@ REPO_ROOT = Path(__file__).parent.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.append(str(REPO_ROOT))
 
-from scripts.validators.human_review import validate_human_review
-from scripts.validators.human_workflow_review import validate_human_workflow_review
-from scripts.validators.final_artifact import validate_final_artifact
-from scripts.validators.promotion_plan import validate_promotion_plan
-from scripts.validators.handoff_verification import validate_handoff
-from scripts.validators.fixture_integrity import validate_fixture_integrity
-from scripts.validators.behavioral_result import validate_behavioral_result
-from scripts.validators.reference_evidence import validate_reference_evidence
 from scripts.validators.workflow_link import validate_workflow_link
 from scripts.validators.zero_repair import validate_zero_repair
+from scripts.validators.certification_kernel import evaluate_output_against_rubric, classify_run_result
 PROMOTION_RUNS_DIR = REPO_ROOT / "promotion-runs"
 PLAN_FILE = REPO_ROOT / "promotion-plan.yaml"
 SKILLS_FILE = REPO_ROOT / "skills.json"
@@ -150,140 +143,8 @@ def run_validator(script_name, target_path, skill_name=None):
     except Exception as e:
         return False, str(e)
 
-def evaluate_output_against_rubric(output_content, rubric_items):
-    """
-    Very simple heuristic: check if the rubric text exists or is satisfied in the output.
-    In a real scenario, this might need more sophisticated NLP or LLM evaluation.
-    For this harness, we look for 'pass' markers or keyword presence.
-    """
-    def extract_subject(text, prefix_len):
-        subject = text[prefix_len:].strip().rstrip('.')
-        for sep in [" where ", " if ", " consistent with ", " as "]:
-            if sep in subject.lower():
-                subject = subject.lower().split(sep)[0].strip()
-                break
-        return subject
-
-    def strip_articles(text):
-        """Strip leading articles (the, a, an) for fuzzy matching."""
-        for article in ["the ", "a ", "an "]:
-            if text.lower().startswith(article):
-                return text[len(article):]
-        return text
-
-    results = []
-    for item in rubric_items:
-        found = False
-        text_lower = item["text"].lower()
-        
-        # 1. Direct match
-        if text_lower in output_content.lower():
-            found = True
-        # 2. Extract "Identifies X" subject
-        elif text_lower.startswith("identifies "):
-            subject = extract_subject(item["text"], 11)
-            subj_stripped = strip_articles(subject)
-            if subj_stripped.lower() in output_content.lower() or subject.lower() in output_content.lower():
-                found = True
-            elif subject.lower().endswith(" surface"):
-                sub_subject = subject[:-8].strip()
-                if sub_subject.lower() in output_content.lower():
-                    found = True
-        # 3. Extract "Prioritizes X" subject
-        elif text_lower.startswith("prioritizes "):
-            subject = extract_subject(item["text"], 12)
-            if strip_articles(subject).lower() in output_content.lower():
-                found = True
-        # 4. Extract "Accounts for X" subject
-        elif text_lower.startswith("accounts for "):
-            subject = extract_subject(item["text"], 13)
-            if strip_articles(subject).lower() in output_content.lower():
-                found = True
-        # 5. Handle "Does not X" (negative test - true if NOT found)
-        elif text_lower.startswith("does not "):
-            subject = extract_subject(item["text"], 9)
-            if subject.lower() not in output_content.lower():
-                found = True
-        # 6. Extract "Names X" subject
-        elif text_lower.startswith("names "):
-            subject = extract_subject(item["text"], 6)
-            if strip_articles(subject).lower() in output_content.lower():
-                found = True
-        # 7. Extract "Mentions X" subject
-        elif text_lower.startswith("mentions "):
-            subject = extract_subject(item["text"], 9)
-            if strip_articles(subject).lower() in output_content.lower():
-                found = True
-        # 8. Extract "Captures X" subject
-        elif text_lower.startswith("captures "):
-            subject = extract_subject(item["text"], 9)
-            if strip_articles(subject).lower() in output_content.lower():
-                found = True
-        # 9. Extract "Includes X" subject
-        elif text_lower.startswith("includes "):
-            subject = extract_subject(item["text"], 9)
-            if strip_articles(subject).lower() in output_content.lower():
-                found = True
-        # 10. Extract "Separates X" — check for both halves around " from "
-        elif text_lower.startswith("separates "):
-            subject = extract_subject(item["text"], 10)
-            parts = subject.lower().split(" from ")
-            if all(p.strip() in output_content.lower() for p in parts if p.strip()):
-                found = True
-        
-        results.append({
-            "item": item["text"],
-            "section": item["section"],
-            "passed": found,
-            "automation": "keyword_match" if found else "pending_manual"
-        })
     return results
- 
 
-def classify_result(skill_name, fixture_name, skill_config, skill_valid, pkg_valid, rubric_passed, rubric_results, output_content, input_content=None, fixture_path=None, artifact_path=None):
-    """
-    Classifies the result based on whether the fixture was expected to fail.
-    Returns (classification, classification_msg, behavioral_status)
-    """
-    messy_fixture_rel = skill_config.get("messy_fixture", "")
-    is_messy = (fixture_name == Path(messy_fixture_rel).name)
-    
-    if not skill_valid:
-        return "fail", "Skill structural validation failed unexpectedly", "invalid_structure"
-        
-    # Behavioral Check via modular validator
-    behavioral_criteria = skill_config.get("behavioral_criteria", {})
-    complexity_thresholds = behavioral_criteria.get("minimum_behavioral_complexity", {})
-    
-    bev_result = validate_behavioral_result(output_content, skill_name, complexity_thresholds, input_content=input_content, fixture_path=fixture_path, artifact_path=artifact_path)
-    
-    if is_messy:
-        # For messy fixtures, we EXPECT failure in rubric or behavioral result
-        if rubric_passed is False or bev_result.status == "fail":
-            return "expected_fail", f"Messy fixture defects correctly detected: {bev_result.findings[0] if bev_result.status == 'fail' else 'Rubric failure'}", "valid"
-        else:
-            return "fail", "Messy fixture defects NOT correctly detected (False Positive Pass)", "adversarial_failure"
-
-    if bev_result.status == "fail":
-        # Map failure modes to legacy behavioral_status if needed
-        status = "valid"
-        if "trivial_placeholders" in bev_result.failure_modes:
-            status = "trivial"
-        elif "low_complexity" in bev_result.failure_modes:
-            status = "low_complexity"
-            
-        return "fail", bev_result.findings[0], status
-            
-    if not pkg_valid:
-        return "fail", "Clean fixture package validation failed", "invalid_package"
-
-    if rubric_passed is False:
-        return "fail", "Clean fixture failed automated rubric check", "rubric_failure"
-        
-    if rubric_passed == "N/A" or rubric_passed == "pending" or any(r.get("automation") == "pending_manual" for r in rubric_results):
-        return "needs_human_review", "Evidence requires human judgment", "needs_review"
-        
-    return "pass", "Clean fixture passed all automated checks", "valid"
 
 def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
     skill_config = plan.get("skills", {}).get(skill_name)
@@ -368,9 +229,13 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
         
         # 6. Behavioral Validation (Modular)
         input_content = extract_input_content(fixture_path, output_file)
-        classification, classification_msg, behavioral_status = classify_result(
-            skill_name, fixture_name, skill_config, skill_valid, pkg_valid, 
-            rubric_passed, rubric_results, output_content, 
+        validators_status = {
+            "skill_structural_valid": skill_valid,
+            "package_structural_valid": pkg_valid
+        }
+        classification, classification_msg, behavioral_status = classify_run_result(
+            skill_name, fixture_name, skill_config, validators_status, 
+            rubric_results, output_content, 
             input_content=input_content, fixture_path=fixture_path, artifact_path=output_file
         )
 

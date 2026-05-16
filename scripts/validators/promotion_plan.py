@@ -93,10 +93,20 @@ def validate_promotion_plan(plan_path, registry_path, repo_root=None):
                     root = Path(repo_root)
                     family_candidates = [root / "fixtures" / family, root / family]
                 
-                found_family = any(p.exists() and p.is_dir() for p in family_candidates)
-                if not found_family:
+                found_family_path = next((p for p in family_candidates if p.exists() and p.is_dir()), None)
+                if not found_family_path:
                     findings.append(f"Skill '{skill}' fixture_family '{family}' not found in candidates: {[str(p) for p in family_candidates]}")
                     failure_modes.append("invalid_fixture_family")
+                else:
+                    # Verify all fixtures belong to this family (ADR 0008 convention)
+                    for fixture_rel in fixtures:
+                        f_path = (Path(repo_root) / fixture_rel) if repo_root else Path(fixture_rel)
+                        try:
+                            f_path.relative_to(found_family_path)
+                        except ValueError:
+                            # Not strictly a failure yet in some layouts, but we warn/fail if ADR 0008 is strict
+                            findings.append(f"Fixture convention violation: Fixture '{fixture_rel}' is outside its declared family '{family}'")
+                            failure_modes.append("fixture_convention_violation")
             
             if not beh_crit.get("minimum_behavioral_complexity"):
                 findings.append(f"Skill '{skill}' is missing 'minimum_behavioral_complexity' in behavioral_criteria")
@@ -112,14 +122,16 @@ def validate_promotion_plan(plan_path, registry_path, repo_root=None):
         requested_scope = prom_crit.get("scope", "stable")
         
         downstream = skill_cfg.get("downstream")
-        if requested_scope == "workflow":
-            # Workflow scope MUST have downstream verification
-            if not prom_crit.get("require_downstream"):
+        # Workflow scope OR explicit require_downstream MUST have downstream verification
+        require_downstream = prom_crit.get("require_downstream", False)
+        
+        if requested_scope == "workflow" or require_downstream:
+            if requested_scope == "workflow" and not require_downstream:
                 findings.append(f"Skill '{skill}' has 'workflow' scope but 'require_downstream' is false (ADR 0007 violation)")
                 failure_modes.append("boundary_violation")
             
             if not downstream:
-                findings.append(f"Skill '{skill}' has 'workflow' scope but is missing 'downstream' configuration")
+                findings.append(f"Skill '{skill}' requires downstream verification but is missing 'downstream' configuration")
                 failure_modes.append("incomplete_downstream_config")
         
         if downstream:
@@ -135,10 +147,10 @@ def validate_promotion_plan(plan_path, registry_path, repo_root=None):
                 findings.append(f"Skill '{skill}' downstream config is missing 'fixture'")
                 failure_modes.append("incomplete_downstream_config")
             
-            # Validate handoff_mode (Mandatory for workflow, optional but validated for stable)
+            # Validate handoff_mode (Mandatory for workflow/required, optional but validated for stable)
             mode = downstream.get("handoff_mode")
-            if requested_scope == "workflow" and not mode:
-                findings.append(f"Skill '{skill}' has 'workflow' scope but 'handoff_mode' is missing")
+            if (requested_scope == "workflow" or require_downstream) and not mode:
+                findings.append(f"Skill '{skill}' requires downstream verification but 'handoff_mode' is missing")
                 failure_modes.append("missing_handoff_mode")
             if mode and mode not in ["real", "simulated"]:
                 findings.append(f"Skill '{skill}' has invalid 'handoff_mode' '{mode}' (Expected: 'real' or 'simulated')")

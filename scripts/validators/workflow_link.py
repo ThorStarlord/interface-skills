@@ -139,6 +139,16 @@ def validate_workflow_link(run_dir, current_step, previous_step=None, workflow_i
                 findings.append("Semantic Drift Warning: Title changed significantly and shares no common vertical keywords.")
             elif shared:
                 findings.append(f"Semantic Preservation: Vertical keywords '{', '.join(list(shared)[:3])}' preserved in titles.")
+            
+        # Final Workflow Meaning Check (ADR 0008)
+        # Verify if the output mentions the workflow goal or final intent
+        if workflow_id:
+            wf_keywords = workflow_id.split("-")
+            matched_wf = [k for k in wf_keywords if k.lower() in content.lower() and len(k) > 3]
+            if matched_wf:
+                findings.append(f"Workflow Intent Verified: Final artifact aligns with workflow ID keywords: {', '.join(matched_wf)}")
+            else:
+                findings.append(f"Workflow Intent Warning: Final artifact for '{workflow_id}' lacks explicit link to workflow keywords.")
 
 
     status = "pass" if not failure_modes else "fail"

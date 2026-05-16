@@ -64,6 +64,20 @@ def validate_behavioral_result(output_content, skill_name, thresholds=None, inpu
             findings.append(f"Boundedness failure: Hallucinated IDs detected: {', '.join(list(hallucinated_ids)[:5])}")
             failure_modes.append("hallucination_detected")
 
+        # 3.3 Semantic Derivation: Check if unique keywords from input appear in output
+        # (Excluding common structural words)
+        input_keywords = set(re.findall(r"\b[a-zA-Z]{6,}\b", input_content))
+        common_words = {"section", "content", "status", "report", "finding", "surface", "inventory", "fixture", "context"}
+        input_keywords = {w.lower() for w in input_keywords if w.lower() not in common_words}
+        
+        if input_keywords:
+            matched_keywords = {w for w in input_keywords if w in output_content.lower()}
+            derivation_ratio = len(matched_keywords) / len(input_keywords) if input_keywords else 0
+            if derivation_ratio < 0.1 and len(input_keywords) > 10: # Heuristic: at least 10% for large inputs
+                findings.append(f"Semantic Derivation Warning: Low keyword overlap ({len(matched_keywords)}/{len(input_keywords)}). Output may not be sufficiently grounded in input.")
+            else:
+                findings.append(f"Semantic Derivation Verified: Output is grounded in input content ({len(matched_keywords)} shared keywords).")
+
     # 4. Complexity Check (Skill-Specific Matrix)
     # This logic should eventually move fully to registry, but kept here for depth
     if thresholds:

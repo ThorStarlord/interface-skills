@@ -77,13 +77,20 @@ def validate_reference_evidence(skill_name, reference_dir, requested_scope="stab
         if h_result.status != "pass":
             findings.extend(h_result.findings)
             failure_modes.extend(h_result.failure_modes)
+        else:
+            findings.append(f"Governance Authority Verified: {review_path.name} is approved for {requested_scope} scope.")
         
-        # Verify Traceability (Run ID Match)
+        # Verify Traceability (Run ID Match - MANDATORY ADR 0008)
         if authorizing_run_id:
             content = review_path.read_text(encoding="utf-8")
             if authorizing_run_id not in content:
-                findings.append(f"Traceability failure: Authorizing Run ID '{authorizing_run_id}' not mentioned in {review_path.name}")
+                findings.append(f"Traceability CRITICAL failure: Authorizing Run ID '{authorizing_run_id}' from record.json not found in {review_path.name}")
                 failure_modes.append("traceability_mismatch")
+            else:
+                findings.append(f"Traceability verified: Record and review both cite Run ID {authorizing_run_id}")
+        else:
+            findings.append("Traceability failure: Missing 'authorizing_run_id' in reference_record.json")
+            failure_modes.append("missing_approval_traceability")
 
 
     # 4. Cleanliness (Strict Dirty-Reference Detection)

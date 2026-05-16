@@ -5,10 +5,13 @@ import yaml
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.append(str(REPO_ROOT))
+
 PROMOTION_RUNS_DIR = REPO_ROOT / "promotion-runs"
 REGISTRY_PATH = REPO_ROOT / "skills.json"
 
-from enforce_promotion_lock import check_promotion_lock
+from scripts.enforce_promotion_lock import check_promotion_lock
 
 def verify_certification():
     """
@@ -62,16 +65,24 @@ def verify_certification():
                                 # Not necessarily a failure if runs are archived, but reference hash must match
                             else:
                                 review_path = run_dir / "HUMAN-REVIEW.md"
+                                is_workflow_review = False
                                 if not review_path.exists():
-                                     review_path = run_dir / "HUMAN-WORKFLOW-REVIEW.md"
+                                    review_path = run_dir / "HUMAN-WORKFLOW-REVIEW.md"
+                                    is_workflow_review = True
                                 
                                 if not review_path.exists():
                                     print(f"    [FAIL] Source run {source_run_id} has no human review.")
                                     success = False
                                 else:
-                                    review_content = review_path.read_text(encoding="utf-8")
-                                    if "**Decision:** approved" not in review_content:
-                                        print(f"    [FAIL] Source run {source_run_id} was never approved.")
+                                    if is_workflow_review:
+                                        from scripts.validators.human_workflow_review import validate_human_workflow_review
+                                        h_result = validate_human_workflow_review(review_path, requested_scope="workflow")
+                                    else:
+                                        from scripts.validators.human_review import validate_human_review
+                                        h_result = validate_human_review(review_path, requested_scope="stable")
+                                        
+                                    if h_result.status != "pass":
+                                        print(f"    [FAIL] Source run {source_run_id} not approved: {', '.join(h_result.findings)}")
                                         success = False
                 
                 if not has_gold:
@@ -103,8 +114,9 @@ def verify_certification():
                         if run_dir.is_dir() and wf_id in run_dir.name and "workflow" in run_dir.name:
                             review_path = run_dir / "HUMAN-WORKFLOW-REVIEW.md"
                             if review_path.exists():
-                                content = review_path.read_text(encoding="utf-8")
-                                if "**Decision:** approved" in content:
+                                from scripts.validators.human_workflow_review import validate_human_workflow_review
+                                h_result = validate_human_workflow_review(review_path, requested_scope="workflow")
+                                if h_result.status == "pass":
                                     wf_runs.append(run_dir)
                     
                     if wf_runs:
