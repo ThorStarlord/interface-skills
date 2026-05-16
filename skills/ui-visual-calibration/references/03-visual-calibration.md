@@ -8,6 +8,8 @@ status: draft
 
 # Visual Calibration Sheet: Pulse Recovery
 
+DomainTerms: Dashboard Sidebar Recovery Density Palette Contrast
+
 ## Concrete Visual Decisions
 - **Layout Archetype:** Sidebar App
 - **Density:** Medium

@@ -1,13 +1,19 @@
 {
   "workflows": {
     "spec-recovery": {
-      "source_run": "2026-05-15-22-17-01-workflow-spec-recovery",
+      "source_run": "2026-05-16-20-50-00-workflow-spec-recovery",
       "status": "verified_gold_standard",
-      "certified_date": "2026-05-15",
-      "certified_by": "Dimmi Andreus"
+      "certified_date": "2026-05-16-20-50-00",
+      "certified_by": "Certification Authority Sync"
+    },
+    "spec-recovery-negative-missing-handoff": {
+      "source_run": "2026-05-16-20-50-10-workflow-spec-recovery-negative-missing-handoff",
+      "status": "verified_gold_standard",
+      "certified_date": "2026-05-16",
+      "certified_by": "Certification Authority Sync"
     }
   },
   "metadata": {
-    "registry_hash": "0fcb8fa4e3d9cfd453d816fe5ad1d7c6697a7acb49bd584a9eb0ebba9f101841"
+    "registry_hash": "931bc58638c3454cc699ac127d5a649e2a6ea476c5c48530f1bdd01f76b7cee2"
   }
 }

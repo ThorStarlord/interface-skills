@@ -129,7 +129,7 @@ skills:
       require_downstream: true
     downstream:
       fixture: examples/promotion/ui-system
-      next_skill: ui-component-spec
+      next_skill: ui-screen-spec
       handoff_mode: real
     behavioral_criteria:
       fixture_family: examples/promotion/ui-system
@@ -298,3 +298,101 @@ skills:
         - incomplete_context
         - handoff_failure
         - evidence_gap
+
+  ui-screen-spec:
+    fixtures:
+      - examples/promotion/ui-screen-spec/settings-page
+    promotion_criteria:
+      min_good_runs: 3
+      require_messy_fail: false
+      require_downstream: true
+    downstream:
+      fixture: examples/promotion/ui-screen-spec/settings-page
+      next_skill: ui-component-spec
+      handoff_mode: real
+    behavioral_criteria:
+      fixture_family: examples/promotion/ui-screen-spec
+      minimum_behavioral_complexity:
+        min_findings: 5
+      blocking_failure_modes:
+        - hallucination
+        - scope_drift
+        - label_friction
+        - incomplete_context
+        - handoff_failure
+        - evidence_gap
+
+  ui-inspector:
+    fixtures:
+      - examples/promotion/ui-inspector
+    promotion_criteria:
+      min_good_runs: 3
+      require_messy_fail: false
+      require_downstream: true
+    downstream:
+      fixture: examples/promotion/ui-inspector
+      next_skill: ui-redline
+      handoff_mode: real
+    behavioral_criteria:
+      fixture_family: examples/promotion/ui-inspector
+      minimum_behavioral_complexity:
+        min_findings: 5
+      blocking_failure_modes:
+        - hallucination
+        - scope_drift
+        - label_friction
+        - incomplete_context
+        - handoff_failure
+        - evidence_gap
+
+  ui-spec-reconcile:
+    fixtures:
+      - examples/promotion/ui-spec-reconcile
+    promotion_criteria:
+      min_good_runs: 3
+      require_messy_fail: false
+      require_downstream: true
+    downstream:
+      fixture: examples/promotion/ui-spec-reconcile
+      next_skill: ui-to-issues
+      handoff_mode: real
+    behavioral_criteria:
+      fixture_family: examples/promotion/ui-spec-reconcile
+      minimum_behavioral_complexity:
+        min_findings: 5
+      blocking_failure_modes:
+        - hallucination
+        - scope_drift
+        - label_friction
+        - incomplete_context
+        - handoff_failure
+        - evidence_gap
+
+  ui-storybook-docs:
+    fixtures:
+      - examples/promotion/ui-storybook-docs
+    promotion_criteria:
+      min_good_runs: 3
+      require_messy_fail: false
+      require_downstream: true
+    downstream:
+      fixture: examples/promotion/ui-storybook-docs
+      next_skill: ui-docs-sync
+      handoff_mode: real
+    behavioral_criteria:
+      fixture_family: examples/promotion/ui-storybook-docs
+      minimum_behavioral_complexity:
+        min_findings: 5
+      blocking_failure_modes:
+        - hallucination
+        - scope_drift
+        - label_friction
+        - incomplete_context
+        - handoff_failure
+        - evidence_gap
+
+workflows:
+  spec-recovery:
+    fixture: examples/fixtures/full-chain/spec-recovery
+  spec-recovery-negative-missing-handoff:
+    fixture: examples/fixtures/full-chain/spec-recovery-negative-missing-handoff

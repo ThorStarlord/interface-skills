@@ -1,0 +1,33 @@
+{
+  "artifacts": {
+    "SPEC-RECONCILE-SUMMARY.md": {
+      "last_synced": "2026-05-16-20-49-02",
+      "source_run": "2026-05-16-20-49-02-ui-spec-reconcile-fresh",
+      "status": "verified_gold_standard",
+      "sha256": "b93e28918f799369e1adb5515d3b07309ddc42a83570d59e3e9dbe7a725c84d9"
+    }
+  },
+  "approval_metadata": {
+    "authorizing_run_id": "2026-05-16-20-49-02-ui-spec-reconcile-fresh",
+    "approval_type": "human_review",
+    "sync_date": "2026-05-16-20-49-02"
+  },
+  "metadata": {
+    "skill_hash": "8370b2357cc8ecda35a8284d929add2e8395ea2532fffb9227cec416035ac824",
+    "validator_hashes": {
+      "behavioral_result.py": "f3d9b99e5cc7a72f571084de103639452946c702e9005e4f50cc134f93e38bc3",
+      "certification_kernel.py": "d6b323d20bee574c5712e0009bd8ed2e6bdc36a3712d79d6b3d0effba07db713",
+      "common.py": "7a8b59c4d11c8091096d19926bb538958dd4dadb9ac5b23df90e3281600a5b77",
+      "final_artifact.py": "99592a653046509b1225fac696daae84357d27eb5b2d1322f8e3e25afaf4d7c0",
+      "fixture_integrity.py": "18f37e6355f825c85ada9c9835506705793df02248cecff2c9af17b31d7a8b00",
+      "handoff_verification.py": "e06674021cd82e404641d01defca2109588491061f97171d0308253c2bd7fb14",
+      "human_review.py": "8f0af846c9bb4f7fa108ed87220dbe155cafd98a69f1bb12ac7ff72cebcbfc8e",
+      "human_workflow_review.py": "766f1d5c10e8d7846f07d1d9ce9dab3b125664e140ce5730949b6a9c123ec366",
+      "promotion_plan.py": "a17089a2188ba905659814a40b4e163832a3575c9abe9e725190bbf7686a1448",
+      "reference_evidence.py": "2089fce262686b00e46d68ae1932e7824bdbed7e24288ecb1ca8070aa6819ce7",
+      "reference_integrity.py": "eff33e8c429d1063412557e3cce1cf7b044165f4de2bbf33640ceeddc83e6acb",
+      "workflow_link.py": "eed20e74a7d4509b15cfbc24d78ed6180b4efa78c71d96ee499ff25e49276f3a",
+      "zero_repair.py": "8b58e0afa277fb159688284d38dacd06a4d52441993132abd076f4858c3f0bd4"
+    }
+  }
+}

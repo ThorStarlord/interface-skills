@@ -1,0 +1,35 @@
+{
+  "fixture": "ui-spec-reconcile",
+  "classification": "needs_human_review",
+  "classification_msg": "Evidence requires human judgment",
+  "behavioral_status": "needs_review",
+  "evidence_level": "promotion_candidate_run",
+  "generated_fresh_output": true,
+  "skill_structural_valid": true,
+  "package_structural_valid": true,
+  "rubric_passed": "pending",
+  "rubric_details": [
+    {
+      "item": "Must document all reconciled components.",
+      "section": "General",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Minimum 5 component actions resolved.",
+      "section": "General",
+      "passed": false,
+      "automation": "pending_manual"
+    }
+  ],
+  "pointers": {
+    "fixture_input": "examples/promotion/ui-spec-reconcile",
+    "output_artifact": "examples\\promotion\\ui-spec-reconcile\\reports\\SPEC-RECONCILE-SUMMARY.md",
+    "narrative_review": "promotion-runs\\2026-05-16-20-49-02-ui-spec-reconcile-fresh\\ui-spec-reconcile\\review.md",
+    "invocation_file": null
+  },
+  "logs": {
+    "skill_validation": "[shared/references/accessibility-baseline.md] [OK] Valid\n[shared/references/full-chain-continuity-audit.md] [OK] Valid\n[shared/references/responsive-patterns.md] [OK] Valid\n[shared/references/severity-scale.md] [OK] Valid\n[shared/references/spec-package-format.md] [OK] Valid\n[shared/references/state-taxonomy.md] [OK] Valid\n[shared/references/token-schema.md] [OK] Valid\n[shared/references/vague-language-translator.md] [OK] Valid\n[shared/references/visual-vocabulary.md] [OK] Valid\n[skills.json] [OK] distribution registry valid\n[ui-spec-reconcile] [WARN] Registry status=stable but README row has '[DRAFT]' marker\n[ui-spec-reconcile] [OK] Valid\n\nValidation passed! [SUCCESS]\n",
+    "package_validation": "# Spec Package Validation: SUCCESS\n"
+  }
+}

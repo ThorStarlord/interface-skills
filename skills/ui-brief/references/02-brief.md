@@ -4,7 +4,10 @@ spec_id: pulse-recovery
 status: current
 based_on: ../reports/ORCHESTRATOR-RECOMMENDATION.md
 ---
+
 # Pulse Dashboard Brief
+
+DomainTerms: Dashboard Sidebar Recovery Density Palette Contrast
 
 Based on [ORCHESTRATOR-RECOMMENDATION.md](../reports/ORCHESTRATOR-RECOMMENDATION.md).
 

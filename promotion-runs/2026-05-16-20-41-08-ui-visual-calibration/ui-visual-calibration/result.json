@@ -1,0 +1,101 @@
+{
+  "fixture": "ui-visual-calibration",
+  "classification": "needs_human_review",
+  "classification_msg": "Evidence requires human judgment",
+  "behavioral_status": "needs_review",
+  "evidence_level": "harness_validation",
+  "generated_fresh_output": false,
+  "skill_structural_valid": true,
+  "package_structural_valid": true,
+  "rubric_passed": "pending",
+  "rubric_details": [
+    {
+      "item": "Identifies Layout archetype",
+      "section": "General",
+      "passed": true,
+      "automation": "keyword_match"
+    },
+    {
+      "item": "Identifies Density",
+      "section": "General",
+      "passed": true,
+      "automation": "keyword_match"
+    },
+    {
+      "item": "Identifies Shape language",
+      "section": "General",
+      "passed": true,
+      "automation": "keyword_match"
+    },
+    {
+      "item": "Identifies Surface style",
+      "section": "General",
+      "passed": true,
+      "automation": "keyword_match"
+    },
+    {
+      "item": "Identifies Palette guidance",
+      "section": "General",
+      "passed": true,
+      "automation": "keyword_match"
+    },
+    {
+      "item": "Translates clean",
+      "section": "ui-visual-calibration",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Translates modern",
+      "section": "ui-visual-calibration",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Translates professional",
+      "section": "ui-visual-calibration",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Translates easy to use",
+      "section": "ui-visual-calibration",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Specifies split panel",
+      "section": "ui-visual-calibration",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Specifies medium density",
+      "section": "ui-visual-calibration",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Specifies mildly rounded shape language",
+      "section": "ui-visual-calibration",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Specifies monochrome with one accent",
+      "section": "ui-visual-calibration",
+      "passed": false,
+      "automation": "pending_manual"
+    }
+  ],
+  "pointers": {
+    "fixture_input": "examples/promotion/ui-visual-calibration",
+    "output_artifact": "examples\\promotion\\ui-visual-calibration\\visual-calibration.md",
+    "narrative_review": "promotion-runs\\2026-05-16-20-41-08-ui-visual-calibration\\ui-visual-calibration\\review.md",
+    "invocation_file": null
+  },
+  "logs": {
+    "skill_validation": "[shared/references/accessibility-baseline.md] [OK] Valid\n[shared/references/full-chain-continuity-audit.md] [OK] Valid\n[shared/references/responsive-patterns.md] [OK] Valid\n[shared/references/severity-scale.md] [OK] Valid\n[shared/references/spec-package-format.md] [OK] Valid\n[shared/references/state-taxonomy.md] [OK] Valid\n[shared/references/token-schema.md] [OK] Valid\n[shared/references/vague-language-translator.md] [OK] Valid\n[shared/references/visual-vocabulary.md] [OK] Valid\n[skills.json] [OK] distribution registry valid\n[ui-visual-calibration] [WARN] Registry status=stable but README row has '[DRAFT]' marker\n[ui-visual-calibration] [OK] Valid\n\nValidation passed! [SUCCESS]\n",
+    "package_validation": "# Spec Package Validation: SUCCESS\n"
+  }
+}

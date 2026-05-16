@@ -335,7 +335,7 @@ workflows:
 
   - id: spec-recovery-negative-missing-handoff
     display_name: Spec Recovery (Negative - Missing Handoff)
-    status: test
+    status: stable
     purpose: Test harness failure when handoff artifacts are missing.
     allowed_execution_modes:
       - plan_only

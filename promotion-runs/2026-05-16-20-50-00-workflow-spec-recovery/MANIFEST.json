@@ -1,0 +1,115 @@
+{
+  "workflow_id": "spec-recovery",
+  "run_id": "2026-05-16-20-50-00-workflow-spec-recovery",
+  "timestamp": "2026-05-16-20-50-00",
+  "status": "pass",
+  "steps": [
+    {
+      "step": 1,
+      "skill": "ui-surface-inventory",
+      "status": "pass",
+      "message": "Artifact found and valid",
+      "artifact": "examples\\fixtures\\full-chain\\spec-recovery\\surface-inventory.md",
+      "validator_findings": {
+        "zero_repair": [
+          "Hash Verified: Artifact 'surface-inventory.md' matches generation-time snapshot."
+        ],
+        "workflow_link": [
+          "Registry alignment verified for workflow 'spec-recovery'.",
+          "First step in workflow - no predecessor to link."
+        ]
+      }
+    },
+    {
+      "step": 2,
+      "skill": "ui-orchestrator",
+      "status": "pass",
+      "message": "Artifact found and valid",
+      "artifact": "examples\\fixtures\\full-chain\\spec-recovery\\reports\\ORCHESTRATOR-RECOMMENDATION.md",
+      "validator_findings": {
+        "zero_repair": [
+          "Hash Verified: Artifact 'reports/ORCHESTRATOR-RECOMMENDATION.md' matches generation-time snapshot."
+        ],
+        "workflow_link": [
+          "Registry alignment verified for workflow 'spec-recovery'.",
+          "Semantic Thread Verified: Single identifier link 'spec_id=pulse-recovery'.",
+          "Semantic Preservation verified: 6 core domain terms preserved across steps.",
+          "Workflow Intent verified: Artifact headers/intro align with 'spec-recovery'."
+        ]
+      }
+    },
+    {
+      "step": 3,
+      "skill": "ui-brief",
+      "status": "pass",
+      "message": "Artifact found and valid",
+      "artifact": "examples\\fixtures\\full-chain\\spec-recovery\\specs\\02-brief.md",
+      "validator_findings": {
+        "zero_repair": [
+          "Hash Verified: Artifact 'specs/02-brief.md' matches generation-time snapshot."
+        ],
+        "workflow_link": [
+          "Registry alignment verified for workflow 'spec-recovery'.",
+          "Semantic Thread Verified: Single identifier link 'spec_id=pulse-recovery'.",
+          "Semantic Preservation verified: 6 core domain terms preserved across steps.",
+          "Workflow Intent verified: Artifact headers/intro align with 'spec-recovery'."
+        ]
+      }
+    },
+    {
+      "step": 4,
+      "skill": "ui-visual-calibration",
+      "status": "pass",
+      "message": "Artifact found and valid",
+      "artifact": "examples\\fixtures\\full-chain\\spec-recovery\\specs\\03-visual-calibration.md",
+      "validator_findings": {
+        "zero_repair": [
+          "Hash Verified: Artifact 'specs/03-visual-calibration.md' matches generation-time snapshot."
+        ],
+        "workflow_link": [
+          "Registry alignment verified for workflow 'spec-recovery'.",
+          "Semantic Thread Verified: Single identifier link 'spec_id=pulse-recovery'.",
+          "Semantic Preservation verified: 7 core domain terms preserved across steps.",
+          "Workflow Intent verified: Artifact headers/intro align with 'spec-recovery'."
+        ]
+      }
+    },
+    {
+      "step": 5,
+      "skill": "ui-blueprint",
+      "status": "pass",
+      "message": "Artifact found and valid",
+      "artifact": "examples\\fixtures\\full-chain\\spec-recovery\\specs\\04-blueprint.md",
+      "validator_findings": {
+        "zero_repair": [
+          "Hash Verified: Artifact 'specs/04-blueprint.md' matches generation-time snapshot."
+        ],
+        "workflow_link": [
+          "Registry alignment verified for workflow 'spec-recovery'.",
+          "Semantic Thread Verified: Single identifier link 'spec_id=pulse-recovery'.",
+          "Semantic Preservation verified: 7 core domain terms preserved across steps.",
+          "Workflow Intent verified: Artifact headers/intro align with 'spec-recovery'."
+        ]
+      }
+    },
+    {
+      "step": 6,
+      "skill": "ui-to-issues",
+      "status": "pass",
+      "message": "Artifact found and valid",
+      "artifact": "examples\\fixtures\\full-chain\\spec-recovery\\reports\\issues.md",
+      "validator_findings": {
+        "zero_repair": [
+          "Hash Verified: Artifact 'reports/issues.md' matches generation-time snapshot."
+        ],
+        "workflow_link": [
+          "Registry alignment verified for workflow 'spec-recovery'.",
+          "Semantic Thread Verified: Single identifier link 'spec_id=pulse-recovery'.",
+          "Semantic Preservation verified: 6 core domain terms preserved across steps.",
+          "Workflow Intent verified: Artifact headers/intro align with 'spec-recovery'."
+        ]
+      }
+    }
+  ],
+  "fixture": "examples/fixtures/full-chain/spec-recovery"
+}

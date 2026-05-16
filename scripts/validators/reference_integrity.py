@@ -34,7 +34,10 @@ def validate_reference_integrity(skill_path):
 
     try:
         record = json.loads(record_path.read_text(encoding="utf-8"))
-        for artifact_name, meta in record.items():
+        artifacts = record.get("artifacts", record) if isinstance(record, dict) and isinstance(record.get("artifacts"), dict) else record
+        for artifact_name, meta in artifacts.items():
+            if not isinstance(meta, dict):
+                continue
             artifact_path = ref_dir / artifact_name
             expected_hash = meta.get("sha256")
             

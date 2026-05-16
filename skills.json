@@ -26,7 +26,7 @@
       "description": "Map an existing app into coherent scopes and surfaces before any spec work begins.",
       "input": "existing app (URL, screenshots, or source code)",
       "output": "UI scope map with surfaces, sub-surfaces, and recovery order",
-      "workflow_position": "first \u2014 always run before ui-brief on an existing product",
+      "workflow_position": "first — always run before ui-brief on an existing product",
       "next": [
         "ui-brief",
         "ui-inspector"
@@ -40,7 +40,11 @@
           "min_surface_candidates": 3,
           "require_ambiguous_boundary": true
         },
-        "blocking_failure_modes": ["hallucination", "scope_drift", "label_friction"]
+        "blocking_failure_modes": [
+          "hallucination",
+          "scope_drift",
+          "label_friction"
+        ]
       }
     },
     {
@@ -48,7 +52,7 @@
       "status": "stable",
       "description": "Turn a vague UI idea into a structured product and design brief.",
       "input": "rough feature idea or product description",
-      "output": "brief.md \u2014 goal, primary user, success criteria, constraints, non-goals",
+      "output": "brief.md — goal, primary user, success criteria, constraints, non-goals",
       "workflow_position": "step 1 of the core spec workflow",
       "prev": [
         "ui-surface-inventory"
@@ -65,7 +69,10 @@
           "min_findings": 5,
           "require_intent_alignment": true
         },
-        "blocking_failure_modes": ["hallucination", "scope_drift"]
+        "blocking_failure_modes": [
+          "hallucination",
+          "scope_drift"
+        ]
       }
     },
     {
@@ -73,7 +80,7 @@
       "status": "stable",
       "description": "Translate vague visual preferences into concrete layout and visual language decisions.",
       "input": "approved brief + visual references or aesthetic preferences",
-      "output": "visual-calibration.md \u2014 density, shape, surface style, palette guidance, typography",
+      "output": "visual-calibration.md — density, shape, surface style, palette guidance, typography",
       "workflow_position": "step 2 of the core spec workflow",
       "prev": [
         "ui-brief"
@@ -105,7 +112,7 @@
       "status": "stable",
       "description": "Map the user journey and decision points across a multi-screen feature.",
       "input": "approved brief",
-      "output": "flow.md \u2014 annotated screen-by-screen journey with transitions and decision points",
+      "output": "flow.md — annotated screen-by-screen journey with transitions and decision points",
       "workflow_position": "optional parallel step after ui-brief; run before ui-blueprint for multi-screen features",
       "prev": [
         "ui-brief"
@@ -123,7 +130,7 @@
       "status": "stable",
       "description": "Convert an approved brief into a concrete layout and visual blueprint.",
       "input": "approved brief + approved visual calibration",
-      "output": "blueprint.md \u2014 layout archetype, information hierarchy, text wireframe, responsive behaviour",
+      "output": "blueprint.md — layout archetype, information hierarchy, text wireframe, responsive behaviour",
       "workflow_position": "step 3 of the core spec workflow",
       "prev": [
         "ui-visual-calibration",
@@ -141,15 +148,19 @@
           "min_findings": 8,
           "require_structural_coherence": true
         },
-        "blocking_failure_modes": ["hallucination", "scope_drift", "artifact_drift"]
+        "blocking_failure_modes": [
+          "hallucination",
+          "scope_drift",
+          "artifact_drift"
+        ]
       }
     },
     {
       "name": "ui-system",
       "status": "stable",
-      "description": "Define the design token system \u2014 colours, typography, spacing, shape, shadow.",
+      "description": "Define the design token system — colours, typography, spacing, shape, shadow.",
       "input": "approved visual calibration + approved blueprint",
-      "output": "system.md \u2014 full token catalogue",
+      "output": "system.md — full token catalogue",
       "workflow_position": "step 4 of the core spec workflow",
       "prev": [
         "ui-blueprint"
@@ -165,10 +176,10 @@
     },
     {
       "name": "ui-screen-spec",
-      "status": "draft",
+      "status": "stable",
       "description": "Map components to screen regions and define data dependencies and state ownership.",
       "input": "approved blueprint + approved system",
-      "output": "screen-spec.md \u2014 region map, component assignments, data dependencies, state ownership",
+      "output": "screen-spec.md — region map, component assignments, data dependencies, state ownership",
       "workflow_position": "step 5 of the core spec workflow",
       "prev": [
         "ui-system"
@@ -180,14 +191,27 @@
       "canonical_output_paths": [
         "specs/06-screen-spec.md",
         "screen-spec.md"
-      ]
+      ],
+      "behavioral_criteria": {
+        "minimum_behavioral_complexity": {
+          "min_findings": 5
+        },
+        "blocking_failure_modes": [
+          "hallucination",
+          "scope_drift",
+          "label_friction",
+          "incomplete_context",
+          "handoff_failure",
+          "evidence_gap"
+        ]
+      }
     },
     {
       "name": "ui-component-spec",
       "status": "stable",
-      "description": "Specify a single interactive component exhaustively \u2014 anatomy, props, states, validation, accessibility.",
+      "description": "Specify a single interactive component exhaustively — anatomy, props, states, validation, accessibility.",
       "input": "approved screen spec (or approved blueprint for standalone components)",
-      "output": "component-specs/<component>.md \u2014 full state matrix",
+      "output": "component-specs/<component>.md — full state matrix",
       "workflow_position": "step 6 of the core spec workflow (per component)",
       "prev": [
         "ui-screen-spec"
@@ -204,9 +228,9 @@
     {
       "name": "ui-microcopy",
       "status": "stable",
-      "description": "Write or refine UX copy \u2014 button labels, error messages, empty states, tooltips.",
+      "description": "Write or refine UX copy — button labels, error messages, empty states, tooltips.",
       "input": "approved component specs or screen spec",
-      "output": "microcopy.md \u2014 copy for every interactive element, state, and edge case",
+      "output": "microcopy.md — copy for every interactive element, state, and edge case",
       "workflow_position": "step 7 of the core spec workflow",
       "prev": [
         "ui-component-spec"
@@ -224,7 +248,7 @@
       "status": "stable",
       "description": "Convert an approved spec into concrete, testable acceptance criteria.",
       "input": "approved spec package (brief through microcopy)",
-      "output": "acceptance.md \u2014 machine-checkable criteria for every state and behaviour",
+      "output": "acceptance.md — machine-checkable criteria for every state and behaviour",
       "workflow_position": "step 8 of the core spec workflow",
       "prev": [
         "ui-microcopy"
@@ -243,8 +267,8 @@
       "status": "stable",
       "description": "Validate a complete spec package for completeness, vocabulary, and state coverage before code generation.",
       "input": "full spec package (brief through acceptance)",
-      "output": "spec-linter-report.md \u2014 ranked issues with fixes",
-      "workflow_position": "step 9 \u2014 quality gate before ui-generate-code",
+      "output": "spec-linter-report.md — ranked issues with fixes",
+      "workflow_position": "step 9 — quality gate before ui-generate-code",
       "prev": [
         "ui-acceptance"
       ],
@@ -260,7 +284,10 @@
           "min_findings": 3,
           "require_pattern_matching": true
         },
-        "blocking_failure_modes": ["hallucination", "false_positive_spam"]
+        "blocking_failure_modes": [
+          "hallucination",
+          "false_positive_spam"
+        ]
       }
     },
     {
@@ -269,7 +296,7 @@
       "description": "Generate production-ready component code from an approved and linted spec package.",
       "input": "approved spec package + clean lint report",
       "output": "component source files, tests, and Storybook stories",
-      "workflow_position": "step 10 \u2014 implementation handoff",
+      "workflow_position": "step 10 — implementation handoff",
       "prev": [
         "ui-spec-linter"
       ],
@@ -279,25 +306,43 @@
     },
     {
       "name": "ui-inspector",
-      "status": "draft",
+      "status": "stable",
       "description": "Gather DOM inventory, computed styles, token usage, accessibility findings, and responsiveness data from a live or static implementation.",
       "input": "live URL, screenshot, or source code",
-      "output": "redlines/inspector-report.md \u2014 structured evidence catalogue",
-      "workflow_position": "step 11 \u2014 always run before ui-redline",
+      "output": "redlines/inspector-report.md — structured evidence catalogue",
+      "workflow_position": "step 11 — always run before ui-redline",
       "prev": [
         "ui-generate-code"
       ],
       "next": [
         "ui-redline"
-      ]
+      ],
+      "canonical_output_paths": [
+        "redlines/inspector-report.md",
+        "inspector-report.md",
+        "reports/inspector-report.md"
+      ],
+      "behavioral_criteria": {
+        "minimum_behavioral_complexity": {
+          "min_findings": 5
+        },
+        "blocking_failure_modes": [
+          "hallucination",
+          "scope_drift",
+          "label_friction",
+          "incomplete_context",
+          "handoff_failure",
+          "evidence_gap"
+        ]
+      }
     },
     {
       "name": "ui-redline",
       "status": "stable",
       "description": "Diagnose an existing UI implementation against an approved spec, rank mismatches, and prescribe exact fixes.",
       "input": "approved spec package + inspector report (or screenshot/code snippet for quick reviews)",
-      "output": "redlines/redline-audit.md \u2014 ranked mismatches with prescribed fixes and a refactor prompt",
-      "workflow_position": "step 12 \u2014 always run after ui-inspector for formal audits",
+      "output": "redlines/redline-audit.md — ranked mismatches with prescribed fixes and a refactor prompt",
+      "workflow_position": "step 12 — always run after ui-inspector for formal audits",
       "prev": [
         "ui-inspector"
       ],
@@ -325,7 +370,7 @@
       "description": "Wire a completed spec package into AI-agent-facing routing files so coding agents discover and use the active spec before editing implementation code.",
       "input": "completed or accepted spec package + agent-facing routing files (CLAUDE.md, AGENTS.md, GEMINI.md, llm-docs/, etc.)",
       "output": "routing report with exact edits or applied patches; DEPRECATED.md in superseded spec folders; updated 00-index.md discovery section",
-      "workflow_position": "final activation step \u2014 run after ui-docs-sync to make the spec operationally discoverable by AI agents",
+      "workflow_position": "final activation step — run after ui-docs-sync to make the spec operationally discoverable by AI agents",
       "prev": [
         "ui-docs-sync"
       ],
@@ -337,7 +382,7 @@
       "description": "Configure a repository for Interface Skills, including folders, agent routing, and root policy.",
       "input": "new or existing repository",
       "output": "INTERFACE_SKILLS.md, spec folders, and patched agent routing files (CLAUDE.md, AGENTS.md, etc.)",
-      "workflow_position": "initial setup \u2014 run once per repository before any other skills",
+      "workflow_position": "initial setup — run once per repository before any other skills",
       "prev": [],
       "next": [
         "ui-surface-inventory",
@@ -346,7 +391,7 @@
     },
     {
       "name": "ui-spec-reconcile",
-      "status": "draft",
+      "status": "stable",
       "description": "Reconcile a UI spec package with the current implementation after fixes or audits.",
       "input": "spec package + redline report or code evidence",
       "output": "updated spec package + reconciliation report",
@@ -357,7 +402,24 @@
       "next": [
         "ui-to-issues",
         "ui-docs-sync"
-      ]
+      ],
+      "canonical_output_paths": [
+        "reports/SPEC-RECONCILE-SUMMARY.md",
+        "reconciliation-report.md"
+      ],
+      "behavioral_criteria": {
+        "minimum_behavioral_complexity": {
+          "min_findings": 5
+        },
+        "blocking_failure_modes": [
+          "hallucination",
+          "scope_drift",
+          "label_friction",
+          "incomplete_context",
+          "handoff_failure",
+          "evidence_gap"
+        ]
+      }
     },
     {
       "name": "ui-to-issues",
@@ -384,12 +446,16 @@
           "min_findings": 5,
           "require_mixed_severity": true
         },
-        "blocking_failure_modes": ["hallucination", "scope_drift", "label_friction"]
+        "blocking_failure_modes": [
+          "hallucination",
+          "scope_drift",
+          "label_friction"
+        ]
       }
     },
     {
       "name": "ui-storybook-docs",
-      "status": "draft",
+      "status": "stable",
       "description": "Generate or update Storybook MDX documentation from a component spec.",
       "input": "approved component spec + generated component code",
       "output": "ComponentName.stories.mdx",
@@ -399,7 +465,25 @@
       ],
       "next": [
         "ui-docs-sync"
-      ]
+      ],
+      "canonical_output_paths": [
+        "ComponentName.stories.mdx",
+        "specs/ComponentName.stories.mdx",
+        "docs/ComponentName.stories.mdx"
+      ],
+      "behavioral_criteria": {
+        "minimum_behavioral_complexity": {
+          "min_findings": 5
+        },
+        "blocking_failure_modes": [
+          "hallucination",
+          "scope_drift",
+          "label_friction",
+          "incomplete_context",
+          "handoff_failure",
+          "evidence_gap"
+        ]
+      }
     },
     {
       "name": "ui-orchestrator",
@@ -407,7 +491,7 @@
       "description": "Analyse a spec package, identify the current state and gaps, and recommend the next skill to run.",
       "input": "spec package directory (any state of completion)",
       "output": "gap analysis + skill recommendation + suggested prompt",
-      "workflow_position": "meta-skill \u2014 can be run at any point; tells you where you are",
+      "workflow_position": "meta-skill — can be run at any point; tells you where you are",
       "prev": [],
       "next": [
         "any skill based on gap analysis"
@@ -421,7 +505,10 @@
           "min_findings": 2,
           "require_step_logic": true
         },
-        "blocking_failure_modes": ["hallucination", "dead_end_recommendation"]
+        "blocking_failure_modes": [
+          "hallucination",
+          "dead_end_recommendation"
+        ]
       }
     },
     {

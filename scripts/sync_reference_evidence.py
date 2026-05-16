@@ -23,6 +23,11 @@ def sync_references(skill_filter=None, run_filter=None):
     if skill_filter and run_filter:
         run_dir = PROMOTION_RUNS_DIR / run_filter
         result_path = run_dir / skill_filter / "result.json"
+        if not result_path.exists():
+            for p in run_dir.iterdir():
+                if p.is_dir() and (p / "result.json").exists():
+                    result_path = p / "result.json"
+                    break
         if result_path.exists():
             try:
                 with open(result_path, "r", encoding="utf-8") as f:
@@ -79,7 +84,10 @@ def sync_references(skill_filter=None, run_filter=None):
         
         review_path = run_dir / "HUMAN-REVIEW.md"
         if skill_filter:
+            # Try both candidate paths
             candidate_review = run_dir / skill_filter / "HUMAN-REVIEW.md"
+            if not candidate_review.exists() and 'result_path' in locals():
+                candidate_review = result_path.parent / "HUMAN-REVIEW.md"
             if candidate_review.exists():
                 review_path = candidate_review
                 

@@ -1,0 +1,8 @@
+{
+  "fixture": "ui-visual-calibration_downstream",
+  "classification": "pass",
+  "classification_msg": "Consumption Contract Verified: Upstream artifact 'visual-calibration.md' cited.; Semantic Continuity Verified: 7 upstream identifiers found in downstream.; Handoff Evidence: Exact citation of upstream artifact 'visual-calibration.md' found.; Handoff Evidence: Identifier linkage detected (2 matches).; Mechanical proof verified: Step handoff is zero-manual-repair stable.",
+  "evidence_level": "harness_validation",
+  "generated_fresh_output": false,
+  "downstream_chain": "ui-visual-calibration -> ui-blueprint"
+}

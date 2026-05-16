@@ -1,16 +1,16 @@
 {
   "artifacts": {
     "ORCHESTRATOR-RECOMMENDATION.md": {
-      "last_synced": "2026-05-16-20-13-34",
-      "source_run": "2026-05-16-20-13-34-retrofitted",
+      "last_synced": "2026-05-16-20-50-00",
+      "source_run": "2026-05-16-20-50-00-workflow-spec-recovery",
       "status": "verified_gold_standard",
-      "sha256": "af7d7e7136a32fbb93b87e902f4ea95e37a816d054d68ef77402605aa6fb14ce"
+      "sha256": "3a9e0e0cf981a5a2f7017f985e53b591a0230dd0b2b8042527d91fe2acbf7c98"
     }
   },
   "approval_metadata": {
-    "authorizing_run_id": "2026-05-16-20-13-34-retrofitted",
-    "approval_type": "human_review",
-    "sync_date": "2026-05-16-20-13-34"
+    "authorizing_run_id": "2026-05-16-20-50-00-workflow-spec-recovery",
+    "approval_type": "human_workflow_review",
+    "sync_date": "2026-05-16-20-50-00"
   },
   "metadata": {
     "skill_hash": "ff5e808c4b78212caac393ce250b49aae85b76f51832b3a2dfae63fd476eca7d",
@@ -25,7 +25,7 @@
       "human_workflow_review.py": "766f1d5c10e8d7846f07d1d9ce9dab3b125664e140ce5730949b6a9c123ec366",
       "promotion_plan.py": "a17089a2188ba905659814a40b4e163832a3575c9abe9e725190bbf7686a1448",
       "reference_evidence.py": "2089fce262686b00e46d68ae1932e7824bdbed7e24288ecb1ca8070aa6819ce7",
-      "reference_integrity.py": "810f68a24d4f2e102f7dbf00aacbf3a84007a5668bb481b73985dd72b8b94a84",
+      "reference_integrity.py": "eff33e8c429d1063412557e3cce1cf7b044165f4de2bbf33640ceeddc83e6acb",
       "workflow_link.py": "eed20e74a7d4509b15cfbc24d78ed6180b4efa78c71d96ee499ff25e49276f3a",
       "zero_repair.py": "8b58e0afa277fb159688284d38dacd06a4d52441993132abd076f4858c3f0bd4"
     }
