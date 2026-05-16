@@ -1,6 +1,15 @@
 import os
 import re
 import json
+import sys
+from pathlib import Path
+
+# Add REPO_ROOT to sys.path
+REPO_ROOT = Path(__file__).parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.append(str(REPO_ROOT))
+
+from scripts.validators.reference_integrity import validate_reference_integrity
 
 TODO_PATTERN = re.compile(r'(## TODO|- \[ \] TODO|TODO \(Human Review Required\))')
 
@@ -280,6 +289,16 @@ def validate_skills(target_skill=None):
                 print(f"[{skill_folder}] [FAIL] Explicitly referenced shared file '{filename}' does not exist")
                 skill_passed = False
             
+        # Check reference integrity (Phase 3)
+        ref_res = validate_reference_integrity(skill_path)
+        if ref_res.status == "fail":
+            for finding in ref_res.findings:
+                print(f"[{skill_folder}] [FAIL] reference_integrity: {finding}")
+            skill_passed = False
+        elif ref_res.status == "error":
+             print(f"[{skill_folder}] [ERROR] reference_integrity: {ref_res.findings[0]}")
+             skill_passed = False
+
         if skill_passed:
             print(f"[{skill_folder}] [OK] Valid")
         else:

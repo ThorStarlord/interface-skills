@@ -30,6 +30,10 @@
       "next": [
         "ui-brief",
         "ui-inspector"
+      ],
+      "canonical_output_paths": [
+        "reports/surface-inventory.md",
+        "surface-inventory.md"
       ]
     },
     {
@@ -44,6 +48,10 @@
       ],
       "next": [
         "ui-visual-calibration"
+      ],
+      "canonical_output_paths": [
+        "specs/02-brief.md",
+        "brief.md"
       ]
     },
     {
@@ -58,6 +66,10 @@
       ],
       "next": [
         "ui-blueprint"
+      ],
+      "canonical_output_paths": [
+        "specs/03-visual-calibration.md",
+        "visual-calibration.md"
       ]
     },
     {
@@ -72,6 +84,10 @@
       ],
       "next": [
         "ui-blueprint"
+      ],
+      "canonical_output_paths": [
+        "specs/03-flow.md",
+        "flow.md"
       ]
     },
     {
@@ -87,6 +103,10 @@
       ],
       "next": [
         "ui-system"
+      ],
+      "canonical_output_paths": [
+        "specs/04-blueprint.md",
+        "blueprint.md"
       ]
     },
     {
@@ -102,6 +122,10 @@
       "next": [
         "ui-screen-spec",
         "ui-component-spec"
+      ],
+      "canonical_output_paths": [
+        "specs/05-system.md",
+        "system.md"
       ]
     },
     {
@@ -117,6 +141,10 @@
       "next": [
         "ui-component-spec",
         "ui-microcopy"
+      ],
+      "canonical_output_paths": [
+        "specs/06-screen-spec.md",
+        "screen-spec.md"
       ]
     },
     {
@@ -132,6 +160,10 @@
       "next": [
         "ui-microcopy",
         "ui-acceptance"
+      ],
+      "canonical_output_paths": [
+        "specs/component-specs/*.md",
+        "component-specs/*.md"
       ]
     },
     {
@@ -146,6 +178,10 @@
       ],
       "next": [
         "ui-acceptance"
+      ],
+      "canonical_output_paths": [
+        "specs/06-microcopy.md",
+        "microcopy.md"
       ]
     },
     {
@@ -161,6 +197,10 @@
       "next": [
         "ui-spec-linter",
         "ui-generate-code"
+      ],
+      "canonical_output_paths": [
+        "specs/07-acceptance.md",
+        "acceptance.md"
       ]
     },
     {
@@ -175,6 +215,10 @@
       ],
       "next": [
         "ui-generate-code"
+      ],
+      "canonical_output_paths": [
+        "reports/spec-linter-report.md",
+        "spec-linter-report.md"
       ]
     },
     {
@@ -287,6 +331,10 @@
       ],
       "next": [
         "ui-generate-code"
+      ],
+      "canonical_output_paths": [
+        "reports/issues.md",
+        "issues.md"
       ]
     },
     {
@@ -313,6 +361,10 @@
       "prev": [],
       "next": [
         "any skill based on gap analysis"
+      ],
+      "canonical_output_paths": [
+        "reports/ORCHESTRATOR-RECOMMENDATION.md",
+        "ORCHESTRATOR-RECOMMENDATION.md"
       ]
     },
     {

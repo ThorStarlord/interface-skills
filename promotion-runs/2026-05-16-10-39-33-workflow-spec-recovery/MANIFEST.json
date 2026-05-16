@@ -1,0 +1,102 @@
+{
+  "workflow_id": "spec-recovery",
+  "run_id": "2026-05-16-10-39-33-workflow-spec-recovery",
+  "timestamp": "2026-05-16-10-39-33",
+  "steps": [
+    {
+      "step": 1,
+      "skill": "ui-surface-inventory",
+      "status": "pass",
+      "message": "Artifact found and valid",
+      "artifact": "examples\\fixtures\\full-chain\\spec-recovery\\surface-inventory.md",
+      "validator_findings": {
+        "workflow_link": [
+          "First step in workflow - no predecessor to link."
+        ],
+        "zero_repair": [
+          "No zero-repair proof found (.zero-repair or .zero-repair-hashes.json missing)."
+        ]
+      }
+    },
+    {
+      "step": 2,
+      "skill": "ui-orchestrator",
+      "status": "pass",
+      "message": "Artifact found and valid",
+      "artifact": "examples\\fixtures\\full-chain\\spec-recovery\\reports\\ORCHESTRATOR-RECOMMENDATION.md",
+      "validator_findings": {
+        "workflow_link": [
+          "Semantic Link found in content: referenced previous ID 'surface-inventory'",
+          "Deep Traceability WARNING: previous spec_id 'pulse-recovery-surface-inventory' not found in current artifact."
+        ],
+        "zero_repair": [
+          "No zero-repair proof found (.zero-repair or .zero-repair-hashes.json missing)."
+        ]
+      }
+    },
+    {
+      "step": 3,
+      "skill": "ui-brief",
+      "status": "pass",
+      "message": "Artifact found and valid",
+      "artifact": "examples\\fixtures\\full-chain\\spec-recovery\\specs\\02-brief.md",
+      "validator_findings": {
+        "workflow_link": [
+          "Semantic Link found in frontmatter: based_on='../reports/ORCHESTRATOR-RECOMMENDATION.md'"
+        ],
+        "zero_repair": [
+          "No zero-repair proof found (.zero-repair or .zero-repair-hashes.json missing)."
+        ]
+      }
+    },
+    {
+      "step": 4,
+      "skill": "ui-visual-calibration",
+      "status": "pass",
+      "message": "Artifact found and valid",
+      "artifact": "examples\\fixtures\\full-chain\\spec-recovery\\specs\\03-visual-calibration.md",
+      "validator_findings": {
+        "workflow_link": [
+          "Semantic Link found in frontmatter: based_on='02-brief.md'",
+          "Deep Traceability OK: spec_id 'pulse-recovery' propagated from previous step."
+        ],
+        "zero_repair": [
+          "No zero-repair proof found (.zero-repair or .zero-repair-hashes.json missing)."
+        ]
+      }
+    },
+    {
+      "step": 5,
+      "skill": "ui-blueprint",
+      "status": "pass",
+      "message": "Artifact found and valid",
+      "artifact": "examples\\fixtures\\full-chain\\spec-recovery\\specs\\04-blueprint.md",
+      "validator_findings": {
+        "workflow_link": [
+          "Semantic Link found in frontmatter: based_on='02-brief.md'",
+          "Deep Traceability OK: spec_id 'pulse-recovery' propagated from previous step."
+        ],
+        "zero_repair": [
+          "No zero-repair proof found (.zero-repair or .zero-repair-hashes.json missing)."
+        ]
+      }
+    },
+    {
+      "step": 6,
+      "skill": "ui-to-issues",
+      "status": "pass",
+      "message": "Artifact found and valid",
+      "artifact": "examples\\fixtures\\full-chain\\spec-recovery\\reports\\issues.md",
+      "validator_findings": {
+        "workflow_link": [
+          "Semantic Link found in content: referenced previous ID '04-blueprint'",
+          "Deep Traceability WARNING: previous spec_id 'pulse-recovery' not found in current artifact."
+        ],
+        "zero_repair": [
+          "No zero-repair proof found (.zero-repair or .zero-repair-hashes.json missing)."
+        ]
+      }
+    }
+  ],
+  "fixture": "examples/fixtures/full-chain/spec-recovery"
+}

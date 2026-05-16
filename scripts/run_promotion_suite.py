@@ -35,8 +35,44 @@ from scripts.validators.fixture_integrity import validate_fixture_integrity
 from scripts.validators.behavioral_result import validate_behavioral_result
 from scripts.validators.reference_evidence import validate_reference_evidence
 from scripts.validators.workflow_link import validate_workflow_link
+from scripts.validators.zero_repair import validate_zero_repair
 PROMOTION_RUNS_DIR = REPO_ROOT / "promotion-runs"
 PLAN_FILE = REPO_ROOT / "promotion-plan.yaml"
+SKILLS_FILE = REPO_ROOT / "skills.json"
+
+def load_skill_registry():
+    """Loads the machine-readable skill registry."""
+    if not SKILLS_FILE.exists():
+        return {"skills": []}
+    return json.loads(SKILLS_FILE.read_text(encoding="utf-8"))
+
+def resolve_skill_artifact(skill_name, fixture_path, registry):
+    """
+    Resolves the output artifact for a skill within a fixture using registry mappings.
+    Returns the Path to the artifact or None.
+    """
+    skill = next((s for s in registry.get("skills", []) if s["name"] == skill_name), None)
+    if not skill or "canonical_output_paths" not in skill:
+        return None
+    
+    for rel_path in skill["canonical_output_paths"]:
+        # Handle globs (like component-specs/*.md)
+        if "*" in rel_path:
+            parts = rel_path.split("/")
+            search_dir = fixture_path
+            for part in parts[:-1]:
+                search_dir = search_dir / part
+            
+            if search_dir.exists() and search_dir.is_dir():
+                matches = list(search_dir.glob(parts[-1]))
+                if matches:
+                    return matches[0]
+        else:
+            candidate = fixture_path / rel_path
+            if candidate.exists():
+                return candidate
+                
+    return None
 
 def parse_rubric(rubric_path):
     """
@@ -648,6 +684,8 @@ def run_promotion_for_workflow(workflow_id, plan, registry_path, dry_run=False):
     workflow_results = []
     total_failures = 0
     
+    skill_registry = load_skill_registry()
+    
     # Loop through steps
     for step in workflow.get("steps", []):
         skill_name = step["skill"]
@@ -657,59 +695,7 @@ def run_promotion_for_workflow(workflow_id, plan, registry_path, dry_run=False):
         skill_valid, skill_log = run_validator("validate-skill.py", REPO_ROOT / "skills" / skill_name, skill_name=skill_name)
         
         # 2. Find the output artifact for this step in the fixture
-        output_file = None
-        if skill_name == "ui-surface-inventory":
-            output_file = fixture_path / "reports" / "surface-inventory.md"
-            if not output_file.exists(): output_file = fixture_path / "surface-inventory.md"
-        elif skill_name == "ui-orchestrator":
-            output_file = fixture_path / "reports" / "ORCHESTRATOR-RECOMMENDATION.md"
-        elif skill_name == "ui-brief":
-            for candidate in [fixture_path / "specs" / "02-brief.md", fixture_path / "brief.md", fixture_path / "02-brief.md"]:
-                if candidate.exists():
-                    output_file = candidate
-                    break
-        elif skill_name == "ui-to-issues":
-            for candidate in [fixture_path / "reports" / "issues.md", fixture_path / "issues.md"]:
-                if candidate.exists():
-                    output_file = candidate
-                    break
-        elif skill_name == "ui-visual-calibration":
-            for candidate in [fixture_path / "specs" / "03-visual-calibration.md", fixture_path / "visual-calibration.md"]:
-                if candidate.exists():
-                    output_file = candidate
-                    break
-        elif skill_name == "ui-blueprint":
-            for candidate in [fixture_path / "specs" / "04-blueprint.md", fixture_path / "blueprint.md"]:
-                if candidate.exists():
-                    output_file = candidate
-                    break
-        elif skill_name == "ui-system":
-            for candidate in [fixture_path / "specs" / "05-system.md", fixture_path / "system.md"]:
-                if candidate.exists():
-                    output_file = candidate
-                    break
-        elif skill_name == "ui-component-spec":
-            # For component-spec, we look for any .md file in the component-specs/ directory
-            comp_dir = fixture_path / "specs" / "component-specs"
-            if not comp_dir.exists(): comp_dir = fixture_path / "component-specs"
-            if comp_dir.exists():
-                comp_files = list(comp_dir.glob("*.md"))
-                if comp_files: output_file = comp_files[0]
-        elif skill_name == "ui-microcopy":
-            for candidate in [fixture_path / "specs" / "06-microcopy.md", fixture_path / "microcopy.md"]:
-                if candidate.exists():
-                    output_file = candidate
-                    break
-        elif skill_name == "ui-acceptance":
-            for candidate in [fixture_path / "specs" / "07-acceptance.md", fixture_path / "acceptance.md"]:
-                if candidate.exists():
-                    output_file = candidate
-                    break
-        elif skill_name == "ui-spec-linter":
-            for candidate in [fixture_path / "reports" / "spec-linter-report.md", fixture_path / "spec-linter-report.md"]:
-                if candidate.exists():
-                    output_file = candidate
-                    break
+        output_file = resolve_skill_artifact(skill_name, fixture_path, skill_registry)
 
         step_success = True
         step_msg = "Artifact found and valid"
@@ -743,14 +729,35 @@ def run_promotion_for_workflow(workflow_id, plan, registry_path, dry_run=False):
             curr_step_data = {
                 "skill": skill_name,
                 "artifact": str(output_file.relative_to(REPO_ROOT)),
-                "input_artifact": prev_step_data.get("artifact") if prev_step_data else None
+                "input_artifact": prev_step_data.get("artifact") if prev_step_data else None,
+                "workflow_id": workflow_id,
+                "step_id": step["id"]
             }
             link_result = validate_workflow_link(run_dir, curr_step_data, prev_step_data)
+            
+            res = workflow_results[-1]
+            res["validator_findings"] = {}
+            res["validator_findings"]["workflow_link"] = link_result.findings
+
             if link_result.status != "pass":
                 print(f"      [FAIL] workflow_link: {', '.join(link_result.findings)}")
+                res["status"] = "fail"
+                res["message"] = "Workflow link validation failed"
                 total_failures += 1
             else:
                 print(f"      [OK] workflow_link: verified semantic and physical continuity")
+
+            # 5. Zero-Manual-Repair Verification
+            zero_repair_result = validate_zero_repair(fixture_path, output_file)
+            res["validator_findings"]["zero_repair"] = zero_repair_result.findings
+            
+            if zero_repair_result.status != "pass":
+                print(f"      [FAIL] zero_repair: {', '.join(zero_repair_result.findings)}")
+                res["status"] = "fail"
+                res["message"] = "Zero-manual-repair validation failed"
+                total_failures += 1
+            else:
+                print(f"      [OK] zero_repair: verified no manual modifications")
 
     # Record workflow manifest
     if not dry_run:
@@ -775,6 +782,20 @@ def run_promotion_for_workflow(workflow_id, plan, registry_path, dry_run=False):
             f.write("\n## Semantic Thread Audit\n\n")
             f.write("- [ ] Intent preserved from start to finish?\n")
             f.write("- [ ] Traceability maintained?\n")
+
+        with open(run_dir / "CONTINUITY-AUDIT.md", "a", encoding="utf-8") as f:
+            f.write("\n## Machine-Generated Validator Findings\n\n")
+            for res in workflow_results:
+                f.write(f"### Step {res['step']} ({res['skill']})\n")
+                f.write(f"- **Status**: {res['status']}\n")
+                f.write(f"- **Message**: {res['message']}\n")
+                # We need to preserve the validator findings in workflow_results
+                if "validator_findings" in res:
+                    for v_name, findings in res["validator_findings"].items():
+                        f.write(f"#### {v_name}\n")
+                        for finding in findings:
+                            f.write(f"- {finding}\n")
+                f.write("\n")
 
     print(f"\n>>> Workflow run complete. ID: {run_id}")
     return total_failures == 0

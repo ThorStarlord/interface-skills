@@ -67,16 +67,16 @@ def validate_workflow_link(run_dir, current_step, previous_step=None):
 
     # Semantic Linkage Check
     based_on = frontmatter.get("based_on", "")
+    curr_spec_id = frontmatter.get("spec_id", "")
     prev_skill = previous_step.get("skill")
+    prev_artifact_rel = previous_step.get("artifact")
+    prev_id = Path(prev_artifact_rel).stem if prev_artifact_rel else ""
     
-    # Pattern 1: frontmatter 'based_on' field
+    # 2.1 Pattern 1: frontmatter 'based_on' field
     if based_on:
         findings.append(f"Semantic Link found in frontmatter: based_on='{based_on}'")
     else:
         # Pattern 2: Search for skill name or previous artifact ID in content
-        prev_artifact_rel = previous_step.get("artifact")
-        prev_id = Path(prev_artifact_rel).stem if prev_artifact_rel else ""
-        
         if prev_id and prev_id in content:
             findings.append(f"Semantic Link found in content: referenced previous ID '{prev_id}'")
         elif prev_skill and prev_skill in content:
@@ -84,6 +84,31 @@ def validate_workflow_link(run_dir, current_step, previous_step=None):
         else:
             findings.append(f"Semantic Continuity Break: Output does not reference previous step '{prev_skill}' or artifact '{prev_id}'")
             failure_modes.append("missing_semantic_link")
+
+    # 2.2 Deep Link Verification: spec_id propagation
+    # If the previous step has a spec_id (found in its content), the current step should match it or reference it.
+    prev_artifact_path = Path(run_dir).parent.parent / prev_artifact_rel if prev_artifact_rel else None
+    if prev_artifact_path and prev_artifact_path.exists():
+        prev_content = prev_artifact_path.read_text(encoding="utf-8")
+        prev_fm_match = re.search(r"^---(.*?)---", prev_content, re.DOTALL)
+        if prev_fm_match:
+            try:
+                prev_fm = yaml.safe_load(prev_fm_match.group(1))
+                prev_spec_id = prev_fm.get("spec_id")
+                if prev_spec_id:
+                    if curr_spec_id:
+                        if curr_spec_id == prev_spec_id:
+                            findings.append(f"Deep Traceability OK: spec_id '{curr_spec_id}' propagated from previous step.")
+                        else:
+                            findings.append(f"Deep Traceability BREAK: spec_id mismatch. Current '{curr_spec_id}' vs Previous '{prev_spec_id}'")
+                            failure_modes.append("mismatched_spec_id")
+                    elif prev_spec_id in content:
+                         findings.append(f"Deep Traceability OK: referenced previous spec_id '{prev_spec_id}' in content.")
+                    else:
+                        findings.append(f"Deep Traceability WARNING: previous spec_id '{prev_spec_id}' not found in current artifact.")
+                        # Warning only for now to avoid breaking legacy fixtures
+            except yaml.YAMLError:
+                pass
 
     status = "pass" if not failure_modes else "fail"
     return ValidatorResult(
