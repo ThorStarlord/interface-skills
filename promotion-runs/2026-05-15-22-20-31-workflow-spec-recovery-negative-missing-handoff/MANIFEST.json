@@ -1,0 +1,22 @@
+{
+  "workflow_id": "spec-recovery-negative-missing-handoff",
+  "run_id": "2026-05-15-22-20-31-workflow-spec-recovery-negative-missing-handoff",
+  "timestamp": "2026-05-15-22-20-31",
+  "steps": [
+    {
+      "step": 1,
+      "skill": "ui-surface-inventory",
+      "status": "fail",
+      "message": "Missing artifact for ui-surface-inventory",
+      "artifact": null
+    },
+    {
+      "step": 2,
+      "skill": "ui-orchestrator",
+      "status": "fail",
+      "message": "Missing artifact for ui-orchestrator",
+      "artifact": null
+    }
+  ],
+  "fixture": "examples/fixtures/full-chain/spec-recovery-negative-missing-handoff"
+}

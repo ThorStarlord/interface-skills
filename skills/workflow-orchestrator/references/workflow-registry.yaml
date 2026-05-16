@@ -288,7 +288,7 @@ workflows:
         gate: session_close
 
   - id: spec-recovery
-    display_name: Spec Recovery
+    display_name: Spec Recovery (Full-Chain Stable)
     purpose: Recover UI specifications from messy existing implementation evidence.
     allowed_execution_modes:
       - plan_only

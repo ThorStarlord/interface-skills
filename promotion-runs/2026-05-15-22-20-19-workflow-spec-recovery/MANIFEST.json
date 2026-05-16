@@ -1,0 +1,36 @@
+{
+  "workflow_id": "spec-recovery",
+  "run_id": "2026-05-15-22-20-19-workflow-spec-recovery",
+  "timestamp": "2026-05-15-22-20-19",
+  "steps": [
+    {
+      "step": 1,
+      "skill": "ui-surface-inventory",
+      "status": "pass",
+      "message": "Artifact found and valid",
+      "artifact": "examples\\fixtures\\full-chain\\spec-recovery\\surface-inventory.md"
+    },
+    {
+      "step": 2,
+      "skill": "ui-orchestrator",
+      "status": "pass",
+      "message": "Artifact found and valid",
+      "artifact": "examples\\fixtures\\full-chain\\spec-recovery\\reports\\ORCHESTRATOR-RECOMMENDATION.md"
+    },
+    {
+      "step": 3,
+      "skill": "ui-brief",
+      "status": "pass",
+      "message": "Artifact found and valid",
+      "artifact": "examples\\fixtures\\full-chain\\spec-recovery\\specs\\02-brief.md"
+    },
+    {
+      "step": 4,
+      "skill": "ui-to-issues",
+      "status": "pass",
+      "message": "Artifact found and valid",
+      "artifact": "examples\\fixtures\\full-chain\\spec-recovery\\reports\\issues.md"
+    }
+  ],
+  "fixture": "examples/fixtures/full-chain/spec-recovery"
+}
