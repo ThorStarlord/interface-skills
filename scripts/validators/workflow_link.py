@@ -126,29 +126,39 @@ def validate_workflow_link(run_dir, current_step, previous_step=None, workflow_i
             findings.append("Semantic Thread BREAK: No shared identifiers (spec_id, run_id, etc.) found between steps.")
             failure_modes.append("missing_semantic_thread")
 
-        # Semantic Preservation Check (ADR 0008)
-        prev_title = re.search(r"^# (.*)", prev_content, re.MULTILINE)
-        curr_title = re.search(r"^# (.*)", content, re.MULTILINE)
-        if prev_title and curr_title:
-            p_t = prev_title.group(1).lower()
-            c_t = curr_title.group(1).lower()
-            p_words = {w for w in re.findall(r"\w{5,}", p_t)}
-            c_words = {w for w in re.findall(r"\w{5,}", c_t)}
-            shared = p_words.intersection(c_words)
-            if not shared and p_words:
-                findings.append("Semantic Drift Warning: Title changed significantly and shares no common vertical keywords.")
-            elif shared:
-                findings.append(f"Semantic Preservation: Vertical keywords '{', '.join(list(shared)[:3])}' preserved in titles.")
-            
-        # Final Workflow Meaning Check (ADR 0008)
-        # Verify if the output mentions the workflow goal or final intent
-        if workflow_id:
-            wf_keywords = workflow_id.split("-")
-            matched_wf = [k for k in wf_keywords if k.lower() in content.lower() and len(k) > 3]
-            if matched_wf:
-                findings.append(f"Workflow Intent Verified: Final artifact aligns with workflow ID keywords: {', '.join(matched_wf)}")
+        # Semantic Preservation Check (ADR 0008 Hardening)
+        # Verify if the core domain nouns are preserved across steps
+        prev_nouns = set(re.findall(r"\b[A-Z][a-z]{6,}\b", prev_content))
+        curr_nouns = set(re.findall(r"\b[A-Z][a-z]{6,}\b", content))
+        
+        common_fm = {"Section", "Content", "Status", "Report", "Fixture", "Surface", "Finding", "Description"}
+        prev_nouns = {n.lower() for n in prev_nouns if n not in common_fm}
+        curr_nouns = {n.lower() for n in curr_nouns if n not in common_fm}
+        
+        if prev_nouns:
+            preserved = prev_nouns.intersection(curr_nouns)
+            preservation_rate = len(preserved) / len(prev_nouns)
+            if preservation_rate < 0.3: # ADR 0008: 30% preservation of domain nouns
+                findings.append(f"Semantic Drift failure: Only {len(preserved)}/{len(prev_nouns)} core domain terms preserved ({preservation_rate:.0%}).")
+                failure_modes.append("semantic_drift")
             else:
-                findings.append(f"Workflow Intent Warning: Final artifact for '{workflow_id}' lacks explicit link to workflow keywords.")
+                findings.append(f"Semantic Preservation verified: {len(preserved)} core domain terms preserved across steps.")
+
+        # Final Workflow Intent Audit (ADR 0008)
+        if workflow_id:
+            # Check for the presence of the workflow's specific intent identifiers or goals
+            wf_parts = workflow_id.split("-")
+            intent_keywords = [p for p in wf_parts if len(p) > 3]
+            
+            # Check if these keywords appear in significant sections (Headers)
+            headers = re.findall(r"^#+ (.*)", content, re.MULTILINE)
+            header_text = " ".join(headers).lower()
+            
+            matched_intent = [k for k in intent_keywords if k.lower() in header_text or k.lower() in content.lower()[:500]]
+            if len(matched_intent) < len(intent_keywords) * 0.5:
+                findings.append(f"Workflow Intent warning: Artifact lacks strong alignment with workflow ID keywords ({matched_intent}).")
+            else:
+                findings.append(f"Workflow Intent verified: Artifact headers/intro align with '{workflow_id}'.")
 
 
     status = "pass" if not failure_modes else "fail"

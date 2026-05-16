@@ -31,6 +31,13 @@ if str(REPO_ROOT) not in sys.path:
 from scripts.validators.workflow_link import validate_workflow_link
 from scripts.validators.zero_repair import validate_zero_repair
 from scripts.validators.certification_kernel import evaluate_output_against_rubric, classify_run_result
+from scripts.validators.fixture_integrity import validate_fixture_integrity
+from scripts.validators.handoff_verification import validate_handoff
+from scripts.validators.promotion_plan import validate_promotion_plan
+from scripts.validators.human_review import validate_human_review
+from scripts.validators.human_workflow_review import validate_human_workflow_review
+from scripts.validators.final_artifact import validate_final_artifact
+from scripts.validators.reference_evidence import validate_reference_evidence
 PROMOTION_RUNS_DIR = REPO_ROOT / "promotion-runs"
 PLAN_FILE = REPO_ROOT / "promotion-plan.yaml"
 SKILLS_FILE = REPO_ROOT / "skills.json"
@@ -326,7 +333,7 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
                     )
                 
                 ds_passed = handoff_result.status == "pass"
-                ds_msg = handoff_result.findings[0]
+                ds_msg = "; ".join(handoff_result.findings)
                 
                 ds_result = {
                     "fixture": f"{fixture_name}_downstream",

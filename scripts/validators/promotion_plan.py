@@ -55,6 +55,9 @@ def validate_promotion_plan(plan_path, registry_path, repo_root=None):
             failure_modes.append("missing_skill")
             continue
             
+        skill_entry = next(s for s in reg_skills_list if s["name"] == skill)
+        current_status = skill_entry.get("status", "experimental")
+        
         # 2. Validate fixtures exist on disk
         skill_cfg = plan["skills"][skill]
         fixtures = list(skill_cfg.get("fixtures", []))
@@ -87,11 +90,12 @@ def validate_promotion_plan(plan_path, registry_path, repo_root=None):
                 # Family Validation: Support flexible layouts (ADR 0008)
                 family_candidates = [
                     Path("fixtures") / family,
-                    Path(family)
+                    Path(family),
+                    Path("examples/fixtures") / family
                 ]
                 if repo_root:
                     root = Path(repo_root)
-                    family_candidates = [root / "fixtures" / family, root / family]
+                    family_candidates = [root / "fixtures" / family, root / family, root / "examples/fixtures" / family]
                 
                 found_family_path = next((p for p in family_candidates if p.exists() and p.is_dir()), None)
                 if not found_family_path:
@@ -104,7 +108,6 @@ def validate_promotion_plan(plan_path, registry_path, repo_root=None):
                         try:
                             f_path.relative_to(found_family_path)
                         except ValueError:
-                            # Not strictly a failure yet in some layouts, but we warn/fail if ADR 0008 is strict
                             findings.append(f"Fixture convention violation: Fixture '{fixture_rel}' is outside its declared family '{family}'")
                             failure_modes.append("fixture_convention_violation")
             
@@ -125,6 +128,11 @@ def validate_promotion_plan(plan_path, registry_path, repo_root=None):
         # Workflow scope OR explicit require_downstream MUST have downstream verification
         require_downstream = prom_crit.get("require_downstream", False)
         
+        # ADR 0008: Stable promotion cannot bypass downstream expectations if require_downstream is True
+        if require_downstream and not downstream:
+            findings.append(f"Skill '{skill}' has require_downstream=True but is missing 'downstream' configuration.")
+            failure_modes.append("missing_downstream_proof")
+
         if requested_scope == "workflow" or require_downstream:
             if requested_scope == "workflow" and not require_downstream:
                 findings.append(f"Skill '{skill}' has 'workflow' scope but 'require_downstream' is false (ADR 0007 violation)")
@@ -143,9 +151,13 @@ def validate_promotion_plan(plan_path, registry_path, repo_root=None):
                 findings.append(f"Skill '{skill}' downstream 'next_skill' '{next_skill}' not found in registry")
                 failure_modes.append("missing_skill")
             
-            if not downstream.get("fixture"):
+            ds_fixture = downstream.get("fixture")
+            if not ds_fixture:
                 findings.append(f"Skill '{skill}' downstream config is missing 'fixture'")
                 failure_modes.append("incomplete_downstream_config")
+            elif ds_fixture not in fixtures:
+                findings.append(f"Skill '{skill}' downstream fixture '{ds_fixture}' is not in the skill's primary fixture list.")
+                failure_modes.append("invalid_downstream_fixture")
             
             # Validate handoff_mode (Mandatory for workflow/required, optional but validated for stable)
             mode = downstream.get("handoff_mode")
@@ -157,15 +169,14 @@ def validate_promotion_plan(plan_path, registry_path, repo_root=None):
                 failure_modes.append("invalid_config_value")
 
         # 5. Evidence Shape Requirements (ADR 0008)
-        # Verify required artifacts are defined if evidence_shape is specified
         shape = skill_cfg.get("evidence_shape")
         if shape:
             required_artifacts = shape.get("required_artifacts", [])
             if not isinstance(required_artifacts, list):
                 findings.append(f"Skill '{skill}' has invalid 'evidence_shape.required_artifacts' (Expected list)")
                 failure_modes.append("invalid_config")
-            elif requested_scope == "workflow" and not required_artifacts:
-                findings.append(f"Skill '{skill}' has 'workflow' scope but 'evidence_shape.required_artifacts' is empty")
+            elif (requested_scope == "workflow" or current_status == "stable") and not required_artifacts:
+                findings.append(f"Skill '{skill}' target scope/status requires evidence but 'evidence_shape.required_artifacts' is empty")
                 failure_modes.append("missing_required_artifacts")
 
             

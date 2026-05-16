@@ -64,50 +64,46 @@ def validate_handoff(run_dir, skill_name, next_skill_name, requested_scope="stab
             is_real = True
             findings.append(f"Handoff Evidence: Exact citation of upstream artifact '{up_basename}' found.")
     
-    # Check 2: Identifier Density (e.g. spec_id, run_id, or custom IDs like UI-123)
+    # Check 2: Identifier Density & Propagation Proof (ADR 0008)
     if upstream_artifact:
         up_content = Path(upstream_artifact).read_text(encoding="utf-8")
         # Look for standard ID patterns
         up_ids = set(re.findall(r"\b[A-Z]{2,4}-\d{3,5}\b|\b[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}\b|\bspec_[a-z0-9]+\b|\brun_[a-z0-9]+\b", up_content))
         if up_ids:
             found_ids = [i for i in up_ids if i in content]
-            if len(found_ids) >= 2: # Require at least 2 matching unique IDs for "real" proof
+            if len(found_ids) >= 3: # Higher threshold for 'real' proof in Phase 3
                 is_real = True
                 findings.append(f"Handoff Evidence: High identifier density ({len(found_ids)} matches).")
-            elif len(found_ids) == 1:
-                findings.append(f"Handoff Evidence: Single identifier match '{found_ids[0]}' (insufficient for 'real' proof).")
+            elif len(found_ids) >= 1:
+                findings.append(f"Handoff Evidence: Identifier linkage detected ({len(found_ids)} matches).")
 
-    # Check 3: Domain-specific keywords (fallback/supplementary)
-    real_handoff_keywords = ["spec-lint-report.md", "redline-audit.md", "surface-inventory.md", "blueprint.md", "brief.md"]
-    found_keywords = [k for k in real_handoff_keywords if k.lower() in content.lower()]
-    if found_keywords:
-        # Keywords alone don't prove consumption, but they support it
-        findings.append(f"Handoff Evidence: Domain-specific artifact references found: {', '.join(found_keywords)}")
-        if not is_real and len(found_keywords) >= 2:
-            is_real = True # Two or more specific artifact names is strong evidence
+    # Check 3: Semantic Data Point Extraction & Matching (Semantic Proof)
+    if upstream_artifact:
+        up_content = Path(upstream_artifact).read_text(encoding="utf-8")
+        # Extract meaningful strings (Findings, Descriptions, etc.)
+        # Look for content in lists or headers
+        potential_data = re.findall(r"(?:##|###|####|-)\s+(.{20,})", up_content)
+        data_points = [d.strip() for d in potential_data if len(d.strip()) > 30]
+        
+        if data_points:
+            # Check if significant fragments of these points exist in downstream
+            matches = 0
+            for point in data_points[:10]: # Check top 10 points
+                fragment = point[:40].lower() # Check first 40 chars
+                if fragment in content.lower():
+                    matches += 1
+            
+            if matches >= 2:
+                is_real = True
+                findings.append(f"Semantic Handoff Proof: {matches} unique data points from upstream were consumed by downstream.")
+            elif matches == 1:
+                findings.append(f"Semantic Handoff Link: 1 unique data point from upstream found in downstream.")
 
     if is_real:
         actual_mode = "real"
-        
-        # Check 4: Deep Semantic Consumption (ADR 0008)
-        # Verify that the downstream doesn't just mention the upstream artifact name,
-        # but also includes content derived from it (more than just IDs).
-        if upstream_artifact:
-            up_content = Path(upstream_artifact).read_text(encoding="utf-8")
-            # Heuristic: Check for unique sentences or phrases from upstream (simplified)
-            # We look for matches of specific findings or surface descriptions
-            potential_data_points = re.findall(r"##\s+(.*)|###\s+(.*)|-\s+(.*)", up_content)
-            data_points = [p[0] or p[1] or p[2] for p in potential_data_points if len(p[0] or p[1] or p[2]) > 20]
-            
-            consumed_points = [p for p in data_points if p.lower()[:30] in content.lower()] # Check first 30 chars
-            if consumed_points:
-                findings.append(f"Deep Consumption Verified: {len(consumed_points)} semantic data points from upstream found in downstream.")
-            elif data_points:
-                findings.append("Deep Consumption Warning: Downstream mentions upstream artifact but lacks evidence of consuming specific semantic data points.")
-                # We don't downgrade actual_mode to simulated yet, but we warn.
     else:
         actual_mode = "simulated"
-        findings.append("Actual handoff mode: simulated (lacks sufficient evidence of direct consumption)")
+        findings.append("Actual handoff mode: simulated (lacks sufficient evidence of direct semantic consumption)")
 
 
     # 3. Enforcement (ADR 0007 / ADR 0008)

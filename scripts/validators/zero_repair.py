@@ -33,11 +33,11 @@ def validate_zero_repair(fixture_path, artifact_path, run_manifest=None, request
             # For simplicity, we check if artifact_path ends with any key in hashes
             rel_path = None
             try:
-                rel_path = str(artifact_path.relative_to(fixture_path))
+                rel_path = str(artifact_path.relative_to(fixture_path)).replace("\\", "/")
             except ValueError:
                 # Artifact might be outside fixture (e.g. in run directory)
                 # Check for filename match
-                rel_path = artifact_path.name
+                rel_path = artifact_path.name.replace("\\", "/")
             
             expected_hash = hashes.get(rel_path)
             

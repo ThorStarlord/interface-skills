@@ -53,8 +53,8 @@ def validate_behavioral_result(output_content, skill_name, thresholds=None, inpu
             if not propagated_ids:
                 findings.append(f"Traceability failure: None of the {len(input_ids)} input IDs were found in output.")
                 failure_modes.append("traceability_loss")
-            elif len(propagated_ids) < len(input_ids) * 0.5: # Heuristic: at least 50%
-                findings.append(f"Traceability warning: Only {len(propagated_ids)}/{len(input_ids)} input IDs were propagated.")
+            elif len(propagated_ids) < len(input_ids) * 0.8: # ADR 0008: Stricter (80%)
+                findings.append(f"Traceability warning: Only {len(propagated_ids)}/{len(input_ids)} input IDs were propagated (Target: 80%+).")
             else:
                 findings.append(f"Traceability verified: Propagated {len(propagated_ids)}/{len(input_ids)} IDs.")
 
@@ -64,39 +64,41 @@ def validate_behavioral_result(output_content, skill_name, thresholds=None, inpu
             findings.append(f"Boundedness failure: Hallucinated IDs detected: {', '.join(list(hallucinated_ids)[:5])}")
             failure_modes.append("hallucination_detected")
 
-        # 3.3 Semantic Derivation: Check if unique keywords from input appear in output
-        # (Excluding common structural words)
-        input_keywords = set(re.findall(r"\b[a-zA-Z]{6,}\b", input_content))
-        common_words = {"section", "content", "status", "report", "finding", "surface", "inventory", "fixture", "context"}
-        input_keywords = {w.lower() for w in input_keywords if w.lower() not in common_words}
+        # 3.3 Semantic Derivation: Deep grounding check (ADR 0008)
+        # Extract meaningful domain terms (Proper nouns or long technical terms)
+        domain_terms = set(re.findall(r"\b[A-Z][a-z]{5,}\b|\b[a-z]{8,}\b", input_content))
+        common_words = {"section", "content", "status", "report", "finding", "surface", "inventory", "fixture", "context", "description", "observed"}
+        domain_terms = {w.lower() for w in domain_terms if w.lower() not in common_words}
         
-        if input_keywords:
-            matched_keywords = {w for w in input_keywords if w in output_content.lower()}
-            derivation_ratio = len(matched_keywords) / len(input_keywords) if input_keywords else 0
-            if derivation_ratio < 0.1 and len(input_keywords) > 10: # Heuristic: at least 10% for large inputs
-                findings.append(f"Semantic Derivation Warning: Low keyword overlap ({len(matched_keywords)}/{len(input_keywords)}). Output may not be sufficiently grounded in input.")
+        if domain_terms:
+            matched_terms = {w for w in domain_terms if w in output_content.lower()}
+            derivation_ratio = len(matched_terms) / len(domain_terms) if domain_terms else 0
+            if derivation_ratio < 0.2: # Target 20% grounding for technical terms
+                findings.append(f"Semantic Grounding failure: Low domain term overlap ({len(matched_terms)}/{len(domain_terms)}). Output appears disconnected from input reality.")
+                failure_modes.append("low_grounding")
             else:
-                findings.append(f"Semantic Derivation Verified: Output is grounded in input content ({len(matched_keywords)} shared keywords).")
+                findings.append(f"Semantic Grounding verified: Output reflects {len(matched_terms)} domain terms from input.")
 
     # 4. Complexity Check (Skill-Specific Matrix)
-    # This logic should eventually move fully to registry, but kept here for depth
     if thresholds:
         min_items = thresholds.get("min_findings") or thresholds.get("min_surface_candidates") or 0
         
-        # Determine item pattern based on skill
-        item_pattern = r"(?:^|\n)\s*(?:##|###|####|-)\s+" # Generic markdown headers or list items
-        if skill_name == "ui-surface-inventory":
-            item_pattern = r"(?:##|###|####)\s+Surface|Surface\s+\d+"
-        elif skill_name == "ui-to-issues":
-            item_pattern = r"^\s*-\s+\[ \]|(?:##|###)\s+Issue|Finding\s+\d+"
-            
-        found_items = len(re.findall(item_pattern, output_content, re.MULTILINE | re.IGNORECASE))
+        # Item identification patterns
+        item_patterns = [
+            r"(?:##|###|####)\s+Surface|Surface\s+\d+",
+            r"^\s*-\s+\[ \]|(?:##|###)\s+Issue|Finding\s+\d+",
+            r"(?:##|###|####)\s+Component|Module|View"
+        ]
         
-        if found_items < min_items:
-            findings.append(f"Low behavioral complexity: {found_items} items found, expected at least {min_items}")
+        total_items = 0
+        for pattern in item_patterns:
+            total_items += len(re.findall(pattern, output_content, re.MULTILINE | re.IGNORECASE))
+        
+        if total_items < min_items:
+            findings.append(f"Judgment Fidelity Warning: Low behavioral complexity ({total_items} items, target {min_items}). Fixture may be too simple or skill may be under-performing.")
             failure_modes.append("low_complexity")
         else:
-            findings.append(f"Complexity verified: {found_items} items detected.")
+            findings.append(f"Complexity verified: {total_items} items detected.")
 
     status = "pass" if not failure_modes else "fail"
     return ValidatorResult(

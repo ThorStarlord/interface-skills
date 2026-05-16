@@ -2,11 +2,18 @@ import json
 import os
 from pathlib import Path
 
+from scripts.enforce_promotion_lock import check_promotion_lock
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SKILLS_DIR = REPO_ROOT / "skills"
 SKILLS_JSON = REPO_ROOT / "skills.json"
 
 def update_registry():
+    # 0. Enforce Promotion Lock (ADR 0008)
+    if not check_promotion_lock():
+        print("Registry update ABORTED: Promotion Lock is active.")
+        return
+
     with open(SKILLS_JSON, 'r', encoding='utf-8') as f:
         data = json.load(f)
     

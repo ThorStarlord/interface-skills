@@ -18,8 +18,9 @@ skills:
     downstream:
       fixture: examples/promotion/ui-surface-inventory
       next_skill: ui-inspector
+      handoff_mode: real
     behavioral_criteria:
-      fixture_family: inventory
+      fixture_family: examples/promotion/ui-surface-inventory
       minimum_behavioral_complexity:
         min_surface_candidates: 3
         require_ambiguous_boundary: true
@@ -42,8 +43,9 @@ skills:
     downstream:
       fixture: examples/promotion/ui-blueprint
       next_skill: ui-visual-calibration
+      handoff_mode: real
     behavioral_criteria:
-      fixture_family: brief_generation
+      fixture_family: examples/promotion
       minimum_behavioral_complexity:
         require_intent_alignment: true
         require_scope_bounding: true
@@ -63,7 +65,7 @@ skills:
       require_messy_fail: false
       require_downstream: false
     behavioral_criteria:
-      fixture_family: flow_generation
+      fixture_family: examples/promotion/ui-flow
       minimum_behavioral_complexity:
         require_navigation_logic: true
       blocking_failure_modes: [hallucination, scope_drift]
@@ -78,8 +80,9 @@ skills:
     downstream:
       fixture: examples/promotion/ui-blueprint
       next_skill: ui-to-issues
+      handoff_mode: real
     behavioral_criteria:
-      fixture_family: blueprint_generation
+      fixture_family: examples/promotion/ui-blueprint
       minimum_behavioral_complexity:
         require_structural_coherence: true
         require_artifact_links: true
@@ -101,8 +104,9 @@ skills:
     downstream:
       fixture: examples/promotion/ui-system
       next_skill: ui-component-spec
+      handoff_mode: real
     behavioral_criteria:
-      fixture_family: system_architecture
+      fixture_family: examples/promotion/ui-system
       minimum_behavioral_complexity:
         require_component_hierarchy: true
       blocking_failure_modes: [hallucination, scope_drift]
@@ -117,8 +121,9 @@ skills:
     downstream:
       fixture: examples/promotion/ui-component-spec
       next_skill: ui-spec-linter
+      handoff_mode: real
     behavioral_criteria:
-      fixture_family: component_specification
+      fixture_family: examples/promotion/ui-component-spec
       minimum_behavioral_complexity:
         require_prop_definitions: true
       blocking_failure_modes: [hallucination, scope_drift]
@@ -133,8 +138,9 @@ skills:
     downstream:
       fixture: examples/promotion/ui-microcopy
       next_skill: ui-docs-sync
+      handoff_mode: real
     behavioral_criteria:
-      fixture_family: microcopy_generation
+      fixture_family: examples/promotion/ui-microcopy
       minimum_behavioral_complexity:
         require_tone_consistency: true
       blocking_failure_modes: [hallucination, scope_drift]
@@ -149,8 +155,9 @@ skills:
     downstream:
       fixture: examples/promotion/ui-acceptance
       next_skill: ui-to-issues
+      handoff_mode: real
     behavioral_criteria:
-      fixture_family: acceptance_criteria
+      fixture_family: examples/promotion/ui-acceptance
       minimum_behavioral_complexity:
         require_edge_cases: true
       blocking_failure_modes: [hallucination, scope_drift]
@@ -165,8 +172,9 @@ skills:
     downstream:
       fixture: examples/promotion/ui-visual-calibration
       next_skill: ui-orchestrator
+      handoff_mode: real
     behavioral_criteria:
-      fixture_family: spec_linting
+      fixture_family: examples/promotion/ui-visual-calibration
       minimum_behavioral_complexity:
         require_pattern_matching: true
       blocking_failure_modes: [hallucination, scope_drift]
@@ -179,7 +187,7 @@ skills:
       require_messy_fail: false
       require_downstream: false
     behavioral_criteria:
-      fixture_family: code_generation
+      fixture_family: examples/promotion/ui-visual-calibration
       minimum_behavioral_complexity:
         require_compilation: true
       blocking_failure_modes: [hallucination, scope_drift]
@@ -194,8 +202,9 @@ skills:
     downstream:
       fixture: examples/promotion/ui-redline
       next_skill: ui-visual-calibration
+      handoff_mode: real
     behavioral_criteria:
-      fixture_family: redline_generation
+      fixture_family: examples/promotion/ui-redline
       minimum_behavioral_complexity:
         require_pixel_precision: true
       blocking_failure_modes: [hallucination, scope_drift]
@@ -210,8 +219,9 @@ skills:
     downstream:
       fixture: examples/promotion/ui-docs-sync
       next_skill: ui-orchestrator
+      handoff_mode: real
     behavioral_criteria:
-      fixture_family: documentation_sync
+      fixture_family: examples/promotion/ui-docs-sync
       minimum_behavioral_complexity:
         require_markdown_integrity: true
       blocking_failure_modes: [hallucination, scope_drift]
@@ -224,7 +234,7 @@ skills:
       require_messy_fail: false
       require_downstream: false
     behavioral_criteria:
-      fixture_family: agent_routing
+      fixture_family: examples/promotion/ui-agent-routing
       minimum_behavioral_complexity:
         require_capability_mapping: true
       blocking_failure_modes: [hallucination, scope_drift]
@@ -237,7 +247,7 @@ skills:
       require_messy_fail: false
       require_downstream: false
     behavioral_criteria:
-      fixture_family: orchestration
+      fixture_family: examples/promotion/ui-visual-calibration
       minimum_behavioral_complexity:
         require_step_logic: true
       blocking_failure_modes: [hallucination, scope_drift]
@@ -250,7 +260,7 @@ skills:
       require_messy_fail: false
       require_downstream: false
     behavioral_criteria:
-      fixture_family: issue_generation
+      fixture_family: examples/promotion/ui-to-issues
       minimum_behavioral_complexity:
         min_findings: 5
         require_mixed_severity: true
