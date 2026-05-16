@@ -1,15 +1,15 @@
-# Pulse Recovery Inventory
+---
+spec_type: inventory
+spec_id: pulse-recovery-surface-inventory
+created: 2026-05-16
+status: approved
+surface_type: multi-surface-map
+---
 
-## Surfaces
+# UI Surface Inventory: Pulse App
 
-### Surface 1: Dashboard
-- **Path**: `/dashboard`
-- **Goal**: Trend monitoring.
+## 1. Purpose
+Retrospective mapping of the Pulse App dashboard.
 
-### Surface 2: Settings
-- **Path**: `/settings`
-- **Goal**: App configuration.
-
-### Surface 3: Alerts
-- **Path**: `/alerts`
-- **Goal**: Notification management.
+## 2. Source evidence
+- `SOURCE.md`

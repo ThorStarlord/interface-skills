@@ -34,6 +34,7 @@ from scripts.validators.handoff_verification import validate_handoff
 from scripts.validators.fixture_integrity import validate_fixture_integrity
 from scripts.validators.behavioral_result import validate_behavioral_result
 from scripts.validators.reference_evidence import validate_reference_evidence
+from scripts.validators.workflow_link import validate_workflow_link
 PROMOTION_RUNS_DIR = REPO_ROOT / "promotion-runs"
 PLAN_FILE = REPO_ROOT / "promotion-plan.yaml"
 
@@ -672,6 +673,43 @@ def run_promotion_for_workflow(workflow_id, plan, registry_path, dry_run=False):
                 if candidate.exists():
                     output_file = candidate
                     break
+        elif skill_name == "ui-visual-calibration":
+            for candidate in [fixture_path / "specs" / "03-visual-calibration.md", fixture_path / "visual-calibration.md"]:
+                if candidate.exists():
+                    output_file = candidate
+                    break
+        elif skill_name == "ui-blueprint":
+            for candidate in [fixture_path / "specs" / "04-blueprint.md", fixture_path / "blueprint.md"]:
+                if candidate.exists():
+                    output_file = candidate
+                    break
+        elif skill_name == "ui-system":
+            for candidate in [fixture_path / "specs" / "05-system.md", fixture_path / "system.md"]:
+                if candidate.exists():
+                    output_file = candidate
+                    break
+        elif skill_name == "ui-component-spec":
+            # For component-spec, we look for any .md file in the component-specs/ directory
+            comp_dir = fixture_path / "specs" / "component-specs"
+            if not comp_dir.exists(): comp_dir = fixture_path / "component-specs"
+            if comp_dir.exists():
+                comp_files = list(comp_dir.glob("*.md"))
+                if comp_files: output_file = comp_files[0]
+        elif skill_name == "ui-microcopy":
+            for candidate in [fixture_path / "specs" / "06-microcopy.md", fixture_path / "microcopy.md"]:
+                if candidate.exists():
+                    output_file = candidate
+                    break
+        elif skill_name == "ui-acceptance":
+            for candidate in [fixture_path / "specs" / "07-acceptance.md", fixture_path / "acceptance.md"]:
+                if candidate.exists():
+                    output_file = candidate
+                    break
+        elif skill_name == "ui-spec-linter":
+            for candidate in [fixture_path / "reports" / "spec-linter-report.md", fixture_path / "spec-linter-report.md"]:
+                if candidate.exists():
+                    output_file = candidate
+                    break
 
         step_success = True
         step_msg = "Artifact found and valid"
@@ -699,6 +737,20 @@ def run_promotion_for_workflow(workflow_id, plan, registry_path, dry_run=False):
             total_failures += 1
         else:
             print(f"      [OK] {step_msg}")
+            
+            # 4. Workflow-Link Validation (Tracer Bullet)
+            prev_step_data = workflow_results[-2] if len(workflow_results) > 1 else None
+            curr_step_data = {
+                "skill": skill_name,
+                "artifact": str(output_file.relative_to(REPO_ROOT)),
+                "input_artifact": prev_step_data.get("artifact") if prev_step_data else None
+            }
+            link_result = validate_workflow_link(run_dir, curr_step_data, prev_step_data)
+            if link_result.status != "pass":
+                print(f"      [FAIL] workflow_link: {', '.join(link_result.findings)}")
+                total_failures += 1
+            else:
+                print(f"      [OK] workflow_link: verified semantic and physical continuity")
 
     # Record workflow manifest
     if not dry_run:

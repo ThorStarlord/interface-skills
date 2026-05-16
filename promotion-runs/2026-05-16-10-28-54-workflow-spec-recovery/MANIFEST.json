@@ -1,0 +1,50 @@
+{
+  "workflow_id": "spec-recovery",
+  "run_id": "2026-05-16-10-28-54-workflow-spec-recovery",
+  "timestamp": "2026-05-16-10-28-54",
+  "steps": [
+    {
+      "step": 1,
+      "skill": "ui-surface-inventory",
+      "status": "fail",
+      "message": "Package validation failed",
+      "artifact": "examples\\fixtures\\full-chain\\spec-recovery\\surface-inventory.md"
+    },
+    {
+      "step": 2,
+      "skill": "ui-orchestrator",
+      "status": "fail",
+      "message": "Package validation failed",
+      "artifact": "examples\\fixtures\\full-chain\\spec-recovery\\reports\\ORCHESTRATOR-RECOMMENDATION.md"
+    },
+    {
+      "step": 3,
+      "skill": "ui-brief",
+      "status": "fail",
+      "message": "Package validation failed",
+      "artifact": "examples\\fixtures\\full-chain\\spec-recovery\\specs\\02-brief.md"
+    },
+    {
+      "step": 4,
+      "skill": "ui-visual-calibration",
+      "status": "fail",
+      "message": "Package validation failed",
+      "artifact": "examples\\fixtures\\full-chain\\spec-recovery\\specs\\03-visual-calibration.md"
+    },
+    {
+      "step": 5,
+      "skill": "ui-blueprint",
+      "status": "fail",
+      "message": "Package validation failed",
+      "artifact": "examples\\fixtures\\full-chain\\spec-recovery\\specs\\04-blueprint.md"
+    },
+    {
+      "step": 6,
+      "skill": "ui-to-issues",
+      "status": "fail",
+      "message": "Package validation failed",
+      "artifact": "examples\\fixtures\\full-chain\\spec-recovery\\reports\\issues.md"
+    }
+  ],
+  "fixture": "examples/fixtures/full-chain/spec-recovery"
+}

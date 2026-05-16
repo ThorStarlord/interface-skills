@@ -1,0 +1,3 @@
+workflow_overrides:
+  spec-recovery:
+    fixture: "examples/fixtures/full-chain/spec-recovery-link"

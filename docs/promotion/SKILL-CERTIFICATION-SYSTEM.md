@@ -37,6 +37,7 @@ The ecosystem is a modular collection of deterministic validators located in `sc
 *   **Behavioral Result** (`behavioral_result.py`): Checks for trivial placeholders and enforces complexity thresholds.
 *   **Contract Enforcement** (`handoff_verification.py`): Verifies that downstream skills can correctly consume the output.
 *   **Governance Validation** (`human_review.py`): Verifies that a `HUMAN-REVIEW.md` exists with explicit approval.
+*   **Workflow Continuity** (`workflow_link.py`): Verifies physical and semantic "Chain of Custody" between skills in a multi-step workflow.
 *   **Reference Snapshot** (`reference_evidence.py`): Ensures the curated "Gold Standard" evidence is complete and traceable.
 
 ## 5. Evidence Lifecycle
@@ -84,9 +85,11 @@ To ensure rapid remediation, every validation failure has a clear owner.
 - [x] Integration of Governance gates and Behavioral shape enforcement.
 
 ### Phase 2: Workflow Stability Generalization (Active)
-**Status: Following established ADR 0007 / spec-recovery precedents.**
+**Status: Transitioning from tracer bullet to registry-wide coverage.**
+- [x] Implement the first `Workflow-Link Validator` for physical and semantic continuity.
+- [x] Expand `spec-recovery` workflow coverage to full 6-step spec chain.
 - [ ] Extend full-chain validation beyond the certified `spec-recovery` workflow.
-- [ ] Implement reusable workflow-level validators for zero-manual-repair handoffs.
+- [ ] Generalize `zero-manual-repair` handoff verification across all workflows in `workflow-registry.yaml`.
 - [ ] Expand regression coverage across `workflow-registry.yaml`.
 
 ### Phase 3: Automated Evidence Lifecycle (Future)

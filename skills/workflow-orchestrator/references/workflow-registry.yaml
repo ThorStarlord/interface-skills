@@ -309,6 +309,14 @@ workflows:
         step_type: local_execution
         gate: review_brief
       - id: 4
+        skill: ui-visual-calibration
+        step_type: local_execution
+        gate: review_visual_direction
+      - id: 5
+        skill: ui-blueprint
+        step_type: local_execution
+        gate: review_blueprint
+      - id: 6
         skill: ui-to-issues
         step_type: local_execution
         gate: review_issues

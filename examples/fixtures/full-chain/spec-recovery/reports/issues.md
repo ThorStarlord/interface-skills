@@ -1,6 +1,6 @@
-# Pulse Implementation Issues
+# Pulse App Issues
 
-## Issues
+Based on [04-blueprint.md](../specs/04-blueprint.md).
 
-- [ ] Issue 1: Implement trend graph with `health-green`.
-- [ ] Issue 2: Create stat cards for server health.
+## Findings
+- [ ] Mismatched contrast in health-green labels.
