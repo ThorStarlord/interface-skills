@@ -31,6 +31,7 @@ if str(REPO_ROOT) not in sys.path:
 from scripts.validators.human_review import validate_human_review
 from scripts.validators.promotion_plan import validate_promotion_plan
 from scripts.validators.handoff_verification import validate_handoff
+from scripts.validators.fixture_integrity import validate_fixture_integrity
 PROMOTION_RUNS_DIR = REPO_ROOT / "promotion-runs"
 PLAN_FILE = REPO_ROOT / "promotion-plan.yaml"
 
@@ -281,6 +282,13 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
         fixture_path = REPO_ROOT / fixture_rel_path
         fixture_name = fixture_path.name
         print(f"  - Testing fixture: {fixture_name}")
+        
+        # Pre-flight: Fixture Integrity
+        integrity_result = validate_fixture_integrity(fixture_path)
+        if integrity_result.status != "pass":
+            print(f"    [FAIL] Fixture integrity check failed: {', '.join(integrity_result.findings)}")
+            total_failures += 1
+            continue
         
         fixture_run_dir = run_dir / fixture_name
         if not dry_run:
