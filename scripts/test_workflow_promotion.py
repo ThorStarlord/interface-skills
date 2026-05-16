@@ -24,7 +24,7 @@ class TestWorkflowPromotion(unittest.TestCase):
         workflow_id = "spec-recovery"
         workflow = next((w for w in self.registry.get("workflows", []) if w["id"] == workflow_id), None)
         self.assertIsNotNone(workflow)
-        self.assertEqual(workflow["display_name"], "Spec Recovery (Full-Chain Stable)")
+        self.assertEqual(workflow["display_name"], "Spec Recovery")
 
     def test_positive_workflow_run(self):
         """Verify that a valid workflow run returns success."""

@@ -23,6 +23,9 @@ jobs:
       - name: Run skill validator
         run: python scripts/validate-skill.py
 
+      - name: Run Unit Tests
+        run: python -m unittest discover scripts -p "test_*.py"
+
       - name: Run examples validator
         run: python scripts/validate-examples.py
 

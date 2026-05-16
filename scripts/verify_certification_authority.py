@@ -123,45 +123,37 @@ def verify_certification():
                 wf_status = wf.get("status", "draft")
                 print(f"    - Workflow: {wf_id} ({wf_status})")
                 
-                # Mandatory check for stable workflows
                 ref = wf_refs.get(wf_id)
-                if wf_status == "stable":
-                    if not ref:
-                        print(f"      [FAIL] Stable workflow has no entry in workflow_reference_record.json.")
-                        success = False
-                        continue
-                    
-                    source_run_id = ref.get("source_run")
-                    if not source_run_id:
-                        print(f"      [FAIL] Workflow reference missing 'source_run'.")
-                        success = False
-                        continue
-                        
-                    run_dir = PROMOTION_RUNS_DIR / source_run_id
-                    if not run_dir.exists():
-                        print(f"      [FAIL] Certified run {source_run_id} missing from promotion-runs/.")
-                        success = False
-                        continue
-                    
-                    review_path = run_dir / "HUMAN-WORKFLOW-REVIEW.md"
-                    if not review_path.exists():
-                        print(f"      [FAIL] Certified run {source_run_id} has no human review.")
-                        success = False
-                    else:
-                        from scripts.validators.human_workflow_review import validate_human_workflow_review
-                        h_result = validate_human_workflow_review(review_path, requested_scope="workflow")
-                        if h_result.status != "pass":
-                            print(f"      [FAIL] Certified run {source_run_id} not approved: {', '.join(h_result.findings)}")
-                            success = False
-                        else:
-                            print(f"      [OK] Certified run found and verified: {source_run_id}")
+                # Mandatory certification check for ALL workflows in registry
+                if not ref:
+                    print(f"      [FAIL] Workflow has no entry in workflow_reference_record.json.")
+                    success = False
+                    continue
                 
+                source_run_id = ref.get("source_run")
+                if not source_run_id:
+                    print(f"      [FAIL] Workflow reference missing 'source_run'.")
+                    success = False
+                    continue
+                    
+                run_dir = PROMOTION_RUNS_DIR / source_run_id
+                if not run_dir.exists():
+                    print(f"      [FAIL] Certified run {source_run_id} missing from promotion-runs/.")
+                    success = False
+                    continue
+                
+                review_path = run_dir / "HUMAN-WORKFLOW-REVIEW.md"
+                if not review_path.exists():
+                    print(f"      [FAIL] Certified run {source_run_id} has no human review.")
+                    success = False
                 else:
-                    # Non-stable workflows: warn if no run found, but don't fail
-                    if not ref:
-                        print(f"      [WARN] No reference record found for {wf_status} workflow.")
+                    from scripts.validators.human_workflow_review import validate_human_workflow_review
+                    h_result = validate_human_workflow_review(review_path, requested_scope="workflow")
+                    if h_result.status != "pass":
+                        print(f"      [FAIL] Certified run {source_run_id} not approved: {', '.join(h_result.findings)}")
+                        success = False
                     else:
-                        print(f"      [OK] Reference record exists for {wf_status} workflow.")
+                        print(f"      [OK] Certified run found and verified: {source_run_id}")
 
         except Exception as e:
             print(f"    [FAIL] Error auditing workflows: {str(e)}")

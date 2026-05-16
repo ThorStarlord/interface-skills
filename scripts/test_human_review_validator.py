@@ -16,7 +16,7 @@ class TestHumanReviewValidator(unittest.TestCase):
         """A human review with approved status, stable scope, sections, and Run ID should pass."""
         content = """# Human Review
         
-**Decision:** APPROVED FOR STABLE PROMOTION
+**Decision:** approved
 **Scope:** stable_promotion_authorized
 **Reviewer:** Dimmi Andreus
 **Date:** 2026-05-15
@@ -39,12 +39,12 @@ The skill is ready for stable promotion.
             
             self.assertEqual(result.status, "pass")
             self.assertEqual(result.validator_name, "human_review")
-            self.assertIn("authorized", result.findings[0])
+            self.assertTrue(any("authorized" in f for f in result.findings))
 
     def test_missing_mandatory_sections_fails(self):
         """A review missing Behavioral or Continuity sections should fail."""
         content = """# Human Review
-**Decision:** APPROVED FOR STABLE PROMOTION
+**Decision:** approved
 **Scope:** stable_promotion_authorized
 **Reviewer:** Dimmi Andreus
 **Date:** 2026-05-15
@@ -66,7 +66,7 @@ Content.
     def test_missing_traceability_fails(self):
         """A review missing Run ID should fail."""
         content = """# Human Review
-**Decision:** APPROVED FOR STABLE PROMOTION
+**Decision:** approved
 **Scope:** stable_promotion_authorized
 **Reviewer:** Dimmi Andreus
 **Date:** 2026-05-15

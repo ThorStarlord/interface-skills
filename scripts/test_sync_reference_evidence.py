@@ -20,13 +20,20 @@ class TestSyncReferenceEvidence(unittest.TestCase):
         (self.repo_root / "scripts" / "validators").mkdir(parents=True)
         (self.repo_root / "promotion-runs").mkdir()
         shutil.copytree(REPO_ROOT / "scripts" / "validators", self.repo_root / "scripts" / "validators", dirs_exist_ok=True)
-        shutil.copy2(REPO_ROOT / "scripts" / "sync_reference_evidence.py", self.repo_root / "scripts" / "sync_reference_evidence.py")
+        for script in ["run_promotion_suite.py", "sync_reference_evidence.py", "enforce_promotion_lock.py"]:
+            shutil.copy2(REPO_ROOT / "scripts" / script, self.repo_root / "scripts" / script)
         
         self.skills_json = self.repo_root / "skills.json"
         self.skills_data = {"skills": [{"name": "test-skill", "status": "stable"}]}
         self.skills_json.write_text(json.dumps(self.skills_data))
         
-        self.patch_repo_root(self.repo_root / "scripts" / "sync_reference_evidence.py")
+        # Create dummy workflow registry for hashing
+        (self.repo_root / "skills" / "workflow-orchestrator" / "references").mkdir(parents=True)
+        (self.repo_root / "skills" / "workflow-orchestrator" / "references" / "workflow-registry.yaml").write_text("workflows: []")
+        
+        # Patch REPO_ROOT in scripts
+        for script in ["run_promotion_suite.py", "sync_reference_evidence.py", "enforce_promotion_lock.py"]:
+            self.patch_repo_root(self.repo_root / "scripts" / script)
 
     def patch_repo_root(self, script_path):
         content = script_path.read_text(encoding="utf-8")
@@ -69,22 +76,26 @@ class TestSyncReferenceEvidence(unittest.TestCase):
         self.create_run("2026-05-16-approved", decision="approved")
         self.create_run("2026-05-16-pending", decision="pending")
         
-        subprocess.run([sys.executable, str(self.repo_root / "scripts" / "sync_reference_evidence.py")], capture_output=True)
+        env = os.environ.copy()
+        env["SKIP_AUTHORITY_VALIDATION"] = "1"
+        res = subprocess.run([sys.executable, str(self.repo_root / "scripts" / "sync_reference_evidence.py")], capture_output=True, env=env, text=True)
         
         ref_record = self.repo_root / "skills" / "test-skill" / "references" / "reference_record.json"
-        self.assertTrue(ref_record.exists())
+        self.assertTrue(ref_record.exists(), f"Record missing. Stdout:\n{res.stdout}\nStderr:\n{res.stderr}")
         data = json.loads(ref_record.read_text())
         self.assertEqual(data["approval_metadata"]["authorizing_run_id"], "2026-05-16-approved")
 
     def test_sync_updates_existing_record(self):
         # Create initial record
         self.create_run("2026-05-16-run-1", decision="approved")
-        subprocess.run([sys.executable, str(self.repo_root / "scripts" / "sync_reference_evidence.py")], capture_output=True)
+        env = os.environ.copy()
+        env["SKIP_AUTHORITY_VALIDATION"] = "1"
+        subprocess.run([sys.executable, str(self.repo_root / "scripts" / "sync_reference_evidence.py")], capture_output=True, env=env)
         
         # Create newer run
         self.create_run("2026-05-16-run-2", decision="approved")
         # Ensure run-2 has a newer timestamp or just run it again
-        subprocess.run([sys.executable, str(self.repo_root / "scripts" / "sync_reference_evidence.py")], capture_output=True)
+        subprocess.run([sys.executable, str(self.repo_root / "scripts" / "sync_reference_evidence.py")], capture_output=True, env=env)
         
         data = json.loads((self.repo_root / "skills" / "test-skill" / "references" / "reference_record.json").read_text())
         # sync_reference_evidence.py picks the first approved run it finds. 

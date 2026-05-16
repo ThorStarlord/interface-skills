@@ -48,7 +48,7 @@ class TestWorkflowLinkValidator(unittest.TestCase):
         
         result = validate_workflow_link(self.run_dir, curr_step, prev_step)
         self.assertEqual(result.status, "pass")
-        self.assertIn("Semantic Link found in frontmatter", result.findings[0])
+        self.assertIn("Semantic Thread Verified", result.findings[0])
 
     def test_missing_semantic_link(self):
         """Test failure when based_on is missing or mismatched."""
@@ -66,7 +66,7 @@ class TestWorkflowLinkValidator(unittest.TestCase):
         
         result = validate_workflow_link(self.run_dir, curr_step, prev_step)
         self.assertEqual(result.status, "fail")
-        self.assertIn("missing_semantic_link", result.failure_modes)
+        self.assertIn("missing_semantic_thread", result.failure_modes)
 
     def test_physical_link_break(self):
         """Test failure when input_artifact doesn't match previous output."""

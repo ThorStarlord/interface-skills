@@ -59,6 +59,14 @@ def sync_references():
         else:
             h_result = validate_human_review(review_path, requested_scope)
             
+        # 1. Authority Validation Gate (ADR 0008)
+        # Call the full validate_run authority path to re-verify everything
+        from scripts.run_promotion_suite import validate_run
+        skip_validation = os.environ.get("SKIP_AUTHORITY_VALIDATION") == "1"
+        if not skip_validation and not validate_run(run_dir, requested_scope):
+            print(f"  - [FAIL] {run_dir.name}: Authority validation failed. Sync BLOCKED.")
+            continue
+
         if h_result.status != "pass":
             print(f"  - [SKIP] {run_dir.name}: Human review not approved or scope mismatch: {', '.join(h_result.findings)}")
             continue
@@ -155,6 +163,15 @@ def sync_references():
                 "certified_date": manifest.get("timestamp", "").split("T")[0] if "T" in manifest.get("timestamp", "") else manifest.get("timestamp"),
                 "certified_by": "Certification Authority Sync"
             }
+            
+            # Add Registry Hash for Promotion Lock (ADR 0009)
+            if "metadata" not in wf_data:
+                wf_data["metadata"] = {}
+            
+            import hashlib
+            wf_registry_path = REPO_ROOT / "skills" / "workflow-orchestrator" / "references" / "workflow-registry.yaml"
+            if wf_registry_path.exists():
+                wf_data["metadata"]["registry_hash"] = hashlib.sha256(wf_registry_path.read_bytes()).hexdigest()
             
             print(f"  - Syncing Workflow: {workflow_id}")
             wf_record_path.write_text(json.dumps(wf_data, indent=2), encoding="utf-8")

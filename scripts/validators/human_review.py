@@ -48,6 +48,7 @@ def validate_human_review(review_path, requested_scope):
     if decision in allowed_decisions:
         if decision == "approved":
             is_approved = True
+            findings.append("Decision verified: approved.")
         else:
             findings.append(f"Promotion blocked: Human review decision is '{decision}'")
             failure_modes.append("review_rejected")
@@ -102,6 +103,8 @@ def validate_human_review(review_path, requested_scope):
     if actual_scope != expected_scope:
         findings.append(f"Scope mismatch: Review is for '{actual_scope}', but '{expected_scope}' was requested.")
         failure_modes.append("scope_mismatch")
+    else:
+        findings.append(f"Scope verified: {actual_scope}.")
         
     status = "pass" if not failure_modes else "fail"
     return ValidatorResult(

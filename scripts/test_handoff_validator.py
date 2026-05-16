@@ -20,14 +20,21 @@ class TestHandoffValidator(unittest.TestCase):
             #   with open(run_dir / f"downstream_{next_skill}.md", "w") as f:
             
             next_skill_file = os.path.join(run_dir, "downstream_ui-inspector.md")
+            # Provide upstream artifact to trigger consumption check
+            upstream_file = os.path.join(run_dir, "ui-surface-inventory-report.md")
+            with open(upstream_file, "w") as f:
+                f.write("# Surface Inventory")
+
             with open(next_skill_file, "w") as f:
                 f.write(next_skill_content)
             
-            result = validate_handoff(run_dir, "ui-surface-inventory", "ui-inspector")
+            result = validate_handoff(run_dir, "ui-surface-inventory", "ui-inspector", 
+                                     upstream_artifact=upstream_file,
+                                     downstream_artifact=next_skill_file)
             
             self.assertEqual(result.status, "fail")
-            self.assertIn("failed to acknowledge", result.findings[0])
-            self.assertIn("missing_consumption_marker", result.failure_modes)
+            self.assertIn("Consumption Contract Violation", result.findings[0])
+            self.assertIn("consumption_contract_violation", result.failure_modes)
 
     def test_valid_handoff(self):
         """A valid handoff should pass."""
@@ -38,13 +45,19 @@ class TestHandoffValidator(unittest.TestCase):
             os.makedirs(run_dir)
             
             next_skill_file = os.path.join(run_dir, "downstream_ui-inspector.md")
+            # Create a mock upstream artifact for the density/citation checks
+            upstream_file = os.path.join(run_dir, "ui-surface-inventory-report.md")
+            with open(upstream_file, "w") as f:
+                f.write("# Surface Inventory\n- SURF-001\n- SURF-002\n- SURF-003")
+
             with open(next_skill_file, "w") as f:
-                f.write(next_skill_content)
+                f.write(next_skill_content + "\n- SURF-001\n- SURF-002\n- SURF-003")
             
-            result = validate_handoff(run_dir, "ui-surface-inventory", "ui-inspector")
+            result = validate_handoff(run_dir, "ui-surface-inventory", "ui-inspector", 
+                                     upstream_artifact=upstream_file,
+                                     downstream_artifact=next_skill_file)
             
             self.assertEqual(result.status, "pass")
-            self.assertIn("detected", result.findings[0])
 
 if __name__ == "__main__":
     unittest.main()

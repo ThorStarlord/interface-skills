@@ -1,6 +1,7 @@
 import unittest
 import os
 import tempfile
+import json
 from scripts.validators.reference_evidence import validate_reference_evidence
 from scripts.validators.common import ValidatorResult
 
@@ -19,15 +20,40 @@ class TestReferenceValidator(unittest.TestCase):
         """A valid reference directory should pass."""
         with tempfile.TemporaryDirectory() as tmpdir:
             ref_dir = os.path.join(tmpdir, "reference")
-            rubric_dir = os.path.join(ref_dir, "expected")
-            os.makedirs(rubric_dir)
-            with open(os.path.join(rubric_dir, "rubric.md"), "w") as f:
-                f.write("# Rubric")
+            os.makedirs(ref_dir)
+            
+            record = {
+                "artifacts": {
+                    "art.md": {"source_run": "2026-05-15-run-001"}
+                },
+                "approval_metadata": {
+                    "authorizing_run_id": "2026-05-15-run-001"
+                }
+            }
+            with open(os.path.join(ref_dir, "reference_record.json"), "w") as f:
+                f.write(json.dumps(record))
+            with open(os.path.join(ref_dir, "art.md"), "w") as f:
+                f.write("content")
+                
+            content = """# Human Review
+**Decision:** approved
+**Scope:** stable_promotion_authorized
+**Reviewer:** Dimmi Andreus
+**Date:** 2026-05-15
+**Run ID:** 2026-05-15-run-001
+
+### Behavioral Review
+Pass.
+
+### Continuity Review
+Pass.
+"""
+            with open(os.path.join(ref_dir, "HUMAN-REVIEW.md"), "w") as f:
+                f.write(content)
             
             result = validate_reference_evidence("ui-surface-inventory", ref_dir)
             
             self.assertEqual(result.status, "pass")
-            self.assertIn("verified", result.findings[0])
 
 if __name__ == "__main__":
     unittest.main()

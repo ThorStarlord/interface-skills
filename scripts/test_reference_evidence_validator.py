@@ -68,11 +68,30 @@ class TestReferenceEvidenceValidator(unittest.TestCase):
         ref_dir = self.test_dir / "good-ref"
         ref_dir.mkdir()
         record = {
-            "art.md": {"source_run": "run-001"}
+            "artifacts": {
+                "art.md": {"source_run": "2026-05-15-run-001"}
+            },
+            "approval_metadata": {
+                "authorizing_run_id": "2026-05-15-run-001"
+            }
         }
         (ref_dir / "reference_record.json").write_text(json.dumps(record))
         (ref_dir / "art.md").write_text("content")
-        (ref_dir / "HUMAN-REVIEW.md").write_text("# Review")
+        
+        content = """# Human Review
+**Decision:** approved
+**Scope:** stable_promotion_authorized
+**Reviewer:** Dimmi Andreus
+**Date:** 2026-05-15
+**Run ID:** 2026-05-15-run-001
+
+### Behavioral Review
+Pass.
+
+### Continuity Review
+Pass.
+"""
+        (ref_dir / "HUMAN-REVIEW.md").write_text(content)
         
         result = validate_reference_evidence("test-skill", ref_dir)
         self.assertEqual(result.status, "pass")

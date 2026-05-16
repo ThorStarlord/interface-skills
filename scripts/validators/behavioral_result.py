@@ -106,6 +106,32 @@ def validate_behavioral_result(output_content, skill_name, thresholds=None, inpu
             failure_modes.append("low_grounding")
         elif grounding_score == 2:
             findings.append("Full Semantic Proof: Strong evidence of domain-grounded derivation.")
+
+        # 3.4 Judgment Fidelity: Proximity Check (ADR 0010)
+        # Verify that judgment keywords appear near propagated IDs
+        if input_ids and output_ids:
+            judgment_keywords = ["priority", "status", "issue", "finding", "detected", "severity", "category"]
+            propagated_ids = input_ids.intersection(output_ids)
+            
+            fidelity_hits = 0
+            for skill_id in propagated_ids:
+                # Find the position of the ID in output
+                for match in re.finditer(re.escape(skill_id), output_content):
+                    start = max(0, match.start() - 100)
+                    end = min(len(output_content), match.end() + 100)
+                    context = output_content[start:end].lower()
+                    
+                    if any(kw in context for kw in judgment_keywords):
+                        fidelity_hits += 1
+                        break # Found a judgment near this instance of the ID
+            
+            if propagated_ids:
+                fidelity_ratio = fidelity_hits / len(propagated_ids)
+                if fidelity_ratio >= 0.5:
+                    findings.append(f"Judgment Fidelity verified: {fidelity_hits}/{len(propagated_ids)} IDs linked to judgment context.")
+                else:
+                    findings.append(f"Judgment Fidelity warning: Only {fidelity_hits}/{len(propagated_ids)} IDs linked to judgment context (Target: 50%+).")
+                    # We don't fail yet, but we log it as a heuristic weakness
     # 4. Complexity Check (Skill-Specific Matrix)
     if thresholds:
         min_items = thresholds.get("min_findings") or thresholds.get("min_surface_candidates") or 0
@@ -122,7 +148,7 @@ def validate_behavioral_result(output_content, skill_name, thresholds=None, inpu
             total_items += len(re.findall(pattern, output_content, re.MULTILINE | re.IGNORECASE))
         
         if total_items < min_items:
-            findings.append(f"Judgment Fidelity Warning: Low behavioral complexity ({total_items} items, target {min_items}). Fixture may be too simple or skill may be under-performing.")
+            findings.append(f"Judgment Fidelity Warning: Low complexity ({total_items} items, target {min_items}). Fixture may be too simple or skill may be under-performing.")
             failure_modes.append("low_complexity")
         else:
             findings.append(f"Complexity verified: {total_items} items detected.")

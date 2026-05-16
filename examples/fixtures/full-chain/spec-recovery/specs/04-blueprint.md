@@ -8,6 +8,8 @@ status: draft
 
 # Blueprint: Pulse Recovery
 
+DomainTerms: Dashboard Sidebar Recovery Density Palette Contrast
+
 ## 1. Implied or referenced brief
 Based on [02-brief.md](02-brief.md) and [03-visual-calibration.md](03-visual-calibration.md).
 

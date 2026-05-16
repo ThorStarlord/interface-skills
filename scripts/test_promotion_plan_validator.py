@@ -78,7 +78,7 @@ class TestPromotionPlanValidator(unittest.TestCase):
                     "behavioral_criteria": {
                         "fixture_family": "fixtures/test",
                         "minimum_behavioral_complexity": {"m": 1},
-                        "blocking_failure_modes": ["err"]
+                        "blocking_failure_modes": ["hallucination", "scope_drift"]
                     }
                 }
             }

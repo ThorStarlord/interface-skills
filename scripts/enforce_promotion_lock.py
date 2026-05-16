@@ -56,10 +56,10 @@ def check_promotion_lock():
             if "metadata" in record:
                 stored_hash = record["metadata"].get("skill_hash")
             else:
-                # In legacy schema, we don't have skill_hash, but we might have 
-                # hashes for individual artifacts. For now, we skip if metadata is missing
-                # but warn that the lock is incomplete.
-                print(f"  [WARN] Legacy reference record for {name}: Missing SKILL.md hash.")
+                # In Phase 3, we require the skill_hash for all stable/certified skills
+                print(f"  [FAIL] Legacy reference record for {name}: Missing mandatory SKILL.md hash.")
+                missing_records.append(name)
+                continue
             
             skill_md = REPO_ROOT / "skills" / name / "SKILL.md"
             if skill_md.exists() and stored_hash:
@@ -83,6 +83,31 @@ def check_promotion_lock():
         except Exception as e:
             print(f"  [ERROR] Failed to audit {name}: {e}")
             error_skills.append(name)
+
+    # 2. Workflow Promotion Lock (ADR 0009)
+    wf_registry_path = REPO_ROOT / "skills" / "workflow-orchestrator" / "references" / "workflow-registry.yaml"
+    wf_record_path = REPO_ROOT / "skills" / "workflow-orchestrator" / "references" / "workflow_reference_record.json"
+    
+    if wf_registry_path.exists():
+        if not wf_record_path.exists():
+            print(f"  [FAIL] Missing workflow_reference_record.json for workflow registry.")
+            missing_records.append("workflow-orchestrator")
+        else:
+            try:
+                wf_record = json.loads(wf_record_path.read_text(encoding="utf-8"))
+                stored_wf_hash = wf_record.get("metadata", {}).get("registry_hash")
+                
+                if stored_wf_hash:
+                    current_wf_hash = get_content_hash(wf_registry_path)
+                    if current_wf_hash != stored_wf_hash:
+                        print(f"  [FAIL] Workflow Registry Drift: workflow-registry.yaml has changed since last certification.")
+                        locked_skills.append("workflow-orchestrator")
+                else:
+                    print(f"  [FAIL] Workflow reference record missing mandatory registry_hash.")
+                    missing_records.append("workflow-orchestrator")
+            except Exception as e:
+                print(f"  [ERROR] Failed to audit workflow registry: {e}")
+                error_skills.append("workflow-orchestrator")
 
     if locked_skills or missing_records or error_skills:
         print("\n>>> [CRITICAL] REGISTRY PROMOTION LOCK ACTIVE")

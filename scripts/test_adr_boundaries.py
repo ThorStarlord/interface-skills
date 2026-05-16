@@ -24,10 +24,10 @@ class TestADRBoundaries(unittest.TestCase):
         content = "# Output\n## Input Evidence\nAcknowledged input."
         self.next_skill_file.write_text(content)
         
-        result = validate_handoff(self.run_dir, "ui-surface-inventory", "ui-inspector", requested_scope="stable")
+        result = validate_handoff(self.run_dir, "ui-surface-inventory", "ui-inspector", requested_scope="stable", downstream_artifact=self.next_skill_file)
         
         self.assertEqual(result.status, "pass")
-        self.assertIn("Simulated handoff detected", result.findings[0])
+        self.assertTrue(any("simulated" in f.lower() for f in result.findings))
         self.assertNotIn("real_handoff_required", result.failure_modes)
 
     def test_adr_0007_workflow_requires_real_handoff(self):
@@ -39,24 +39,30 @@ class TestADRBoundaries(unittest.TestCase):
         content = "# Output\n## Input Evidence\nAcknowledged input."
         self.next_skill_file.write_text(content)
         
-        result = validate_handoff(self.run_dir, "ui-surface-inventory", "ui-inspector", requested_scope="workflow")
+        result = validate_handoff(self.run_dir, "ui-surface-inventory", "ui-inspector", requested_scope="workflow", downstream_artifact=self.next_skill_file)
         
         self.assertEqual(result.status, "fail")
         self.assertIn("real_handoff_required", result.failure_modes)
-        self.assertIn("REQUIRES real handoff", result.findings[1])
+        self.assertTrue(any("expected 'real' handoff" in f.lower() for f in result.findings))
 
     def test_adr_0007_workflow_passes_with_real_handoff(self):
         """
         Workflow Promotion should PASS if real handoff is detected.
         """
+        upstream_file = self.run_dir / "ui-surface-inventory-report.md"
+        upstream_file.write_text("# Surface Inventory")
+        
         # Real handoff: has artifact keywords
         content = "# Output\n## Input Evidence\nConsumed inventory report from ui-surface-inventory-report.md"
         self.next_skill_file.write_text(content)
         
-        result = validate_handoff(self.run_dir, "ui-surface-inventory", "ui-inspector", requested_scope="workflow")
+        result = validate_handoff(self.run_dir, "ui-surface-inventory", "ui-inspector", 
+                                 requested_scope="workflow", 
+                                 upstream_artifact=upstream_file,
+                                 downstream_artifact=self.next_skill_file)
         
         self.assertEqual(result.status, "pass")
-        self.assertIn("Real handoff detected", result.findings[0])
+        self.assertTrue(any("exact citation" in f.lower() for f in result.findings))
 
 if __name__ == "__main__":
     unittest.main()

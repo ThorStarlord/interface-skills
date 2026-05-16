@@ -59,18 +59,18 @@ class TestFixtureIntegrityValidator(unittest.TestCase):
         fixture.mkdir()
         (fixture / "expected").mkdir()
         (fixture / "expected" / "rubric.md").write_text("# Rubric")
-        (fixture / "input.md").write_text("# Substantial Content\n" + "A" * 200)
+        (fixture / "input.md").write_text("# Substantial Content\n" + "A" * 600)
         
         result = validate_fixture_integrity(fixture)
         self.assertEqual(result.status, "pass")
-        self.assertIn("Content depth verified", result.findings[1])
+        self.assertIn("Fixture depth verified", result.findings[1])
 
     def test_adversarial_tagging(self):
         fixture = self.test_dir / "messy-fixture"
         fixture.mkdir()
         (fixture / "expected").mkdir()
         (fixture / "expected" / "rubric.md").write_text("# Rubric")
-        (fixture / "input.md").write_text("# Messy Content\n" + "B" * 200)
+        (fixture / "input.md").write_text("# Messy Content\n" + "B" * 600)
         
         result = validate_fixture_integrity(fixture)
         self.assertEqual(result.status, "pass")
