@@ -25,17 +25,17 @@ graph TD
     
     inventory["ui-surface-inventory"]:::stable
     brief["ui-brief"]:::stable
-    calibration["ui-visual-calibration"]:::draft
+    calibration["ui-visual-calibration"]:::stable
     flow["ui-flow"]:::stable
     blueprint["ui-blueprint"]:::stable
     system["ui-system"]:::stable
-    screen["ui-screen-spec"]:::draft
+    screen["ui-screen-spec"]:::stable
     component["ui-component-spec"]:::stable
     microcopy["ui-microcopy"]:::stable
     acceptance["ui-acceptance"]:::stable
     linter["ui-spec-linter"]:::stable
     codegen["ui-generate-code"]:::stable
-    inspector["ui-inspector"]:::draft
+    inspector["ui-inspector"]:::stable
     redline["ui-redline"]:::stable
     sync["ui-docs-sync"]:::stable
     routing["ui-agent-routing"]:::stable
@@ -62,34 +62,36 @@ graph TD
 Focuses on locking in the static, upstream spec-generation skills.
 - [x] Promote **`ui-visual-calibration`** to `stable`
   - *Prerequisites*: Approved structural promotion plan with calibrated failure modes; human-reviewed gold standard execution.
-- [ ] Promote **`ui-screen-spec`** to `stable`
+- [x] Promote **`ui-screen-spec`** to `stable`
   - *Prerequisites*: Enforce regional layout mappings and state-dependency rubrics.
 
 ### Wave 2: Implementation & Inspection Chain
 Focuses on downstream code generation and feedback loop auditing.
-- [ ] Promote **`ui-inspector`** to `stable`
+- [x] Promote **`ui-inspector`** to `stable`
   - *Prerequisites*: Integrate robust computed-style extracting and DOM validation schemas.
-- [ ] Promote **`ui-spec-reconcile`** to `stable`
+- [x] Promote **`ui-spec-reconcile`** to `stable`
   - *Prerequisites*: Enforce strict round-trip continuity checking between implementation and spec files.
-- [ ] Promote **`ui-storybook-docs`** to `stable`
+- [x] Promote **`ui-storybook-docs`** to `stable`
   - *Prerequisites*: Establish MDX template check criteria and Storybook catalog matching.
 
 ### Wave 3: Full-Chain Workflow Certifications
 Certifying multi-skill chains using real handoff evidence and zero-manual-repair gates.
 - [x] Certify **Core Spec Workflow** (Brief -> Calibration -> Blueprint -> System -> Component)
-- [ ] Certify **Audit & Refactor Workflow** (Inspector -> Redline -> Reconcile -> Docs-Sync)
-- [ ] Certify **Full Agent-Routing Workflow** (Sync -> Agent-Routing)
+- [x] Certify **Audit & Refactor Workflow** (Inspector -> Redline -> Reconcile -> Docs-Sync)
+- [x] Certify **Full Agent-Routing Workflow** (Sync -> Agent-Routing)
 
 ---
 
 ## 3. Active Task Checklist
 
-### Testing & Infrastructure Stability
+### Testing & Infrastructure Hardening
 - [x] Fix path contamination in [test_certification_authority.py](file:///h:/GithubRepositories/interface-skills/scripts/test_certification_authority.py) by specifying `cwd` for subprocesses.
 - [x] Enhance [validate-package.py](file:///h:/GithubRepositories/interface-skills/scripts/validate-package.py) to validate `run-manifest.json` schemas and check for missing artifacts.
 - [x] Ensure 100% success across the 68 tests of the global validator verification suite.
+- [x] Enforce dynamic fixture lookup in [sync_reference_evidence.py](file:///h:/GithubRepositories/interface-skills/scripts/sync_reference_evidence.py) to support divergent fixture/skill naming.
 
-### Next Execution Goals
-- [x] Draft the `promotion-plan.yaml` for `ui-visual-calibration` (initiating Wave 1).
-- [x] Run the promotion suite for `ui-visual-calibration` using simulated evidence.
-- [x] Perform a continuity audit check to certify the first multi-skill sequence.
+### Certification Accomplishments
+- [x] Run the promotion suite for `ui-screen-spec`, `ui-inspector`, `ui-spec-reconcile`, and `ui-storybook-docs` with exit code `0`.
+- [x] Approve and sign off on all 6 human reviews.
+- [x] Execute workflow-level certified runs for `spec-recovery` and `spec-recovery-negative-missing-handoff`.
+- [x] Verify global certification compliance: `verify_certification_authority.py` returns SUCCESS.
