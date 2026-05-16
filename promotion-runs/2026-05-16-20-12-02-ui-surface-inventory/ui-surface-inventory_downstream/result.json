@@ -1,0 +1,8 @@
+{
+  "fixture": "ui-surface-inventory_downstream",
+  "classification": "pass",
+  "classification_msg": "Consumption Contract Verified: Upstream artifact 'surface-inventory.md' cited.; Semantic Continuity Verified: 7 upstream identifiers found in downstream.; Handoff Evidence: Exact citation of upstream artifact 'surface-inventory.md' found.; Mechanical proof verified: Step handoff is zero-manual-repair stable.",
+  "evidence_level": "harness_validation",
+  "generated_fresh_output": false,
+  "downstream_chain": "ui-surface-inventory -> ui-inspector"
+}
