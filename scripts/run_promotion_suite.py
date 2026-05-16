@@ -33,6 +33,7 @@ from scripts.validators.promotion_plan import validate_promotion_plan
 from scripts.validators.handoff_verification import validate_handoff
 from scripts.validators.fixture_integrity import validate_fixture_integrity
 from scripts.validators.behavioral_result import validate_behavioral_result
+from scripts.validators.reference_evidence import validate_reference_evidence
 PROMOTION_RUNS_DIR = REPO_ROOT / "promotion-runs"
 PLAN_FILE = REPO_ROOT / "promotion-plan.yaml"
 
@@ -580,7 +581,27 @@ def validate_run(run_dir, requested_scope="stable"):
             print(f"    [FAIL] {result.validator_name}: {', '.join(result.findings)}")
             for mode in result.failure_modes:
                 print(f"         Failure Mode: {mode}")
+    
+    # 3. Reference Evidence Validation
+    # We infer the skill name from the run_dir name if possible, 
+    # or it should be passed in.
+    # Run ID format: YYYY-MM-DD-HH-MM-SS-skillname
+    run_parts = run_dir.name.split("-")
+    if len(run_parts) > 6:
+        skill_name = "-".join(run_parts[6:])
+        # For fresh runs, remove -fresh suffix
+        if skill_name.endswith("-fresh"):
+            skill_name = skill_name[:-6]
             
+        ref_dir = REPO_ROOT / "examples" / "promotion" / skill_name / "reference"
+        if ref_dir.exists():
+            ref_result = validate_reference_evidence(skill_name, ref_dir)
+            if ref_result.status == "pass":
+                print(f"    [OK] {ref_result.validator_name}: Reference snapshot verified for {skill_name}")
+            else:
+                print(f"    [FAIL] {ref_result.validator_name}: {', '.join(ref_result.findings)}")
+                # We don't fail the whole run yet as reference might not be mandatory for candidates
+    
     return True # Human review is the primary cert gate for now
 
 
