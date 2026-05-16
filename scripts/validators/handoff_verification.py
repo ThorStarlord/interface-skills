@@ -93,11 +93,11 @@ def validate_handoff(run_dir, skill_name, next_skill_name, requested_scope="stab
                 if fragment in content.lower():
                     matches += 1
             
-            if matches >= 2:
+            if matches >= 3: # Phase 3: Higher threshold for 'real' proof
                 is_real = True
                 findings.append(f"Semantic Handoff Proof: {matches} unique data points from upstream were consumed by downstream.")
-            elif matches == 1:
-                findings.append(f"Semantic Handoff Link: 1 unique data point from upstream found in downstream.")
+            elif matches >= 1:
+                findings.append(f"Semantic Handoff Link: {matches} unique data point(s) from upstream found in downstream.")
 
     if is_real:
         actual_mode = "real"

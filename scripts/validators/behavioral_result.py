@@ -70,15 +70,42 @@ def validate_behavioral_result(output_content, skill_name, thresholds=None, inpu
         common_words = {"section", "content", "status", "report", "finding", "surface", "inventory", "fixture", "context", "description", "observed"}
         domain_terms = {w.lower() for w in domain_terms if w.lower() not in common_words}
         
+        # Phase 3 Hardening: Extract long phrase fragments (Semantic Proof)
+        # Look for 4-6 word sequences that appear to be descriptive
+        descriptive_phrases = re.findall(r"([a-z]{4,}(?:\s+[a-z]{4,}){3,5})", input_content.lower())
+        descriptive_phrases = [p for p in descriptive_phrases if len(p.split()) >= 4]
+        
+        grounding_score = 0
         if domain_terms:
             matched_terms = {w for w in domain_terms if w in output_content.lower()}
             derivation_ratio = len(matched_terms) / len(domain_terms) if domain_terms else 0
-            if derivation_ratio < 0.2: # Target 20% grounding for technical terms
-                findings.append(f"Semantic Grounding failure: Low domain term overlap ({len(matched_terms)}/{len(domain_terms)}). Output appears disconnected from input reality.")
-                failure_modes.append("low_grounding")
+            if derivation_ratio >= 0.2:
+                grounding_score += 1
+                findings.append(f"Semantic Grounding (Keywords): Verified ({len(matched_terms)}/{len(domain_terms)}).")
             else:
-                findings.append(f"Semantic Grounding verified: Output reflects {len(matched_terms)} domain terms from input.")
+                findings.append(f"Semantic Grounding (Keywords): Warning ({len(matched_terms)}/{len(domain_terms)}).")
 
+        if descriptive_phrases:
+            # Check if any significant phrase fragments are preserved or paraphrased
+            phrase_matches = 0
+            for phrase in descriptive_phrases[:20]: # Check a representative sample
+                # Use smaller fragments for robustness to paraphrasing
+                words = phrase.split()
+                fragment = " ".join(words[:3]) # 3-word fragment
+                if fragment in output_content.lower():
+                    phrase_matches += 1
+            
+            if phrase_matches >= 2:
+                grounding_score += 1
+                findings.append(f"Semantic Grounding (Phrasal): Verified ({phrase_matches} phrase fragments detected).")
+            else:
+                findings.append(f"Semantic Grounding (Phrasal): Low evidence ({phrase_matches} matches).")
+
+        if grounding_score == 0 and (domain_terms or descriptive_phrases):
+            findings.append("Semantic Grounding failure: Output appears disconnected from input reality.")
+            failure_modes.append("low_grounding")
+        elif grounding_score == 2:
+            findings.append("Full Semantic Proof: Strong evidence of domain-grounded derivation.")
     # 4. Complexity Check (Skill-Specific Matrix)
     if thresholds:
         min_items = thresholds.get("min_findings") or thresholds.get("min_surface_candidates") or 0

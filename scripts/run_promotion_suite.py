@@ -769,6 +769,8 @@ def main():
         skills_to_run = [args.skill]
     elif args.validate:
         pass # Allow running validation only
+    elif args.validate_all_runs or args.validate_plan:
+        pass # Allow standalone validation runs
     else:
         parser.print_help()
         sys.exit(0)

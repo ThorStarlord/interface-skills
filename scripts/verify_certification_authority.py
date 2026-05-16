@@ -50,9 +50,18 @@ def verify_certification():
                 
             try:
                 ref_record = json.loads(ref_record_path.read_text(encoding="utf-8"))
+                
+                # Support both NEW schema (nested artifacts) and LEGACY schema (flat)
+                artifacts_to_audit = ref_record.get("artifacts", ref_record)
+                if not isinstance(artifacts_to_audit, dict):
+                    # If legacy schema was somehow broken, fallback to root
+                    artifacts_to_audit = ref_record
+                
                 # Check if there's a verified source run
                 has_gold = False
-                for artifact, meta in ref_record.items():
+                for artifact, meta in artifacts_to_audit.items():
+                    if not isinstance(meta, dict): continue # Skip metadata/approval_metadata keys if present
+                    
                     if meta.get("status") == "verified_gold_standard":
                         has_gold = True
                         source_run_id = meta.get("source_run")

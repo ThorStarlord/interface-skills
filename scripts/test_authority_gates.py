@@ -5,6 +5,7 @@ import yaml
 import shutil
 import tempfile
 import unittest
+import subprocess
 from pathlib import Path
 
 # Add REPO_ROOT to sys.path
@@ -187,6 +188,40 @@ class TestAuthorityGates(unittest.TestCase):
         res = subprocess.run([sys.executable, str(self.repo_root / "scripts" / "enforce_promotion_lock.py")], capture_output=True, text=True)
         self.assertNotEqual(res.returncode, 0, "Lock should fail after drift.")
         self.assertIn("REGISTRY PROMOTION LOCK ACTIVE", res.stdout)
+
+    def test_full_authority_audit_path(self):
+        # 1. Create an approved run
+        run_id = "2026-05-16-audit-pass"
+        self.create_workflow_run(run_id, decision="approved")
+        
+        # 2. Sync to references
+        import subprocess
+        subprocess.run([sys.executable, str(self.repo_root / "scripts" / "sync_reference_evidence.py")], capture_output=True, text=True)
+        
+        # 3. Create SKILL.md to match reference (synchronized during sync)
+        skill_md = self.repo_root / "skills" / "test-skill" / "SKILL.md"
+        skill_md.parent.mkdir(parents=True, exist_ok=True)
+        skill_md.write_text("Original Skill Content") # Match what we "synced"
+        
+        # We need to ensure the sync actually used the current SKILL.md hash.
+        # In our setUp, we didn't have SKILL.md before sync.
+        # Let's recreate the flow properly.
+        shutil.rmtree(self.repo_root / "skills" / "test-skill" / "references")
+        (self.repo_root / "skills" / "test-skill" / "references").mkdir()
+        skill_md.write_text("Gold Standard Content")
+        subprocess.run([sys.executable, str(self.repo_root / "scripts" / "sync_reference_evidence.py")], capture_output=True, text=True)
+        
+        # 4. Run Certification Audit
+        res = subprocess.run([sys.executable, str(self.repo_root / "scripts" / "verify_certification_authority.py")], capture_output=True, text=True)
+        self.assertEqual(res.returncode, 0, f"Audit should pass for fully certified repo. Output: {res.stdout}")
+        self.assertIn("[CERTIFIED]", res.stdout)
+
+    def test_authority_audit_fails_on_missing_reference(self):
+        # Stable skill but no references
+        res = subprocess.run([sys.executable, str(self.repo_root / "scripts" / "verify_certification_authority.py")], capture_output=True, text=True)
+        self.assertNotEqual(res.returncode, 0, "Audit should fail if stable skill missing references.")
+        self.assertIn("[FAIL]", res.stdout)
+        self.assertIn("Missing reference_record.json", res.stdout)
 
 if __name__ == "__main__":
     unittest.main()

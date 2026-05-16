@@ -199,7 +199,34 @@ def validate_promotion_plan(plan_path, registry_path, repo_root=None):
                     findings.append(f"Skill '{skill}' target scope/status requires evidence but 'evidence_shape.required_artifacts' is empty")
                     failure_modes.append("missing_required_artifacts")
 
+        # 6. Validate workflows section (ADR 0008)
+        plan_workflows = plan.get("workflows", {})
+        if plan_workflows:
+            # Load workflow registry
+            wf_reg_path = Path(repo_root) / "skills" / "workflow-orchestrator" / "references" / "workflow-registry.yaml" if repo_root else Path("skills/workflow-orchestrator/references/workflow-registry.yaml")
+            wf_registry = {}
+            if wf_reg_path.exists():
+                try:
+                    wf_registry = yaml.safe_load(wf_reg_path.read_text(encoding="utf-8"))
+                except: pass
             
+            reg_wf_ids = {w["id"] for w in wf_registry.get("workflows", [])} if wf_registry else set()
+            
+            for wf_id, wf_cfg in plan_workflows.items():
+                if reg_wf_ids and wf_id not in reg_wf_ids:
+                    findings.append(f"Workflow '{wf_id}' in plan is missing from workflow-registry.yaml")
+                    failure_modes.append("missing_workflow")
+                
+                wf_fixture = wf_cfg.get("fixture")
+                if wf_fixture:
+                    f_path = (Path(repo_root) / wf_fixture) if repo_root else Path(wf_fixture)
+                    if not f_path.exists():
+                        findings.append(f"Fixture path '{wf_fixture}' for workflow '{wf_id}' not found on disk")
+                        failure_modes.append("missing_fixture")
+                else:
+                    findings.append(f"Workflow '{wf_id}' in plan is missing 'fixture' configuration")
+                    failure_modes.append("incomplete_workflow_config")
+
     if not findings:
         return ValidatorResult(
             status="pass",
