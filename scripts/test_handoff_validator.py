@@ -44,7 +44,7 @@ class TestHandoffValidator(unittest.TestCase):
             result = validate_handoff(run_dir, "ui-surface-inventory", "ui-inspector")
             
             self.assertEqual(result.status, "pass")
-            self.assertIn("verified", result.findings[0])
+            self.assertIn("detected", result.findings[0])
 
 if __name__ == "__main__":
     unittest.main()

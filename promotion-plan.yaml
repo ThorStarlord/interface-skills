@@ -62,6 +62,11 @@ skills:
       min_good_runs: 3
       require_messy_fail: false
       require_downstream: false
+    behavioral_criteria:
+      fixture_family: flow_generation
+      minimum_behavioral_complexity:
+        require_navigation_logic: true
+      blocking_failure_modes: [hallucination, scope_drift]
 
   ui-blueprint:
     fixtures:
@@ -70,6 +75,21 @@ skills:
       min_good_runs: 3
       require_messy_fail: false
       require_downstream: true
+    downstream:
+      fixture: examples/promotion/ui-blueprint
+      next_skill: ui-to-issues
+    behavioral_criteria:
+      fixture_family: blueprint_generation
+      minimum_behavioral_complexity:
+        require_structural_coherence: true
+        require_artifact_links: true
+      blocking_failure_modes:
+        - hallucination
+        - scope_drift
+        - label_friction
+        - incomplete_context
+        - handoff_failure
+        - evidence_gap
 
   ui-system:
     fixtures:
@@ -78,6 +98,14 @@ skills:
       min_good_runs: 3
       require_messy_fail: false
       require_downstream: true
+    downstream:
+      fixture: examples/promotion/ui-system
+      next_skill: ui-component-spec
+    behavioral_criteria:
+      fixture_family: system_architecture
+      minimum_behavioral_complexity:
+        require_component_hierarchy: true
+      blocking_failure_modes: [hallucination, scope_drift]
 
   ui-component-spec:
     fixtures:
@@ -86,14 +114,30 @@ skills:
       min_good_runs: 3
       require_messy_fail: false
       require_downstream: true
+    downstream:
+      fixture: examples/promotion/ui-component-spec
+      next_skill: ui-spec-linter
+    behavioral_criteria:
+      fixture_family: component_specification
+      minimum_behavioral_complexity:
+        require_prop_definitions: true
+      blocking_failure_modes: [hallucination, scope_drift]
 
   ui-microcopy:
     fixtures:
       - examples/promotion/ui-microcopy
     promotion_criteria:
       min_good_runs: 3
-      require_mess_fail: false
+      require_messy_fail: false
       require_downstream: true
+    downstream:
+      fixture: examples/promotion/ui-microcopy
+      next_skill: ui-docs-sync
+    behavioral_criteria:
+      fixture_family: microcopy_generation
+      minimum_behavioral_complexity:
+        require_tone_consistency: true
+      blocking_failure_modes: [hallucination, scope_drift]
 
   ui-acceptance:
     fixtures:
@@ -102,6 +146,14 @@ skills:
       min_good_runs: 3
       require_messy_fail: false
       require_downstream: true
+    downstream:
+      fixture: examples/promotion/ui-acceptance
+      next_skill: ui-to-issues
+    behavioral_criteria:
+      fixture_family: acceptance_criteria
+      minimum_behavioral_complexity:
+        require_edge_cases: true
+      blocking_failure_modes: [hallucination, scope_drift]
 
   ui-spec-linter:
     fixtures:
@@ -110,6 +162,14 @@ skills:
       min_good_runs: 3
       require_messy_fail: false
       require_downstream: true
+    downstream:
+      fixture: examples/promotion/ui-visual-calibration
+      next_skill: ui-orchestrator
+    behavioral_criteria:
+      fixture_family: spec_linting
+      minimum_behavioral_complexity:
+        require_pattern_matching: true
+      blocking_failure_modes: [hallucination, scope_drift]
 
   ui-generate-code:
     fixtures:
@@ -118,6 +178,11 @@ skills:
       min_good_runs: 3
       require_messy_fail: false
       require_downstream: false
+    behavioral_criteria:
+      fixture_family: code_generation
+      minimum_behavioral_complexity:
+        require_compilation: true
+      blocking_failure_modes: [hallucination, scope_drift]
 
   ui-redline:
     fixtures:
@@ -126,6 +191,14 @@ skills:
       min_good_runs: 3
       require_messy_fail: false
       require_downstream: true
+    downstream:
+      fixture: examples/promotion/ui-redline
+      next_skill: ui-visual-calibration
+    behavioral_criteria:
+      fixture_family: redline_generation
+      minimum_behavioral_complexity:
+        require_pixel_precision: true
+      blocking_failure_modes: [hallucination, scope_drift]
 
   ui-docs-sync:
     fixtures:
@@ -134,6 +207,14 @@ skills:
       min_good_runs: 3
       require_messy_fail: false
       require_downstream: true
+    downstream:
+      fixture: examples/promotion/ui-docs-sync
+      next_skill: ui-orchestrator
+    behavioral_criteria:
+      fixture_family: documentation_sync
+      minimum_behavioral_complexity:
+        require_markdown_integrity: true
+      blocking_failure_modes: [hallucination, scope_drift]
 
   ui-agent-routing:
     fixtures:
@@ -142,6 +223,11 @@ skills:
       min_good_runs: 3
       require_messy_fail: false
       require_downstream: false
+    behavioral_criteria:
+      fixture_family: agent_routing
+      minimum_behavioral_complexity:
+        require_capability_mapping: true
+      blocking_failure_modes: [hallucination, scope_drift]
 
   ui-orchestrator:
     fixtures:
@@ -150,6 +236,11 @@ skills:
       min_good_runs: 7
       require_messy_fail: false
       require_downstream: false
+    behavioral_criteria:
+      fixture_family: orchestration
+      minimum_behavioral_complexity:
+        require_step_logic: true
+      blocking_failure_modes: [hallucination, scope_drift]
 
   ui-to-issues:
     fixtures:

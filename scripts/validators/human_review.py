@@ -18,23 +18,51 @@ def validate_human_review(review_path, requested_scope):
     
     content = path.read_text(encoding="utf-8")
     
-    # Extract status
+    # Extract status (deprecated but kept for compatibility)
     status_match = re.search(r"\*\*Status:\*\*\s*(.*)", content, re.IGNORECASE)
     status = status_match.group(1).strip().lower() if status_match else "unknown"
     
-    # Extract scope
-    scope_match = re.search(r"\*\*Scope:\*\*\s*(.*)", content, re.IGNORECASE)
+    # Extract decision (new primary authority)
+    decision_match = re.search(r"\*\*Decision:\*\*\s*(.*)", content, re.IGNORECASE)
+    decision = decision_match.group(1).strip().lower() if decision_match else "unknown"
+    
+    # Extract reviewer
+    reviewer_match = re.search(r"\*\*Reviewer:\*\*\s*(.*)", content, re.IGNORECASE)
+    reviewer = reviewer_match.group(1).strip() if reviewer_match else ""
+    
+    # Extract date
+    date_match = re.search(r"\*\*Date:\*\*\s*(.*)", content, re.IGNORECASE)
+    date = date_match.group(1).strip() if date_match else ""
+    
+    # Extract scope (supports **Scope:** or **Approval Scope:**)
+    scope_match = re.search(r"\*\*(?:Approval\s+)?Scope:\*\*\s*(.*)", content, re.IGNORECASE)
     actual_scope = scope_match.group(1).strip().lower() if scope_match else "unknown"
     
     findings = []
     failure_modes = []
     
-    if status != "approved":
-        findings.append(f"Status is '{status}', expected 'approved'")
+    # Decision authority logic
+    is_approved = False
+    if "approved" in decision:
+        is_approved = True
+    elif decision == "unknown" and status == "approved":
+        # Fallback for legacy files
+        is_approved = True
+    
+    if not is_approved:
+        findings.append(f"Decision is '{decision}', expected 'approved'")
         failure_modes.append("review_not_approved")
     
+    # Governance checks
+    if not reviewer:
+        findings.append("Missing 'Reviewer' field")
+        failure_modes.append("missing_reviewer")
+    
+    if not date:
+        findings.append("Missing 'Date' field")
+        failure_modes.append("missing_date")
+    
     # Map requested_scope to expected artifact scope
-    # stable -> stable_promotion_authorized
     scope_map = {
         "stable": "stable_promotion_authorized",
         "workflow": "workflow_promotion_authorized"
@@ -49,7 +77,7 @@ def validate_human_review(review_path, requested_scope):
         return ValidatorResult(
             status="pass",
             validator_name="human_review",
-            findings=[f"Human review authorized for scope: {actual_scope}"],
+            findings=[f"Human review authorized by {reviewer} on {date} for scope: {actual_scope}"],
             artifact_path=str(path),
             checked_scope=requested_scope
         )

@@ -73,7 +73,12 @@ class TestPromotionPlanValidator(unittest.TestCase):
         plan_data = {
             "skills": {
                 "existing-skill": {
-                    "fixtures": ["valid/fixture"]
+                    "fixtures": ["valid/fixture"],
+                    "behavioral_criteria": {
+                        "fixture_family": "inventory",
+                        "minimum_behavioral_complexity": {"min_surfaces": 1},
+                        "blocking_failure_modes": ["hallucination"]
+                    }
                 }
             }
         }
@@ -98,7 +103,86 @@ class TestPromotionPlanValidator(unittest.TestCase):
             result = validate_promotion_plan(plan_path, registry_path=registry_path, repo_root=tmpdir)
             
             self.assertEqual(result.status, "pass")
-            self.assertIn("correctly registered", result.findings[0])
+            self.assertIn("semantically complete", result.findings[0])
+
+    def test_missing_behavioral_criteria_fails(self):
+        """A plan missing behavioral_criteria should fail."""
+        plan_data = {
+            "skills": {
+                "existing-skill": {
+                    "fixtures": ["valid/fixture"]
+                }
+            }
+        }
+        registry_data = {"skills": [{"name": "existing-skill"}]}
+        
+        with tempfile.TemporaryDirectory() as tmpdir:
+            plan_path = os.path.join(tmpdir, "promotion-plan.yaml")
+            registry_path = os.path.join(tmpdir, "skills.json")
+            os.makedirs(os.path.join(tmpdir, "valid/fixture"), exist_ok=True)
+            
+            with open(plan_path, "w") as f: yaml.dump(plan_data, f)
+            with open(registry_path, "w") as f: json.dump(registry_data, f)
+            
+            result = validate_promotion_plan(plan_path, registry_path=registry_path, repo_root=tmpdir)
+            self.assertEqual(result.status, "fail")
+            self.assertIn("missing_behavioral_criteria", result.failure_modes)
+
+    def test_missing_blocking_failure_modes_fails(self):
+        """A plan missing blocking_failure_modes should fail."""
+        plan_data = {
+            "skills": {
+                "existing-skill": {
+                    "fixtures": ["valid/fixture"],
+                    "behavioral_criteria": {
+                        "fixture_family": "inventory",
+                        "minimum_behavioral_complexity": {"min_surfaces": 1}
+                    }
+                }
+            }
+        }
+        registry_data = {"skills": [{"name": "existing-skill"}]}
+        
+        with tempfile.TemporaryDirectory() as tmpdir:
+            plan_path = os.path.join(tmpdir, "promotion-plan.yaml")
+            registry_path = os.path.join(tmpdir, "skills.json")
+            os.makedirs(os.path.join(tmpdir, "valid/fixture"), exist_ok=True)
+            
+            with open(plan_path, "w") as f: yaml.dump(plan_data, f)
+            with open(registry_path, "w") as f: json.dump(registry_data, f)
+            
+            result = validate_promotion_plan(plan_path, registry_path=registry_path, repo_root=tmpdir)
+            self.assertEqual(result.status, "fail")
+            self.assertIn("missing_blocking_failure_modes", result.failure_modes)
+
+    def test_invalid_downstream_config_fails(self):
+        """If require_downstream is true, missing downstream block should fail."""
+        plan_data = {
+            "skills": {
+                "existing-skill": {
+                    "fixtures": ["valid/fixture"],
+                    "promotion_criteria": {"require_downstream": True},
+                    "behavioral_criteria": {
+                        "fixture_family": "inventory",
+                        "minimum_behavioral_complexity": {"min_surfaces": 1},
+                        "blocking_failure_modes": ["hallucination"]
+                    }
+                }
+            }
+        }
+        registry_data = {"skills": [{"name": "existing-skill"}]}
+        
+        with tempfile.TemporaryDirectory() as tmpdir:
+            plan_path = os.path.join(tmpdir, "promotion-plan.yaml")
+            registry_path = os.path.join(tmpdir, "skills.json")
+            os.makedirs(os.path.join(tmpdir, "valid/fixture"), exist_ok=True)
+            
+            with open(plan_path, "w") as f: yaml.dump(plan_data, f)
+            with open(registry_path, "w") as f: json.dump(registry_data, f)
+            
+            result = validate_promotion_plan(plan_path, registry_path=registry_path, repo_root=tmpdir)
+            self.assertEqual(result.status, "fail")
+            self.assertIn("incomplete_downstream_config", result.failure_modes)
 
 if __name__ == "__main__":
     unittest.main()

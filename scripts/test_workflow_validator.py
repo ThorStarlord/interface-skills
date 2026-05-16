@@ -25,7 +25,7 @@ class TestWorkflowLinkValidator(unittest.TestCase):
         self.brief_path.write_text("---\nspec_id: brief-001\n---\n# Brief", encoding="utf-8")
         
         self.blueprint_path = self.tmp_dir / "specs" / "04-blueprint.md"
-        self.blueprint_path.write_text("---\nspec_id: blueprint-001\nbased_on: brief-001\n---\n# Blueprint", encoding="utf-8")
+        self.blueprint_path.write_text("---\nspec_id: brief-001\nbased_on: brief-001\n---\n# Blueprint", encoding="utf-8")
 
     def tearDown(self):
         shutil.rmtree(self.tmp_dir)

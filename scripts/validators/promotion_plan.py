@@ -57,7 +57,7 @@ def validate_promotion_plan(plan_path, registry_path, repo_root=None):
             
         # 2. Validate fixtures exist on disk
         skill_cfg = plan["skills"][skill]
-        fixtures = skill_cfg.get("fixtures", [])
+        fixtures = list(skill_cfg.get("fixtures", []))
         messy = skill_cfg.get("messy_fixture")
         if messy:
             fixtures.append(messy)
@@ -72,12 +72,39 @@ def validate_promotion_plan(plan_path, registry_path, repo_root=None):
             if not fixture_path.exists():
                 findings.append(f"Fixture path '{fixture_rel}' for skill '{skill}' not found on disk")
                 failure_modes.append("missing_fixture")
+
+        # 3. Validate behavioral_criteria (Mandatory for stable promotion)
+        beh_crit = skill_cfg.get("behavioral_criteria")
+        if not beh_crit:
+            findings.append(f"Skill '{skill}' is missing 'behavioral_criteria'")
+            failure_modes.append("missing_behavioral_criteria")
+        else:
+            if not beh_crit.get("fixture_family"):
+                findings.append(f"Skill '{skill}' is missing 'fixture_family' in behavioral_criteria")
+                failure_modes.append("missing_fixture_family")
+            
+            if not beh_crit.get("minimum_behavioral_complexity"):
+                findings.append(f"Skill '{skill}' is missing 'minimum_behavioral_complexity' in behavioral_criteria")
+                failure_modes.append("missing_complexity_metrics")
+                
+            blocking = beh_crit.get("blocking_failure_modes")
+            if not blocking or not isinstance(blocking, list):
+                findings.append(f"Skill '{skill}' is missing or has invalid 'blocking_failure_modes'")
+                failure_modes.append("missing_blocking_failure_modes")
+
+        # 4. Validate downstream coherence
+        prom_crit = skill_cfg.get("promotion_criteria", {})
+        if prom_crit.get("require_downstream"):
+            downstream = skill_cfg.get("downstream")
+            if not downstream or not downstream.get("fixture") or not downstream.get("next_skill"):
+                findings.append(f"Skill '{skill}' requires downstream but has incomplete 'downstream' config")
+                failure_modes.append("incomplete_downstream_config")
             
     if not findings:
         return ValidatorResult(
             status="pass",
             validator_name="promotion_plan",
-            findings=["Promotion plan skills are correctly registered"]
+            findings=["Promotion plan is semantically complete and coherent"]
         )
     else:
         return ValidatorResult(

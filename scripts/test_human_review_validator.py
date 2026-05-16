@@ -11,6 +11,7 @@ class TestHumanReviewValidator(unittest.TestCase):
         
 **Status:** approved
 **Scope:** stable_promotion_authorized
+**Reviewer:** Dimmi Andreus
 **Date:** 2026-05-15
 
 The skill is ready for stable promotion.
@@ -32,6 +33,7 @@ The skill is ready for stable promotion.
         
 **Status:** approved
 **Scope:** restoration_baseline_confirmation
+**Reviewer:** Dimmi Andreus
 **Date:** 2026-05-15
 """
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -50,6 +52,63 @@ The skill is ready for stable promotion.
         
 **Status:** pending
 **Scope:** stable_promotion_authorized
+**Reviewer:** Dimmi Andreus
+**Date:** 2026-05-15
+"""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            review_path = os.path.join(tmpdir, "HUMAN-REVIEW.md")
+            with open(review_path, "w") as f:
+                f.write(content)
+            
+            result = validate_human_review(review_path, requested_scope="stable")
+            
+            self.assertEqual(result.status, "fail")
+            self.assertIn("review_not_approved", result.failure_modes)
+
+    def test_missing_reviewer_fails(self):
+        """A review missing the reviewer field should fail."""
+        content = """# Human Review
+**Status:** approved
+**Decision:** APPROVED FOR STABLE PROMOTION
+**Scope:** stable_promotion_authorized
+**Date:** 2026-05-15
+"""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            review_path = os.path.join(tmpdir, "HUMAN-REVIEW.md")
+            with open(review_path, "w") as f:
+                f.write(content)
+            
+            result = validate_human_review(review_path, requested_scope="stable")
+            
+            self.assertEqual(result.status, "fail")
+            self.assertIn("missing_reviewer", result.failure_modes)
+
+    def test_missing_date_fails(self):
+        """A review missing the date field should fail."""
+        content = """# Human Review
+**Status:** approved
+**Decision:** APPROVED FOR STABLE PROMOTION
+**Scope:** stable_promotion_authorized
+**Reviewer:** Dimmi Andreus
+"""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            review_path = os.path.join(tmpdir, "HUMAN-REVIEW.md")
+            with open(review_path, "w") as f:
+                f.write(content)
+            
+            result = validate_human_review(review_path, requested_scope="stable")
+            
+            self.assertEqual(result.status, "fail")
+            self.assertIn("missing_date", result.failure_modes)
+
+    def test_explicit_rejection_fails(self):
+        """An explicit rejection in the decision field should fail even if status is approved."""
+        content = """# Human Review
+**Status:** approved
+**Decision:** REJECTED
+**Scope:** stable_promotion_authorized
+**Reviewer:** Dimmi Andreus
+**Date:** 2026-05-15
 """
         with tempfile.TemporaryDirectory() as tmpdir:
             review_path = os.path.join(tmpdir, "HUMAN-REVIEW.md")
