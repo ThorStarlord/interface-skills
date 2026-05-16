@@ -1,7 +1,7 @@
 from pathlib import Path
 from .common import ValidatorResult
 
-def validate_fixture_integrity(fixture_path, skill_name=None):
+def validate_fixture_integrity(fixture_path, skill_name=None, plan=None):
     """
     Validates structural integrity and content depth of a test fixture.
     """
@@ -37,9 +37,12 @@ def validate_fixture_integrity(fixture_path, skill_name=None):
         failure_modes.append("trivial_fixture")
     else:
         total_size = sum(f.stat().st_size for f in content_files)
-        if total_size < 100:
-            findings.append(f"Fixture content is too thin ({total_size} bytes).")
+        # Deepen: 100 bytes is too low for a "real" fixture
+        if total_size < 500:
+            findings.append(f"Fixture content is too thin ({total_size} bytes). Minimum 500 bytes required for promotion.")
             failure_modes.append("trivial_content")
+        else:
+            findings.append(f"Fixture depth verified: {total_size} bytes across {len(content_files)} files.")
 
     # 3. Input Artifact Verification (Skill-Specific)
     if skill_name:
@@ -55,7 +58,23 @@ def validate_fixture_integrity(fixture_path, skill_name=None):
                 findings.append(f"Missing required input artifact for '{skill_name}': {req}")
                 failure_modes.append("missing_input_artifact")
 
-    # 4. Adversarial Intent Tagging
+    # 4. Fixture Family Check (ADR 0008)
+    # Check if this skill has at least one clean and one messy fixture defined in the plan
+    if skill_name and plan:
+        skill_config = plan.get("skills", {}).get(skill_name, {})
+        fixtures = skill_config.get("fixtures", [])
+        messy = skill_config.get("messy_fixture")
+        
+        if not messy and skill_config.get("promotion_criteria", {}).get("require_messy_fail", True):
+            findings.append(f"Fixture Family Failure: Skill '{skill_name}' has no messy_fixture defined (required for stable promotion).")
+            failure_modes.append("missing_messy_fixture")
+        elif messy and not fixtures:
+            findings.append(f"Fixture Family Failure: Skill '{skill_name}' has no clean fixtures defined.")
+            failure_modes.append("missing_clean_fixture")
+        else:
+            findings.append("Fixture family (clean/messy parity) verified.")
+
+    # 5. Adversarial Intent Tagging
     if "messy" in path.name.lower() or "adversarial" in path.name.lower():
         findings.append("Adversarial intent detected: This is a 'messy' fixture.")
 
@@ -66,3 +85,4 @@ def validate_fixture_integrity(fixture_path, skill_name=None):
         findings=findings,
         failure_modes=failure_modes
     )
+

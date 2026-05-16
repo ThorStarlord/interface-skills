@@ -20,7 +20,7 @@ def validate_reference_evidence(skill_name, reference_dir):
     findings = []
     failure_modes = []
     
-    # 1. Reference Record Presence
+    # 1. Reference Record Presence & Approval Traceability
     record_path = path / "reference_record.json"
     if not record_path.exists():
         findings.append(f"Reference for '{skill_name}' is missing reference_record.json")
@@ -30,8 +30,19 @@ def validate_reference_evidence(skill_name, reference_dir):
             record = json.loads(record_path.read_text(encoding="utf-8"))
             findings.append("Reference record found and parsed.")
             
+            # 1.1 Approval Traceability (ADR 0008)
+            approval_meta = record.get("approval_metadata", {})
+            if not approval_meta.get("authorizing_run_id"):
+                findings.append("Traceability failure: reference_record.json is missing 'authorizing_run_id'")
+                failure_modes.append("missing_approval_traceability")
+            else:
+                findings.append(f"Approval Traceability Verified: Authorizing Run ID: {approval_meta['authorizing_run_id']}")
+
             # 2. Artifact Completeness
-            for artifact_name, meta in record.items():
+            artifacts = record.get("artifacts", {}) if "artifacts" in record else record # Handle both legacy and new schema
+            for artifact_name, meta in artifacts.items():
+                if artifact_name == "approval_metadata" or artifact_name == "metadata": continue
+                
                 artifact_path = path / artifact_name
                 if not artifact_path.exists():
                     findings.append(f"Missing referenced artifact: {artifact_name}")
@@ -50,13 +61,30 @@ def validate_reference_evidence(skill_name, reference_dir):
         failure_modes.append("missing_governance_evidence")
     else:
         findings.append("Authorizing HUMAN-REVIEW.md found in reference dir.")
+        # Verify the review file itself is valid
+        # (We can't easily call validate_human_review here without circular imports or refactoring, 
+        # but we can do a quick check)
+        review_content = review_path.read_text(encoding="utf-8")
+        if "approved" not in review_content.lower():
+            findings.append("Governance failure: Curated HUMAN-REVIEW.md does not contain 'approved' decision.")
+            failure_modes.append("invalid_governance_evidence")
 
-    # 4. Cleanliness (No junk files)
+    # 4. Cleanliness (Strict Dirty-Reference Detection)
+    allowed_files = {"reference_record.json", "HUMAN-REVIEW.md", "SOURCE.md", "source-run.txt"}
     allowed_extensions = {'.md', '.json', '.png', '.jpg', '.pdf'}
-    junk_files = [f.name for f in path.glob("*") if f.is_file() and f.suffix not in allowed_extensions]
+    
+    current_files = [f for f in path.glob("*") if f.is_file()]
+    junk_files = []
+    for f in current_files:
+        if f.name in allowed_files: continue
+        if f.suffix in allowed_extensions: continue
+        junk_files.append(f.name)
+        
     if junk_files:
-        findings.append(f"Dirty reference directory: junk files found: {', '.join(junk_files)}")
+        findings.append(f"Dirty reference directory: Unauthorized files found: {', '.join(junk_files)}")
         failure_modes.append("dirty_reference")
+    else:
+        findings.append("Reference directory cleanliness verified.")
 
     # 5. Promotion Lock (Staleness Check - ADR 0008)
     if record_path.exists():
@@ -89,3 +117,4 @@ def validate_reference_evidence(skill_name, reference_dir):
         findings=findings,
         failure_modes=failure_modes
     )
+

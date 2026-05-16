@@ -9,3 +9,5 @@ class ValidatorResult:
     failure_modes: List[str] = field(default_factory=list)
     artifact_path: Optional[str] = None
     checked_scope: Optional[str] = None
+    detected_mode: Optional[str] = None
+    extra_meta: dict = field(default_factory=dict)

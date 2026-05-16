@@ -34,7 +34,14 @@
       "canonical_output_paths": [
         "reports/surface-inventory.md",
         "surface-inventory.md"
-      ]
+      ],
+      "behavioral_criteria": {
+        "minimum_behavioral_complexity": {
+          "min_surface_candidates": 3,
+          "require_ambiguous_boundary": true
+        },
+        "blocking_failure_modes": ["hallucination", "scope_drift", "label_friction"]
+      }
     },
     {
       "name": "ui-brief",
@@ -52,7 +59,14 @@
       "canonical_output_paths": [
         "specs/02-brief.md",
         "brief.md"
-      ]
+      ],
+      "behavioral_criteria": {
+        "minimum_behavioral_complexity": {
+          "min_findings": 5,
+          "require_intent_alignment": true
+        },
+        "blocking_failure_modes": ["hallucination", "scope_drift"]
+      }
     },
     {
       "name": "ui-visual-calibration",
@@ -107,7 +121,14 @@
       "canonical_output_paths": [
         "specs/04-blueprint.md",
         "blueprint.md"
-      ]
+      ],
+      "behavioral_criteria": {
+        "minimum_behavioral_complexity": {
+          "min_findings": 8,
+          "require_structural_coherence": true
+        },
+        "blocking_failure_modes": ["hallucination", "scope_drift", "artifact_drift"]
+      }
     },
     {
       "name": "ui-system",
@@ -219,7 +240,14 @@
       "canonical_output_paths": [
         "reports/spec-linter-report.md",
         "spec-linter-report.md"
-      ]
+      ],
+      "behavioral_criteria": {
+        "minimum_behavioral_complexity": {
+          "min_findings": 3,
+          "require_pattern_matching": true
+        },
+        "blocking_failure_modes": ["hallucination", "false_positive_spam"]
+      }
     },
     {
       "name": "ui-generate-code",
@@ -334,8 +362,16 @@
       ],
       "canonical_output_paths": [
         "reports/issues.md",
-        "issues.md"
-      ]
+        "issues.md",
+        "SOURCE.md"
+      ],
+      "behavioral_criteria": {
+        "minimum_behavioral_complexity": {
+          "min_findings": 5,
+          "require_mixed_severity": true
+        },
+        "blocking_failure_modes": ["hallucination", "scope_drift", "label_friction"]
+      }
     },
     {
       "name": "ui-storybook-docs",
@@ -365,7 +401,14 @@
       "canonical_output_paths": [
         "reports/ORCHESTRATOR-RECOMMENDATION.md",
         "ORCHESTRATOR-RECOMMENDATION.md"
-      ]
+      ],
+      "behavioral_criteria": {
+        "minimum_behavioral_complexity": {
+          "min_findings": 2,
+          "require_step_logic": true
+        },
+        "blocking_failure_modes": ["hallucination", "dead_end_recommendation"]
+      }
     },
     {
       "name": "caveman",

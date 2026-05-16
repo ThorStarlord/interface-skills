@@ -18,13 +18,13 @@ def validate_human_review(review_path, requested_scope):
     
     content = path.read_text(encoding="utf-8")
     
-    # Extract status (deprecated but kept for compatibility)
-    status_match = re.search(r"\*\*Status:\*\*\s*(.*)", content, re.IGNORECASE)
-    status = status_match.group(1).strip().lower() if status_match else "unknown"
-    
-    # Extract decision (new primary authority)
+    # Extract decision (primary authority)
     decision_match = re.search(r"\*\*Decision:\*\*\s*(.*)", content, re.IGNORECASE)
     decision = decision_match.group(1).strip().lower() if decision_match else "unknown"
+    
+    # Extract status (fallback/legacy)
+    status_match = re.search(r"\*\*Status:\*\*\s*(.*)", content, re.IGNORECASE)
+    status = status_match.group(1).strip().lower() if status_match else "unknown"
     
     # Extract reviewer
     reviewer_match = re.search(r"\*\*Reviewer:\*\*\s*(.*)", content, re.IGNORECASE)
@@ -41,42 +41,58 @@ def validate_human_review(review_path, requested_scope):
     findings = []
     failure_modes = []
     
-    # Decision authority logic
+    # 1. Decision Authority Enforcement (ADR 0008)
+    allowed_decisions = ["approved", "rejected", "needs_revision"]
+    
     is_approved = False
-    if "approved" in decision:
+    if decision in allowed_decisions:
+        if decision == "approved":
+            is_approved = True
+        else:
+            findings.append(f"Promotion blocked: Human review decision is '{decision}'")
+            failure_modes.append("review_rejected")
+    elif status == "approved":
+        # Legacy fallback
         is_approved = True
-    elif decision == "unknown" and status == "approved":
-        # Fallback for legacy files
-        is_approved = True
+        findings.append("Note: Using legacy 'Status: approved' as decision authority.")
+    else:
+        findings.append(f"Invalid or missing Decision: '{decision}'. Must be one of: {', '.join(allowed_decisions)}")
+        failure_modes.append("invalid_decision_format")
     
-    if not is_approved:
-        findings.append(f"Decision is '{decision}', expected 'approved'")
-        failure_modes.append("review_not_approved")
-    
-    # Governance checks
-    if not reviewer:
-        findings.append("Missing 'Reviewer' field")
+    # 2. Governance Mandatory Fields
+    if not reviewer or reviewer.lower() in ("tbd", "todo", "[name]"):
+        findings.append("Governance failure: 'Reviewer' field is missing or placeholder")
         failure_modes.append("missing_reviewer")
     
-    if not date:
-        findings.append("Missing 'Date' field")
+    if not date or date.lower() in ("tbd", "todo", "[date]"):
+        findings.append("Governance failure: 'Date' field is missing or placeholder")
         failure_modes.append("missing_date")
 
-    # 1. Rich Template Validation
-    # Check for mandatory scrutiny sections
+    # 3. Rich Template Validation
     mandatory_sections = ["Behavioral Review", "Continuity Review"]
     for section in mandatory_sections:
         if not re.search(fr"###\s+{section}", content, re.IGNORECASE):
             findings.append(f"Missing mandatory review section: '### {section}'")
             failure_modes.append("incomplete_template")
 
-    # 2. Governance Audit (Traceability)
-    # Check for Run ID link (e.g. [Run ID: 2026-...] or **Run ID:** 2026-...)
-    if not re.search(r"Run\s+ID[^0-9]+[0-9]{4}-[0-9]{2}-[0-9]{2}", content, re.IGNORECASE):
+    # 4. Governance Audit (Run ID Traceability)
+    # Check for Run ID link and verify it's not a placeholder
+    run_id_match = re.search(r"Run\s+ID[^0-9]+([0-9]{4}-[0-9]{2}-[0-9]{2}[^\s\)]+)", content, re.IGNORECASE)
+    if not run_id_match:
         findings.append("Governance failure: HUMAN-REVIEW.md is not linked to a specific PROMOTION-RUN ID")
         failure_modes.append("missing_traceability")
-    
-    # Map requested_scope to expected artifact scope
+    else:
+        run_id = run_id_match.group(1)
+        # Verify it's in the current path if we are in a promotion-run directory
+        if "promotion-runs" in str(path):
+            current_run_id = path.parent.name
+            if run_id != current_run_id:
+                findings.append(f"Traceability mismatch: Review Run ID '{run_id}' does not match directory '{current_run_id}'")
+                failure_modes.append("traceability_mismatch")
+            else:
+                findings.append(f"Governance verified: Linked to Run ID {run_id}")
+
+    # 5. Scope Enforcement
     scope_map = {
         "stable": "stable_promotion_authorized",
         "workflow": "workflow_promotion_authorized"
@@ -84,23 +100,16 @@ def validate_human_review(review_path, requested_scope):
     expected_scope = scope_map.get(requested_scope, requested_scope)
     
     if actual_scope != expected_scope:
-        findings.append(f"Scope is '{actual_scope}', expected '{expected_scope}'")
+        findings.append(f"Scope mismatch: Review is for '{actual_scope}', but '{expected_scope}' was requested.")
         failure_modes.append("scope_mismatch")
         
-    if not findings:
-        return ValidatorResult(
-            status="pass",
-            validator_name="human_review",
-            findings=[f"Human review authorized by {reviewer} on {date} for scope: {actual_scope}"],
-            artifact_path=str(path),
-            checked_scope=requested_scope
-        )
-    else:
-        return ValidatorResult(
-            status="fail",
-            validator_name="human_review",
-            findings=findings,
-            failure_modes=failure_modes,
-            artifact_path=str(path),
-            checked_scope=requested_scope
-        )
+    status = "pass" if not failure_modes else "fail"
+    return ValidatorResult(
+        status=status,
+        validator_name="human_review",
+        findings=findings,
+        failure_modes=failure_modes,
+        artifact_path=str(path),
+        checked_scope=requested_scope
+    )
+

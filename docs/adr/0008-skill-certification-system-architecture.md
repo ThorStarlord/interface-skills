@@ -1,7 +1,10 @@
 # ADR 0008: Skill Certification System Architecture
  
- ## Status
- Proposed
+ ## Status: Accepted
+Date: 2026-05-16
+Deciders: Antigravity, User
+Consulted: ThorStarlord
+Informed: Registry Maintainers
  
  ## Context
  The `interface-skills` repository is evolving its promotion logic into a formal **Skill Certification System**. To ensure auditability and reduce authority ambiguity, the monolithic promotion scripts must be decomposed into a modular **Validator Ecosystem**.

@@ -11,7 +11,7 @@ def validate_behavioral_result(output_content, skill_name, thresholds=None, inpu
     failure_modes = []
     thresholds = thresholds or {}
     
-    # 0. Zero-Manual-Repair Integration
+    # 0. Zero-Manual-Repair Integration (ADR 0005/0008)
     if fixture_path and artifact_path:
         z_result = validate_zero_repair(Path(fixture_path), Path(artifact_path))
         if z_result.status != "pass":
@@ -20,73 +20,75 @@ def validate_behavioral_result(output_content, skill_name, thresholds=None, inpu
         else:
             findings.append("Mechanical proof verified: Zero-Manual-Repair contract intact.")
     
-    # 1. Placeholder Check (Strict)
-    placeholders = [r"\bTBD\b", r"\bTODO\b", r"\[insert", r"INSERT HERE", r"\[PLACEHOLDER\]", r"\[FIXME\]"]
+    # 1. Consumption Contract: Citation Traceability
+    # The output should ideally cite its source or input artifacts to ensure a closed-loop audit.
+    if fixture_path:
+        source_context = Path(fixture_path).name
+        if source_context.lower() not in output_content.lower() and "source" not in output_content.lower():
+            # Soft failure for now, but logged
+            findings.append(f"Consumption Warning: Output does not explicitly cite source context '{source_context}'")
+    
+    # 2. Placeholder Check (Strict)
+    placeholders = [
+        r"\bTBD\b", r"\bTODO\b", r"\[insert", r"INSERT HERE", r"\[PLACEHOLDER\]", 
+        r"\[FIXME\]", r"\[\.\.\.\]", r"\[FILL ME\]", r"<.+>"
+    ]
     found_placeholders = [p for p in placeholders if re.search(p, output_content, re.IGNORECASE)]
     
     if found_placeholders:
         findings.append(f"Output contains trivial placeholders: {', '.join(found_placeholders)}")
         failure_modes.append("trivial_placeholders")
 
-    # 2. Traceability & Boundedness (ID Propagation)
-    # Detect common ID patterns: SURF-001, FIND-001, SPEC-001, etc.
+    # 3. Traceability & Boundedness (ID Propagation)
+    # Detect common ID patterns: SURF-001, FIND-001, SPEC-001, RECO-001, etc.
     id_pattern = r"\b[A-Z]{3,4}-\d{3}\b"
     
     if input_content:
         input_ids = set(re.findall(id_pattern, input_content))
         output_ids = set(re.findall(id_pattern, output_content))
         
-        # Traceability: Did we keep the IDs from the input?
+        # 3.1 Traceability: Did we keep the IDs from the input?
         if input_ids:
             propagated_ids = input_ids.intersection(output_ids)
-            if not propagated_ids and len(input_ids) > 0:
+            if not propagated_ids:
                 findings.append(f"Traceability failure: None of the {len(input_ids)} input IDs were found in output.")
                 failure_modes.append("traceability_loss")
+            elif len(propagated_ids) < len(input_ids) * 0.5: # Heuristic: at least 50%
+                findings.append(f"Traceability warning: Only {len(propagated_ids)}/{len(input_ids)} input IDs were propagated.")
             else:
                 findings.append(f"Traceability verified: Propagated {len(propagated_ids)}/{len(input_ids)} IDs.")
 
-        # Boundedness: Did we hallucinate new IDs?
+        # 3.2 Boundedness: Did we hallucinate new IDs?
         hallucinated_ids = output_ids - input_ids
         if hallucinated_ids and input_ids: # Only check if input had IDs
             findings.append(f"Boundedness failure: Hallucinated IDs detected: {', '.join(list(hallucinated_ids)[:5])}")
             failure_modes.append("hallucination_detected")
 
-    # 3. Complexity Check (Skill-Specific)
+    # 4. Complexity Check (Skill-Specific Matrix)
+    # This logic should eventually move fully to registry, but kept here for depth
     if thresholds:
-        if skill_name == "ui-surface-inventory":
-            min_surfaces = thresholds.get("min_surface_candidates", 0)
-            surface_count = len(re.findall(r"(?:##|###|####)\s+Surface|Surface\s+\d+", output_content, re.IGNORECASE))
-            if surface_count < min_surfaces:
-                findings.append(f"Low complexity: {surface_count} surfaces found, need {min_surfaces}")
-                failure_modes.append("low_complexity")
-                
-        elif skill_name == "ui-to-issues":
-            min_findings = thresholds.get("min_findings", 0)
-            finding_count = len(re.findall(r"^\s*-\s+\[ \]|(?:##|###)\s+Issue|Finding\s+\d+", output_content, re.MULTILINE | re.IGNORECASE))
-            if finding_count < min_findings:
-                findings.append(f"Low complexity: {finding_count} findings found, need {min_findings}")
-                failure_modes.append("low_complexity")
+        min_items = thresholds.get("min_findings") or thresholds.get("min_surface_candidates") or 0
         
-        # New: Generic finding count for other report-based skills
-        elif "min_findings" in thresholds:
-            min_findings = thresholds.get("min_findings")
-            finding_count = len(re.findall(r"(?:^|\n)\s*(?:##|###|####|-)\s+", output_content))
-            if finding_count < min_findings:
-                findings.append(f"Low behavioral complexity: {finding_count} items found, need {min_findings}")
-                failure_modes.append("low_complexity")
+        # Determine item pattern based on skill
+        item_pattern = r"(?:^|\n)\s*(?:##|###|####|-)\s+" # Generic markdown headers or list items
+        if skill_name == "ui-surface-inventory":
+            item_pattern = r"(?:##|###|####)\s+Surface|Surface\s+\d+"
+        elif skill_name == "ui-to-issues":
+            item_pattern = r"^\s*-\s+\[ \]|(?:##|###)\s+Issue|Finding\s+\d+"
+            
+        found_items = len(re.findall(item_pattern, output_content, re.MULTILINE | re.IGNORECASE))
+        
+        if found_items < min_items:
+            findings.append(f"Low behavioral complexity: {found_items} items found, expected at least {min_items}")
+            failure_modes.append("low_complexity")
+        else:
+            findings.append(f"Complexity verified: {found_items} items detected.")
 
-    if not findings:
-        return ValidatorResult(
-            status="pass",
-            validator_name="behavioral_result",
-            findings=["Output meets behavioral quality and traceability standards"]
-        )
-    else:
-        # If we have findings but no failure modes (e.g. just informational tags), it passes
-        status = "fail" if failure_modes else "pass"
-        return ValidatorResult(
-            status=status,
-            validator_name="behavioral_result",
-            findings=findings,
-            failure_modes=failure_modes
-        )
+    status = "pass" if not failure_modes else "fail"
+    return ValidatorResult(
+        status=status,
+        validator_name="behavioral_result",
+        findings=findings,
+        failure_modes=failure_modes
+    )
+

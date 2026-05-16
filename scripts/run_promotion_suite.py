@@ -281,8 +281,7 @@ def classify_result(skill_name, fixture_name, skill_config, skill_valid, pkg_val
     if rubric_passed == "N/A" or rubric_passed == "pending" or any(r.get("automation") == "pending_manual" for r in rubric_results):
         return "needs_human_review", "Evidence requires human judgment", "needs_review"
         
-    return "pass", "Clean fixture passed", "valid"
-
+    return "pass", "Clean fixture passed all automated checks", "valid"
 
 def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
     skill_config = plan.get("skills", {}).get(skill_name)
@@ -306,99 +305,54 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
         fixtures.append(messy_fixture)
 
     all_results = []
+    skill_registry = load_skill_registry()
+    # Get criteria from registry if available, fallback to plan
+    registry_skill = next((s for s in skill_registry.get("skills", []) if s["name"] == skill_name), {})
+    behavioral_criteria = registry_skill.get("behavioral_criteria") or skill_config.get("behavioral_criteria", {})
 
     for fixture_rel_path in fixtures:
         fixture_path = REPO_ROOT / fixture_rel_path
         fixture_name = fixture_path.name
         print(f"  - Testing fixture: {fixture_name}")
         
-        # Pre-flight: Fixture Integrity
-        integrity_result = validate_fixture_integrity(fixture_path, skill_name=skill_name)
+        # 1. Pre-flight: Fixture Integrity (ADR 0008)
+        integrity_result = validate_fixture_integrity(fixture_path, skill_name=skill_name, plan=plan)
         if integrity_result.status != "pass":
             print(f"    [FAIL] Fixture integrity check failed: {', '.join(integrity_result.findings)}")
             total_failures += 1
-            continue
         
         fixture_run_dir = run_dir / fixture_name
         if not dry_run:
             fixture_run_dir.mkdir(exist_ok=True)
         
-        # 1. Setup Environment
-        # (In a real runner, we might copy the fixture to a temp worktree of the target repo)
+        # 2. Setup Environment (Mock for now)
         
-        # 2. Execution Task
-        # Since we are an AI repo, the "execution" is the output of the skill.
-        # If the output already exists in the fixture (as an expected result), we validate it.
-        # If not, the harness should ideally "call" the skill.
+        # 3. Execution Task / Resolve output artifact
+        output_file = resolve_skill_artifact(skill_name, fixture_path, skill_registry)
         
-        # Look for existing output in the fixture to validate
-        output_file = None
-        # Heuristic for output file name based on skill
-        if skill_name == "ui-spec-linter":
-            output_file = fixture_path / "reports" / "SPEC-LINT-REPORT.md"
-            if not output_file.exists():
-                output_file = fixture_path / "spec-linter-report.md" # Fallback for some fixtures
-        elif skill_name == "ui-orchestrator":
-            output_file = fixture_path / "reports" / "ORCHESTRATOR-RECOMMENDATION.md"
-            if not output_file.exists():
-                output_file = fixture_path / "orchestrator-recommendation.md"
-        elif skill_name == "ui-surface-inventory":
-            output_file = fixture_path / "reports" / "surface-inventory.md"
-            if not output_file.exists():
-                output_file = fixture_path / "surface-inventory.md"
-        elif skill_name == "ui-to-issues":
-            # ui-to-issues often generates issues.md or SOURCE.md in the fixture
-            for candidate in [
-                fixture_path / "reports" / "issues.md",
-                fixture_path / "issues.md",
-                fixture_path / "SOURCE.md",
-            ]:
-                if candidate.exists():
-                    output_file = candidate
-                    break
-        elif skill_name == "ui-brief":
-            # Brief can be stored at different paths depending on fixture layout:
-            # - spec-recovery-create style: brief.md at root
-            # - kanban-recovery style: input/02-brief.md
-            # - standardized: specs/02-brief.md
-            for candidate in [
-                fixture_path / "specs" / "02-brief.md",
-                fixture_path / "input" / "02-brief.md",
-                fixture_path / "brief.md",
-                fixture_path / "02-brief.md",
-            ]:
-                if candidate.exists():
-                    output_file = candidate
-                    break
-
         if not output_file or not output_file.exists():
-            print(f"    [WARN] No output file found for {skill_name} in {fixture_name}. Skipping rubric check.")
+            print(f"    [WARN] No output file found for {skill_name} in {fixture_name}. Skipping behavioral check.")
             output_content = ""
         else:
             output_content = output_file.read_text(encoding="utf-8")
 
-        # 3. Structural Validation
+        # 4. Structural Validation
         skill_valid, skill_log = run_validator("validate-skill.py", REPO_ROOT / "skills" / skill_name, skill_name=skill_name)
         
-        # If the output is a spec package (or part of one), validate it
         pkg_valid = True
         pkg_log = "N/A"
         if output_file and output_file.exists():
             pkg_valid, pkg_log = run_validator("validate-spec-package.py", fixture_path)
 
-        # 4. Rubric Evaluation
+        # 5. Rubric Evaluation
         rubric_path = fixture_path / "expected" / "rubric.md"
         rubric_results = []
         rubric_passed = "N/A"
         if rubric_path.exists():
             rubric_items = parse_rubric(rubric_path)
-            # Filter rubric items for this specific skill
             skill_rubric_items = [item for item in rubric_items if item["section"].lower() in (skill_name.lower(), "general")]
             if skill_rubric_items:
                 rubric_results = evaluate_output_against_rubric(output_content, skill_rubric_items)
-                # True if ALL passed (no pending_manual)
-                # False if ANY automated FAILED
-                # "pending" if some are pending_manual but none of the automated failed
                 automated_fail = any(r["passed"] is False and r["automation"] != "pending_manual" for r in rubric_results)
                 all_passed = all(r["passed"] for r in rubric_results)
                 
@@ -408,15 +362,9 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
                     rubric_passed = True
                 else:
                     rubric_passed = "pending"
-            else:
-                 print(f"    [INFO] No rubric section found for {skill_name} in {fixture_name}")
-        else:
-            print(f"    [INFO] No rubric.md found for {fixture_name}")
-
-        # 4.5 Extract Input Content (for behavioral validation)
+        
+        # 6. Behavioral Validation (Modular)
         input_content = extract_input_content(fixture_path, output_file)
-
-        # 5. Classification
         classification, classification_msg, behavioral_status = classify_result(
             skill_name, fixture_name, skill_config, skill_valid, pkg_valid, 
             rubric_passed, rubric_results, output_content, 
@@ -533,53 +481,52 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
             with open(fixture_run_dir / "result.json", "w", encoding="utf-8") as f:
                 json.dump(fixture_result, f, indent=2)
             
-            # Write human-readable review
-            with open(fixture_run_dir / "review.md", "w", encoding="utf-8") as f:
-                f.write(f"# Review: {skill_name} on {fixture_name}\n\n")
-                f.write(f"- **Classification:** `{fixture_result['classification']}`\n")
-                f.write(f"- **Message:** {fixture_result['classification_msg']}\n")
-                f.write(f"- **Evidence Level:** `{fixture_result.get('evidence_level', 'unknown')}`\n")
-                f.write(f"- **Skill Valid:** {'✅' if skill_valid else '❌'}\n")
-                f.write(f"- **Package Valid:** {'✅' if pkg_valid else '❌'}\n")
-                f.write(f"- **Rubric Pass:** {fixture_result['rubric_passed']}\n\n")
+            # Write official certification gate (ADR 0008)
+            review_template_path = fixture_run_dir / "HUMAN-REVIEW.md"
+            with open(review_template_path, "w", encoding="utf-8") as f:
+                f.write(f"# HUMAN REVIEW: {skill_name} on {fixture_name}\n\n")
+                f.write(f"**Run ID:** {run_id}\n")
+                f.write(f"**Skill:** `{skill_name}`\n")
+                f.write(f"**Fixture:** `{fixture_name}`\n")
+                f.write(f"**Date:** {time.strftime('%Y-%m-%d')}\n")
+                f.write(f"**Reviewer:** [NAME]\n")
+                f.write(f"**Decision:** pending  <!-- approved | rejected | needs_revision -->\n")
+                f.write(f"**Scope:** {skill_config.get('promotion_criteria', {}).get('scope', 'stable_promotion_authorized')}\n\n")
                 
                 if fixture_result['classification'] == "needs_human_review" or fixture_result['classification'] == "expected_fail":
                     f.write("> [!IMPORTANT]\n")
                     f.write("> **Human Review Required:** This result needs manual verification to confirm the skill's judgment matches reality.\n\n")
 
-                f.write("## Human Review Checklist\n\n")
-                f.write("- [ ] The clean fixtures are not incorrectly classified as failures.\n")
-                f.write("- [ ] The messy fixture is correctly classified as `expected_fail`.\n")
-                f.write("- [ ] The lint report catches the expected defects.\n")
-                f.write("- [ ] The lint report does not invent major false positives.\n")
-                f.write("- [ ] The severity levels are useful.\n")
-                f.write("- [ ] The output format remained stable.\n")
-                f.write("- [ ] A downstream skill can consume the output.\n")
-                f.write("- [ ] The reviewer agrees the output is useful and not misleading.\n\n")
-                f.write("Decision: approved | rejected | needs_revision\n")
-                f.write("Reviewer:\n")
-                f.write("Review date:\n\n")
-
-                behavioral_criteria = skill_config.get("behavioral_criteria")
-                if behavioral_criteria:
-                    f.write("## Behavioral Scrutiny\n\n")
-                    f.write("Verify that none of the following blocking failure modes occurred:\n\n")
-                    for mode in behavioral_criteria.get("blocking_failure_modes", []):
-                        f.write(f"- [ ] {mode}\n")
-                    f.write("\n")
-                    
-                    f.write("## Judgment Fidelity Assessment\n\n")
-                    f.write("- [ ] Judgment matches ground truth exactly.\n")
-                    f.write("- [ ] Ambiguous boundaries handled with correct trade-offs.\n")
-                    f.write("- [ ] No hallucination of artifacts or attributes.\n")
-                    f.write("- [ ] Scope correctly bounded to the fixture domain.\n\n")
-
-                f.write("## Rubric Details\n\n")
+                f.write("### Behavioral Review Checklist\n")
+                f.write(f"- [ ] **Integrity:** {classification_msg}\n")
+                if 'bev_result' in locals() and bev_result.failure_modes:
+                    f.write(f"- [ ] **Failure Modes Found:** {', '.join(bev_result.failure_modes)}\n")
+                f.write("- [ ] **Judgment Fidelity:** Output reflects domain reality without hallucination.\n")
+                f.write("- [ ] **Complexity:** Output meets depth requirements for the target surface.\n")
+                f.write("- [ ] **Zero-Manual-Repair:** Verified that no manual edits were made to this artifact.\n\n")
+                
+                f.write("### Continuity Review\n")
+                f.write("- [ ] **Upstream Handoff:** Input data correctly consumed.\n")
+                f.write("- [ ] **Downstream Compatibility:** Output structure is ready for consumption.\n\n")
+                
+                f.write("## Automated Findings Summary\n")
+                all_findings = []
+                if 'bev_result' in locals():
+                    all_findings.extend(bev_result.findings)
+                if 'integrity_result' in locals():
+                    all_findings.extend(integrity_result.findings)
+                
+                if all_findings:
+                    for finding in all_findings:
+                        f.write(f"- {finding}\n")
+                else:
+                    f.write("No automated findings.\n")
+                
                 if rubric_results:
+                    f.write("\n### Rubric Evaluation\n")
                     for r in rubric_results:
                         f.write(f"- [{'x' if r['passed'] else ' '}] {r['item']} ({r['automation']})\n")
-                else:
-                    f.write("No rubric items found.\n")
+                f.write("\n")
 
     # 6. Generate Improvement or Fixture Repair Brief if needed
     total_failures = sum(1 for r in all_results if r.get("classification") == "fail")

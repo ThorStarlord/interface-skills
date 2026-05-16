@@ -1,0 +1,8 @@
+{
+  "fixture": "ui-surface-inventory_downstream",
+  "classification": "pass",
+  "classification_msg": "Consumption Contract Verified: Upstream artifact 'surface-inventory.md' cited.",
+  "evidence_level": "harness_validation",
+  "generated_fresh_output": false,
+  "downstream_chain": "ui-surface-inventory -> ui-inspector"
+}
