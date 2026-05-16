@@ -79,9 +79,16 @@ def validate_promotion_plan(plan_path, registry_path, repo_root=None):
             findings.append(f"Skill '{skill}' is missing 'behavioral_criteria'")
             failure_modes.append("missing_behavioral_criteria")
         else:
-            if not beh_crit.get("fixture_family"):
+            family = beh_crit.get("fixture_family")
+            if not family:
                 findings.append(f"Skill '{skill}' is missing 'fixture_family' in behavioral_criteria")
                 failure_modes.append("missing_fixture_family")
+            else:
+                # Family Validation: Check if family directory exists
+                family_path = Path(repo_root) / "fixtures" / family if repo_root else Path("fixtures") / family
+                if not family_path.exists() or not family_path.is_dir():
+                    findings.append(f"Skill '{skill}' fixture_family '{family}' not found or not a directory (Expected: {family_path})")
+                    failure_modes.append("invalid_fixture_family")
             
             if not beh_crit.get("minimum_behavioral_complexity"):
                 findings.append(f"Skill '{skill}' is missing 'minimum_behavioral_complexity' in behavioral_criteria")
@@ -92,13 +99,24 @@ def validate_promotion_plan(plan_path, registry_path, repo_root=None):
                 findings.append(f"Skill '{skill}' is missing or has invalid 'blocking_failure_modes'")
                 failure_modes.append("missing_blocking_failure_modes")
 
-        # 4. Validate downstream coherence
+        # 4. Validate downstream coherence & Boundary Rules (ADR 0006/0007)
         prom_crit = skill_cfg.get("promotion_criteria", {})
-        if prom_crit.get("require_downstream"):
+        requested_scope = prom_crit.get("scope", "stable")
+        
+        if requested_scope == "workflow":
+            # Workflow scope MUST have downstream verification
+            if not prom_crit.get("require_downstream"):
+                findings.append(f"Skill '{skill}' has 'workflow' scope but 'require_downstream' is false (ADR 0007 violation)")
+                failure_modes.append("boundary_violation")
+            
             downstream = skill_cfg.get("downstream")
             if not downstream or not downstream.get("fixture") or not downstream.get("next_skill"):
                 findings.append(f"Skill '{skill}' requires downstream but has incomplete 'downstream' config")
                 failure_modes.append("incomplete_downstream_config")
+        
+        elif requested_scope == "stable":
+            # Stable scope can exist without downstream, but MUST have behavioral criteria (checked above)
+            pass
             
     if not findings:
         return ValidatorResult(

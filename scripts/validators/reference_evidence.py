@@ -58,6 +58,30 @@ def validate_reference_evidence(skill_name, reference_dir):
         findings.append(f"Dirty reference directory: junk files found: {', '.join(junk_files)}")
         failure_modes.append("dirty_reference")
 
+    # 5. Promotion Lock (Staleness Check - ADR 0008)
+    if record_path.exists():
+        import hashlib
+        def get_content_hash(path):
+            if not path.exists(): return None
+            return hashlib.sha256(path.read_bytes()).hexdigest()
+
+        try:
+            record = json.loads(record_path.read_text(encoding="utf-8"))
+            stored_hash = record.get("metadata", {}).get("skill_hash")
+            
+            skill_md = Path("skills") / skill_name / "SKILL.md"
+            if skill_md.exists() and stored_hash:
+                current_hash = get_content_hash(skill_md)
+                if current_hash != stored_hash:
+                    findings.append(f"STALE REFERENCE: Skill '{skill_name}' has been modified since reference evidence was curated.")
+                    failure_modes.append("stale_reference_evidence")
+                    findings.append("> [!CAUTION]")
+                    findings.append("> **Promotion Lock Active:** Registry update is blocked until reference evidence is resynchronized.")
+                else:
+                    findings.append("Reference evidence is current and synchronized with SKILL.md.")
+        except Exception:
+            pass
+
     status = "pass" if not failure_modes else "fail"
     return ValidatorResult(
         status=status,

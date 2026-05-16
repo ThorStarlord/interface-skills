@@ -1,13 +1,24 @@
 import re
+from pathlib import Path
 from .common import ValidatorResult
+from .zero_repair import validate_zero_repair
 
-def validate_behavioral_result(output_content, skill_name, thresholds=None, input_content=None):
+def validate_behavioral_result(output_content, skill_name, thresholds=None, input_content=None, fixture_path=None, artifact_path=None):
     """
     Validates the shape, quality, and traceability of a behavioral result.
     """
     findings = []
     failure_modes = []
     thresholds = thresholds or {}
+    
+    # 0. Zero-Manual-Repair Integration
+    if fixture_path and artifact_path:
+        z_result = validate_zero_repair(Path(fixture_path), Path(artifact_path))
+        if z_result.status != "pass":
+            findings.extend(z_result.findings)
+            failure_modes.append("zero_repair_violation")
+        else:
+            findings.append("Mechanical proof verified: Zero-Manual-Repair contract intact.")
     
     # 1. Placeholder Check (Strict)
     placeholders = [r"\bTBD\b", r"\bTODO\b", r"\[insert", r"INSERT HERE", r"\[PLACEHOLDER\]", r"\[FIXME\]"]

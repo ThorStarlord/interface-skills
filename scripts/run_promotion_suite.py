@@ -238,7 +238,7 @@ def evaluate_output_against_rubric(output_content, rubric_items):
     return results
  
 
-def classify_result(skill_name, fixture_name, skill_config, skill_valid, pkg_valid, rubric_passed, rubric_results, output_content, input_content=None):
+def classify_result(skill_name, fixture_name, skill_config, skill_valid, pkg_valid, rubric_passed, rubric_results, output_content, input_content=None, fixture_path=None, artifact_path=None):
     """
     Classifies the result based on whether the fixture was expected to fail.
     Returns (classification, classification_msg, behavioral_status)
@@ -253,7 +253,7 @@ def classify_result(skill_name, fixture_name, skill_config, skill_valid, pkg_val
     behavioral_criteria = skill_config.get("behavioral_criteria", {})
     complexity_thresholds = behavioral_criteria.get("minimum_behavioral_complexity", {})
     
-    bev_result = validate_behavioral_result(output_content, skill_name, complexity_thresholds, input_content=input_content)
+    bev_result = validate_behavioral_result(output_content, skill_name, complexity_thresholds, input_content=input_content, fixture_path=fixture_path, artifact_path=artifact_path)
     
     if is_messy:
         # For messy fixtures, we EXPECT failure in rubric or behavioral result
@@ -313,7 +313,7 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
         print(f"  - Testing fixture: {fixture_name}")
         
         # Pre-flight: Fixture Integrity
-        integrity_result = validate_fixture_integrity(fixture_path)
+        integrity_result = validate_fixture_integrity(fixture_path, skill_name=skill_name)
         if integrity_result.status != "pass":
             print(f"    [FAIL] Fixture integrity check failed: {', '.join(integrity_result.findings)}")
             total_failures += 1
@@ -417,7 +417,11 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
         input_content = extract_input_content(fixture_path, output_file)
 
         # 5. Classification
-        classification, classification_msg, behavioral_status = classify_result(skill_name, fixture_name, skill_config, skill_valid, pkg_valid, rubric_passed, rubric_results, output_content, input_content=input_content)
+        classification, classification_msg, behavioral_status = classify_result(
+            skill_name, fixture_name, skill_config, skill_valid, pkg_valid, 
+            rubric_passed, rubric_results, output_content, 
+            input_content=input_content, fixture_path=fixture_path, artifact_path=output_file
+        )
 
         # 5.5 Evidence Level
         evidence_level = "promotion_candidate_run" if fresh else "harness_validation"
@@ -488,7 +492,14 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
                     ds_file = handoff_path / f"downstream_{next_skill}.md"
                     ds_file.write_text(next_skill_output, encoding="utf-8")
                     
-                    handoff_result = validate_handoff(handoff_path, skill_name, next_skill)
+                    requested_scope = skill_config.get("promotion_criteria", {}).get("scope", "stable")
+                    handoff_result = validate_handoff(
+                        handoff_path, skill_name, next_skill, 
+                        requested_scope=requested_scope,
+                        upstream_artifact=output_file,
+                        downstream_artifact=downstream_output_file,
+                        fixture_path=fixture_path
+                    )
                 
                 ds_passed = handoff_result.status == "pass"
                 ds_msg = handoff_result.findings[0]
@@ -608,7 +619,85 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
 
     print(f"\n>>> Run complete. ID: {run_id}")
     print(f"    Results saved to promotion-runs/{run_id}/")
-    return total_failures == 0
+    return total_failures == 0, run_id
+
+
+def run_promotion_for_workflow(workflow_id, plan, registry_path, dry_run=False):
+    """
+    Runs promotion sequence for all skills in a workflow.
+    """
+    print(f"\n>>> Executing Workflow Promotion: {workflow_id}")
+    
+    if not registry_path.exists():
+        print(f"Error: Workflow registry not found at {registry_path}")
+        return False
+        
+    try:
+        reg = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
+        workflows = reg.get("workflows", [])
+        wf = next((w for w in workflows if w["id"] == workflow_id), None)
+        
+        if not wf:
+            print(f"Error: Workflow '{workflow_id}' not found in registry.")
+            return False
+            
+        steps = wf.get("steps", [])
+        print(f"    Found {len(steps)} steps in workflow.")
+        
+        success = True
+        step_manifest = [] # Track run_ids and artifacts for linkage
+        
+        for i, step in enumerate(steps):
+            skill_name = step["skill"]
+            print(f"\n--- Workflow Step {i+1}: {skill_name} ---")
+            
+            step_success, run_id = run_promotion_for_skill(skill_name, plan, dry_run=dry_run)
+            if not step_success:
+                success = False
+                print(f"    [FAIL] Workflow step {i+1} ({skill_name}) failed.")
+            
+            # Record manifest for linkage
+            # We need to find the artifact path from the run results
+            run_dir = PROMOTION_RUNS_DIR / run_id
+            manifest = {}
+            # Heuristic: find the first result.json in subdirectories
+            for res_file in run_dir.glob("*/result.json"):
+                with open(res_file, "r") as f:
+                    res_data = json.load(f)
+                    manifest = {
+                        "skill": skill_name,
+                        "run_id": run_id,
+                        "artifact": res_data.get("pointers", {}).get("output_artifact"),
+                        "input_artifact": res_data.get("pointers", {}).get("fixture_input") # Simplification
+                    }
+                    break
+            
+            if manifest:
+                step_manifest.append(manifest)
+                
+                # 2. Workflow Link Validation (ADR 0008)
+                if i > 0:
+                    prev_manifest = step_manifest[i-1]
+                    link_result = validate_workflow_link(
+                        run_dir, 
+                        manifest, 
+                        previous_step=prev_manifest,
+                        workflow_id=workflow_id,
+                        registry_path=registry_path
+                    )
+                    
+                    if link_result.status != "pass":
+                        print(f"    [FAIL] Workflow Linkage Failure: {', '.join(link_result.findings)}")
+                        success = False
+                    else:
+                        print(f"    [OK] Workflow Linkage Verified: {link_result.findings[0]}")
+            
+        return success
+    except Exception as e:
+        print(f"Error executing workflow promotion: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return False
 
 
 def validate_run(run_dir, requested_scope="stable"):
@@ -887,7 +976,8 @@ def main():
         sys.exit(0)
 
     for skill in skills_to_run:
-        if not run_promotion_for_skill(skill, plan, dry_run=args.dry_run, fresh=args.fresh):
+        skill_success, _ = run_promotion_for_skill(skill, plan, dry_run=args.dry_run, fresh=args.fresh)
+        if not skill_success:
             success = False
     
     if args.validate:

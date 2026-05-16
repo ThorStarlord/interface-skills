@@ -61,6 +61,20 @@ def validate_human_review(review_path, requested_scope):
     if not date:
         findings.append("Missing 'Date' field")
         failure_modes.append("missing_date")
+
+    # 1. Rich Template Validation
+    # Check for mandatory scrutiny sections
+    mandatory_sections = ["Behavioral Review", "Continuity Review"]
+    for section in mandatory_sections:
+        if not re.search(fr"###\s+{section}", content, re.IGNORECASE):
+            findings.append(f"Missing mandatory review section: '### {section}'")
+            failure_modes.append("incomplete_template")
+
+    # 2. Governance Audit (Traceability)
+    # Check for Run ID link (e.g. [Run ID: 2026-...] or **Run ID:** 2026-...)
+    if not re.search(r"Run\s+ID[^0-9]+[0-9]{4}-[0-9]{2}-[0-9]{2}", content, re.IGNORECASE):
+        findings.append("Governance failure: HUMAN-REVIEW.md is not linked to a specific PROMOTION-RUN ID")
+        failure_modes.append("missing_traceability")
     
     # Map requested_scope to expected artifact scope
     scope_map = {
