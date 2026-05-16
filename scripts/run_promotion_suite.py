@@ -28,6 +28,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.append(str(REPO_ROOT))
 
 from scripts.validators.human_review import validate_human_review
+from scripts.validators.promotion_plan import validate_promotion_plan
 PROMOTION_RUNS_DIR = REPO_ROOT / "promotion-runs"
 PLAN_FILE = REPO_ROOT / "promotion-plan.yaml"
 
@@ -736,8 +737,22 @@ def main():
     with open(PLAN_FILE, "r") as f:
         plan = yaml.safe_load(f)
 
-    # 1. Validate Promotion Plan Schema
-    print(">>> Validating Promotion Plan Schema...")
+    # 1. Validate Promotion Plan
+    print(">>> Validating Promotion Plan...")
+    plan_result = validate_promotion_plan(
+        PLAN_FILE, 
+        registry_path=REPO_ROOT / "skills.json",
+        repo_root=REPO_ROOT
+    )
+    if plan_result.status != "pass":
+        print(f"Error: Promotion Plan validation failed:")
+        for finding in plan_result.findings:
+            print(f"  - {finding}")
+        sys.exit(1)
+    print("    Plan OK.")
+
+    # 1.5 Validate Promotion Plan Schema (Legacy check - keeping for now)
+    print(">>> Validating Promotion Plan Schema (Legacy)...")
     validator_script = REPO_ROOT / "scripts" / "validate-promotion-plan-schema.py"
     if validator_script.exists():
         v_result = subprocess.run(
