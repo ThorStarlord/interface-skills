@@ -18,9 +18,10 @@ def validate_zero_repair(fixture_path, artifact_path, run_manifest=None):
     Verifies that the artifact has not been manually repaired.
     Mechanical proof:
     1. If a .zero-repair-hashes.json exists in the fixture, verify the hash.
-    2. If we are in a git repo, verify the last committer is not a human (optional/future).
+    2. Missing hashes or markers results in failure for stable/workflow promotion.
     """
     findings = []
+    failure_modes = []
     
     # 1. Hash Verification
     hash_manifest_path = fixture_path / ".zero-repair-hashes.json"
@@ -35,28 +36,34 @@ def validate_zero_repair(fixture_path, artifact_path, run_manifest=None):
                 actual_hash = get_file_hash(artifact_path)
                 if actual_hash != expected_hash:
                     findings.append(f"Hash Mismatch: Artifact '{rel_path}' has been modified since generation.")
+                    failure_modes.append("manual_repair_detected")
                 else:
                     findings.append(f"Hash Verified: Artifact '{rel_path}' matches generation-time snapshot.")
             else:
                 findings.append(f"Hash Missing: No recorded hash for '{rel_path}' in .zero-repair-hashes.json.")
+                failure_modes.append("missing_hash_proof")
         except Exception as e:
             findings.append(f"Error reading hash manifest: {str(e)}")
+            failure_modes.append("manifest_error")
     else:
         # Fallback: Check for a simple .zero-repair marker file
         marker_path = fixture_path / ".zero-repair"
         if not marker_path.exists():
             findings.append("No zero-repair proof found (.zero-repair or .zero-repair-hashes.json missing).")
+            failure_modes.append("missing_zero_repair_proof")
         else:
             findings.append("Zero-repair marker found (soft verification).")
 
-    status = "fail" if any("Mismatch" in f or "Error" in f for f in findings) else "pass"
-    # If no findings or only positive ones, it's a pass
-    if not findings:
-        status = "pass"
+    status = "fail" if failure_modes else "pass"
+    
+    if not findings and not failure_modes:
+        status = "fail"
         findings.append("No zero-repair constraints defined for this fixture.")
+        failure_modes.append("missing_zero_repair_proof")
 
     return ValidatorResult(
         validator_name="zero_repair",
         status=status,
-        findings=findings
+        findings=findings,
+        failure_modes=failure_modes
     )

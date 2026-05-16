@@ -35,7 +35,23 @@ def sync_references():
         if not all_passed:
             continue
             
-        print(f"\n>>> Syncing references from Verified Run: {manifest.get('run_id')}")
+        # 1. Human Approval Gate (ADR 0008 Hardening)
+        review_path = run_dir / "HUMAN-REVIEW.md"
+        if not review_path.exists():
+            review_path = run_dir / "HUMAN-WORKFLOW-REVIEW.md"
+            
+        if not review_path.exists():
+            print(f"  - [SKIP] {run_dir.name}: No Human Review found.")
+            continue
+            
+        review_content = review_path.read_text(encoding="utf-8")
+        import re
+        decision_match = re.search(r"\*\*Decision:\*\*\s*approved", review_content)
+        if not decision_match:
+            print(f"  - [SKIP] {run_dir.name}: Human review exists but not 'approved'.")
+            continue
+
+        print(f"\n>>> Syncing Approved Gold Standard: {manifest.get('run_id')}")
         
         for step in manifest.get("steps", []):
             skill_name = step.get("skill")

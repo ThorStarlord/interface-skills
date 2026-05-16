@@ -29,6 +29,8 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.append(str(REPO_ROOT))
 
 from scripts.validators.human_review import validate_human_review
+from scripts.validators.human_workflow_review import validate_human_workflow_review
+from scripts.validators.final_artifact import validate_final_artifact
 from scripts.validators.promotion_plan import validate_promotion_plan
 from scripts.validators.handoff_verification import validate_handoff
 from scripts.validators.fixture_integrity import validate_fixture_integrity
@@ -320,6 +322,7 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
         if integrity_result.status != "pass":
             print(f"    [FAIL] Fixture integrity check failed: {', '.join(integrity_result.findings)}")
             total_failures += 1
+            continue # STOP processing this fixture immediately
         
         fixture_run_dir = run_dir / fixture_name
         if not dry_run:
@@ -375,6 +378,14 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
         evidence_level = "promotion_candidate_run" if fresh else "harness_validation"
         generated_fresh_output = fresh
         
+        # Try to find last invocation file
+        invocation_file = None
+        claude_invocation = REPO_ROOT / ".claude" / "last-invocation.json"
+        if claude_invocation.exists():
+            try:
+                invocation_file = str(claude_invocation.relative_to(REPO_ROOT))
+            except: pass
+
         # 6. Record Result
         fixture_result = {
             "fixture": fixture_name,
@@ -391,7 +402,7 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
                 "fixture_input": str(fixture_rel_path),
                 "output_artifact": str(output_file.relative_to(REPO_ROOT)) if output_file and output_file.exists() else None,
                 "narrative_review": str((fixture_run_dir / "review.md").relative_to(REPO_ROOT)),
-                "invocation_file": None # Placeholder for future invocation tracking
+                "invocation_file": invocation_file
             },
             "logs": {
                 "skill_validation": skill_log,
@@ -571,7 +582,7 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
 
 def run_promotion_for_workflow(workflow_id, plan, registry_path, dry_run=False):
     """
-    Runs promotion sequence for all skills in a workflow.
+    Runs a full-chain promotion for a workflow.
     """
     print(f"\n>>> Executing Workflow Promotion: {workflow_id}")
     
@@ -591,54 +602,136 @@ def run_promotion_for_workflow(workflow_id, plan, registry_path, dry_run=False):
         steps = wf.get("steps", [])
         print(f"    Found {len(steps)} steps in workflow.")
         
+        timestamp = time.strftime("%Y-%m-%d-%H-%M-%S")
+        run_id = f"{timestamp}-workflow-{workflow_id}"
+        run_dir = PROMOTION_RUNS_DIR / run_id
+        
+        if not dry_run:
+            run_dir.mkdir(parents=True, exist_ok=True)
+
+        # Look for full-chain fixture in plan or by convention
+        # Check if the plan has a 'full_chain' entry for this workflow
+        fixture_rel_path = plan.get("workflows", {}).get(workflow_id, {}).get("fixture")
+        if not fixture_rel_path:
+            fixture_rel_path = f"examples/fixtures/full-chain/{workflow_id}"
+            
+        fixture_path = REPO_ROOT / fixture_rel_path
+        if not fixture_path.exists():
+             print(f"    [WARN] No full-chain fixture found at {fixture_rel_path}")
+             # We might still want to run if individual fixtures are linked, but ADR 0008 implies full-chain fixture.
+             return False
+
+        print(f"  - Testing with fixture: {fixture_path.name}")
+        
         success = True
-        step_manifest = [] # Track run_ids and artifacts for linkage
+        workflow_results = []
+        skill_registry = load_skill_registry()
         
         for i, step in enumerate(steps):
             skill_name = step["skill"]
-            print(f"\n--- Workflow Step {i+1}: {skill_name} ---")
+            step_id = step.get("id", i + 1)
+            print(f"\n    [Step {step_id}] Verifying skill: {skill_name}")
             
-            step_success, run_id = run_promotion_for_skill(skill_name, plan, dry_run=dry_run)
-            if not step_success:
-                success = False
-                print(f"    [FAIL] Workflow step {i+1} ({skill_name}) failed.")
+            # 1. Structural Validation
+            skill_valid, skill_log = run_validator("validate-skill.py", REPO_ROOT / "skills" / skill_name, skill_name=skill_name)
             
-            # Record manifest for linkage
-            # We need to find the artifact path from the run results
-            run_dir = PROMOTION_RUNS_DIR / run_id
-            manifest = {}
-            # Heuristic: find the first result.json in subdirectories
-            for res_file in run_dir.glob("*/result.json"):
-                with open(res_file, "r") as f:
-                    res_data = json.load(f)
-                    manifest = {
-                        "skill": skill_name,
-                        "run_id": run_id,
-                        "artifact": res_data.get("pointers", {}).get("output_artifact"),
-                        "input_artifact": res_data.get("pointers", {}).get("fixture_input") # Simplification
-                    }
-                    break
+            # 2. Resolve output artifact
+            output_file = resolve_skill_artifact(skill_name, fixture_path, skill_registry)
             
-            if manifest:
-                step_manifest.append(manifest)
+            step_success = True
+            step_msg = "Artifact found and valid"
+            validator_findings = {}
+
+            if not output_file or not output_file.exists():
+                step_success = False
+                step_msg = f"Missing artifact for {skill_name}"
+            else:
+                # 3. Validate the artifact
+                pkg_valid, pkg_log = run_validator("validate-spec-package.py", fixture_path)
+                if not pkg_valid:
+                    step_success = False
+                    step_msg = "Package validation failed"
                 
-                # 2. Workflow Link Validation (ADR 0008)
-                if i > 0:
-                    prev_manifest = step_manifest[i-1]
-                    link_result = validate_workflow_link(
-                        run_dir, 
-                        manifest, 
-                        previous_step=prev_manifest,
-                        workflow_id=workflow_id,
-                        registry_path=registry_path
-                    )
-                    
-                    if link_result.status != "pass":
-                        print(f"    [FAIL] Workflow Linkage Failure: {', '.join(link_result.findings)}")
-                        success = False
-                    else:
-                        print(f"    [OK] Workflow Linkage Verified: {link_result.findings[0]}")
+                # 4. Zero-Manual-Repair Verification
+                zero_repair_result = validate_zero_repair(fixture_path, output_file)
+                validator_findings["zero_repair"] = zero_repair_result.findings
+                if zero_repair_result.status != "pass":
+                    step_success = False
+                    step_msg = f"Zero-repair failure: {zero_repair_result.findings[0]}"
+
+                # 5. Workflow-Link Validation
+                prev_step_data = workflow_results[-1] if workflow_results else None
+                curr_step_data = {
+                    "skill": skill_name,
+                    "artifact": str(output_file.relative_to(REPO_ROOT)),
+                    "input_artifact": prev_step_data.get("artifact") if prev_step_data else None,
+                    "workflow_id": workflow_id,
+                    "step_id": step_id
+                }
+                link_result = validate_workflow_link(run_dir, curr_step_data, prev_step_data, workflow_id=workflow_id, registry_path=registry_path)
+                validator_findings["workflow_link"] = link_result.findings
+                if link_result.status != "pass":
+                    step_success = False
+                    step_msg = f"Workflow link failure: {link_result.findings[0]}"
+
+            workflow_results.append({
+                "step": step_id,
+                "skill": skill_name,
+                "status": "pass" if step_success else "fail",
+                "message": step_msg,
+                "artifact": str(output_file.relative_to(REPO_ROOT)) if output_file and output_file.exists() else None,
+                "validator_findings": validator_findings
+            })
             
+            if not step_success:
+                print(f"      [FAIL] {step_msg}")
+                success = False
+            else:
+                print(f"      [OK] {step_msg}")
+
+        # Record workflow manifest
+        if not dry_run:
+            manifest = {
+                "workflow_id": workflow_id,
+                "run_id": run_id,
+                "timestamp": timestamp,
+                "status": "pass" if success else "fail",
+                "steps": workflow_results,
+                "fixture": fixture_rel_path
+            }
+            with open(run_dir / "MANIFEST.json", "w", encoding="utf-8") as f:
+                json.dump(manifest, f, indent=2)
+            
+            # Create the Continuity Audit record
+            with open(run_dir / "CONTINUITY-AUDIT.md", "w", encoding="utf-8") as f:
+                f.write(f"# Continuity Audit: {workflow_id}\n\n")
+                f.write(f"- **Run ID**: `{run_id}`\n")
+                f.write(f"- **Fixture**: `{fixture_rel_path}`\n")
+                f.write(f"- **Status**: `{'PASS' if success else 'FAIL'}`\n\n")
+                f.write("## Machine-Generated Validator Findings\n\n")
+                for res in workflow_results:
+                    f.write(f"### Step {res['step']} ({res['skill']})\n")
+                    f.write(f"- **Status**: {res['status']}\n")
+                    f.write(f"- **Message**: {res['message']}\n")
+                    if "validator_findings" in res:
+                        for v_name, findings in res["validator_findings"].items():
+                            f.write(f"#### {v_name}\n")
+                            for finding in findings:
+                                f.write(f"- {finding}\n")
+                    f.write("\n")
+
+            # Create the Human Workflow Review record
+            with open(run_dir / "HUMAN-WORKFLOW-REVIEW.md", "w", encoding="utf-8") as f:
+                f.write(f"# Human Workflow Review: {workflow_id}\n\n")
+                f.write(f"**Decision:** pending  <!-- approved | rejected -->\n")
+                f.write(f"**Scope:** workflow_promotion_authorized\n")
+                f.write(f"**Run ID:** {run_id}\n\n")
+                f.write("## Review Criteria\n\n")
+                f.write("- [ ] **Real Handoff Confirmed:** Verified content flows correctly between all steps.\n")
+                f.write("- [ ] **Zero Manual Repair Confirmed:** No artifacts were edited manually.\n")
+                f.write("- [ ] **Final Artifact Accepted:** The end result meets workflow goals.\n")
+
+        print(f"\n>>> Workflow run complete. ID: {run_id}")
         return success
     except Exception as e:
         print(f"Error executing workflow promotion: {str(e)}")
@@ -650,213 +743,96 @@ def run_promotion_for_workflow(workflow_id, plan, registry_path, dry_run=False):
 def validate_run(run_dir, requested_scope="stable"):
     """
     Runs all modular validators for a given promotion run directory.
+    Strictly returns False if any mandatory validator fails.
     """
-    print(f"\n>>> Validating Run Certification: {run_dir.name}")
+    print(f"\n>>> Validating Run Certification Authority: {run_dir.name}")
     
+    success = True
+    mandatory_findings = []
+
     # 1. Human Review Governance Validation
+    is_workflow = (run_dir / "CONTINUITY-AUDIT.md").exists()
     review_path = run_dir / "HUMAN-REVIEW.md"
-    # Fallback to review.md if HUMAN-REVIEW.md doesn't exist yet (for transition)
-    if not review_path.exists():
-        review_path = run_dir / "review.md"
+    
+    if is_workflow:
+        review_path = run_dir / "HUMAN-WORKFLOW-REVIEW.md"
+        result = validate_human_workflow_review(review_path, requested_scope="workflow_promotion_authorized")
+    else:
+        result = validate_human_review(review_path, requested_scope)
+
+    if result.status != "pass":
+        print(f"    [FAIL] {result.validator_name}: {', '.join(result.findings)}")
+        success = False
+    else:
+        print(f"    [OK] {result.validator_name}: Human approval verified.")
         
-    result = validate_human_review(review_path, requested_scope)
+    # 1.5 Final Artifact Validation (for workflows)
+    if is_workflow:
+        fa_result = validate_final_artifact(run_dir)
+        if fa_result.status != "pass":
+            print(f"    [FAIL] {fa_result.validator_name}: {', '.join(fa_result.findings)}")
+            success = False
+        else:
+            print(f"    [OK] {fa_result.validator_name}: Final artifact verified.")
     
     # 2. Handoff Verification Validation
-    # We check if there are any downstream files to validate
     downstream_files = list(run_dir.glob("downstream_*.md"))
     for ds_file in downstream_files:
         next_skill = ds_file.name.replace("downstream_", "").replace(".md", "")
-        # Note: we don't strictly know the source skill from just the filename, 
-        # but in this harness it's the skill currently being validated.
-        # We'll use a placeholder or try to infer.
-        result = validate_handoff(run_dir, "unknown-source", next_skill)
-        
-        if result.status == "pass":
-            print(f"    [OK] {result.validator_name}: {result.findings[0]}")
+        # Try to infer source skill from directory name or manifest
+        source_skill = "unknown"
+        manifest_path = run_dir / "MANIFEST.json"
+        if manifest_path.exists():
+            try:
+                m = json.loads(manifest_path.read_text(encoding="utf-8"))
+                source_skill = m.get("skill_name", "unknown")
+            except: pass
+            
+        handoff_result = validate_handoff(run_dir, source_skill, next_skill)
+        if handoff_result.status != "pass":
+            print(f"    [FAIL] {handoff_result.validator_name}: {', '.join(handoff_result.findings)}")
+            success = False
         else:
-            print(f"    [FAIL] {result.validator_name}: {', '.join(result.findings)}")
-            for mode in result.failure_modes:
-                print(f"         Failure Mode: {mode}")
+            print(f"    [OK] {handoff_result.validator_name}: Handoff verified.")
     
-    # 3. Reference Evidence Validation
-    # We infer the skill name from the run_dir name if possible, 
-    # or it should be passed in.
-    # Run ID format: YYYY-MM-DD-HH-MM-SS-skillname
+    # 3. Reference Evidence Validation (if applicable)
     run_parts = run_dir.name.split("-")
     if len(run_parts) > 6:
         skill_name = "-".join(run_parts[6:])
-        # For fresh runs, remove -fresh suffix
         if skill_name.endswith("-fresh"):
             skill_name = skill_name[:-6]
             
-        ref_dir = REPO_ROOT / "examples" / "promotion" / skill_name / "reference"
+        ref_dir = REPO_ROOT / "skills" / skill_name / "references"
         if ref_dir.exists():
             ref_result = validate_reference_evidence(skill_name, ref_dir)
-            if ref_result.status == "pass":
-                print(f"    [OK] {ref_result.validator_name}: Reference snapshot verified for {skill_name}")
+            if ref_result.status != "pass":
+                print(f"    [FAIL] {ref_result.validator_name}: Reference integrity compromised.")
+                success = False
             else:
-                print(f"    [FAIL] {ref_result.validator_name}: {', '.join(ref_result.findings)}")
-                # We don't fail the whole run yet as reference might not be mandatory for candidates
-    
-    return True # Human review is the primary cert gate for now
+                print(f"    [OK] {ref_result.validator_name}: Reference snapshot verified.")
+
+    # 4. Zero-Manual-Repair Validation (Aggregated check)
+    manifest_path = run_dir / "MANIFEST.json"
+    if manifest_path.exists():
+        try:
+            m = json.loads(manifest_path.read_text(encoding="utf-8"))
+            for step in m.get("steps", []):
+                artifact_rel = step.get("artifact")
+                if artifact_rel:
+                    artifact_path = REPO_ROOT / artifact_rel
+                    fixture_rel = m.get("fixture")
+                    if fixture_rel:
+                        fixture_path = REPO_ROOT / fixture_rel
+                        zr_result = validate_zero_repair(fixture_path, artifact_path)
+                        if zr_result.status != "pass":
+                            print(f"    [FAIL] zero_repair: {', '.join(zr_result.findings)}")
+                            success = False
+        except: pass
+
+    return success
 
 
-def run_promotion_for_workflow(workflow_id, plan, registry_path, dry_run=False):
-    """
-    Runs a full-chain promotion for a workflow.
-    """
-    if not registry_path.exists():
-        print(f"Error: Workflow registry {registry_path} not found")
-        return False
 
-    with open(registry_path, "r", encoding="utf-8") as f:
-        registry = yaml.safe_load(f)
-    
-    workflow = next((w for w in registry.get("workflows", []) if w["id"] == workflow_id), None)
-    if not workflow:
-        print(f"Error: Workflow {workflow_id} not found in registry")
-        return False
-
-    print(f"\n>>> Running Full-Chain Promotion Suite for Workflow: {workflow_id}")
-    
-    timestamp = time.strftime("%Y-%m-%d-%H-%M-%S")
-    run_id = f"{timestamp}-workflow-{workflow_id}"
-    run_dir = PROMOTION_RUNS_DIR / run_id
-    
-    if not dry_run:
-        run_dir.mkdir(parents=True, exist_ok=True)
-
-    # In a full-chain run, we typically use one master fixture
-    # For now, we'll look for a 'full_chain' entry in the promotion-plan or use a convention
-    # Let's assume the spec-recovery workflow uses the 'pulse-recovery' fixture
-    fixture_rel_path = f"examples/fixtures/full-chain/{workflow_id}"
-    fixture_path = REPO_ROOT / fixture_rel_path
-    
-    if not fixture_path.exists():
-         # Try a fallback or looking in promotion-plan
-         print(f"    [WARN] No dedicated full-chain fixture found at {fixture_rel_path}")
-         return False
-
-    print(f"  - Testing with fixture: {fixture_path.name}")
-    
-    workflow_results = []
-    total_failures = 0
-    
-    skill_registry = load_skill_registry()
-    
-    # Loop through steps
-    for step in workflow.get("steps", []):
-        skill_name = step["skill"]
-        print(f"    [Step {step['id']}] Verifying skill: {skill_name}")
-        
-        # 1. Structural Validation of the skill itself
-        skill_valid, skill_log = run_validator("validate-skill.py", REPO_ROOT / "skills" / skill_name, skill_name=skill_name)
-        
-        # 2. Find the output artifact for this step in the fixture
-        output_file = resolve_skill_artifact(skill_name, fixture_path, skill_registry)
-
-        step_success = True
-        step_msg = "Artifact found and valid"
-        
-        if not output_file or not output_file.exists():
-            step_success = False
-            step_msg = f"Missing artifact for {skill_name}"
-        else:
-            # 3. Validate the artifact
-            pkg_valid, pkg_log = run_validator("validate-spec-package.py", fixture_path)
-            if not pkg_valid:
-                step_success = False
-                step_msg = "Package validation failed"
-
-        workflow_results.append({
-            "step": step["id"],
-            "skill": skill_name,
-            "status": "pass" if step_success else "fail",
-            "message": step_msg,
-            "artifact": str(output_file.relative_to(REPO_ROOT)) if output_file and output_file.exists() else None
-        })
-        
-        if not step_success:
-            print(f"      [FAIL] {step_msg}")
-            total_failures += 1
-        else:
-            print(f"      [OK] {step_msg}")
-            
-            # 4. Workflow-Link Validation (Tracer Bullet)
-            prev_step_data = workflow_results[-2] if len(workflow_results) > 1 else None
-            curr_step_data = {
-                "skill": skill_name,
-                "artifact": str(output_file.relative_to(REPO_ROOT)),
-                "input_artifact": prev_step_data.get("artifact") if prev_step_data else None,
-                "workflow_id": workflow_id,
-                "step_id": step["id"]
-            }
-            link_result = validate_workflow_link(run_dir, curr_step_data, prev_step_data)
-            
-            res = workflow_results[-1]
-            res["validator_findings"] = {}
-            res["validator_findings"]["workflow_link"] = link_result.findings
-
-            if link_result.status != "pass":
-                print(f"      [FAIL] workflow_link: {', '.join(link_result.findings)}")
-                res["status"] = "fail"
-                res["message"] = "Workflow link validation failed"
-                total_failures += 1
-            else:
-                print(f"      [OK] workflow_link: verified semantic and physical continuity")
-
-            # 5. Zero-Manual-Repair Verification
-            zero_repair_result = validate_zero_repair(fixture_path, output_file)
-            res["validator_findings"]["zero_repair"] = zero_repair_result.findings
-            
-            if zero_repair_result.status != "pass":
-                print(f"      [FAIL] zero_repair: {', '.join(zero_repair_result.findings)}")
-                res["status"] = "fail"
-                res["message"] = "Zero-manual-repair validation failed"
-                total_failures += 1
-            else:
-                print(f"      [OK] zero_repair: verified no manual modifications")
-
-    # Record workflow manifest
-    if not dry_run:
-        manifest = {
-            "workflow_id": workflow_id,
-            "run_id": run_id,
-            "timestamp": timestamp,
-            "steps": workflow_results,
-            "fixture": fixture_rel_path
-        }
-        with open(run_dir / "MANIFEST.json", "w", encoding="utf-8") as f:
-            json.dump(manifest, f, indent=2)
-        
-        # Create the Continuity Audit record
-        with open(run_dir / "CONTINUITY-AUDIT.md", "w", encoding="utf-8") as f:
-            f.write(f"# Continuity Audit: {workflow_id}\n\n")
-            f.write(f"- **Run ID**: `{run_id}`\n")
-            f.write(f"- **Fixture**: `{fixture_rel_path}`\n\n")
-            f.write("## Zero-Manual-Repair Check\n\n")
-            for res in workflow_results:
-                f.write(f"- [ ] Step {res['step']} ({res['skill']}): consumed upstream without repair?\n")
-            f.write("\n## Semantic Thread Audit\n\n")
-            f.write("- [ ] Intent preserved from start to finish?\n")
-            f.write("- [ ] Traceability maintained?\n")
-
-        with open(run_dir / "CONTINUITY-AUDIT.md", "a", encoding="utf-8") as f:
-            f.write("\n## Machine-Generated Validator Findings\n\n")
-            for res in workflow_results:
-                f.write(f"### Step {res['step']} ({res['skill']})\n")
-                f.write(f"- **Status**: {res['status']}\n")
-                f.write(f"- **Message**: {res['message']}\n")
-                # We need to preserve the validator findings in workflow_results
-                if "validator_findings" in res:
-                    for v_name, findings in res["validator_findings"].items():
-                        f.write(f"#### {v_name}\n")
-                        for finding in findings:
-                            f.write(f"- {finding}\n")
-                f.write("\n")
-
-    print(f"\n>>> Workflow run complete. ID: {run_id}")
-    return total_failures == 0
 
 def main():
     parser = argparse.ArgumentParser(description="Skill Promotion Harness Runner")
