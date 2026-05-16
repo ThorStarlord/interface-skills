@@ -1,5 +1,6 @@
 import yaml
 import json
+import re
 from pathlib import Path
 from .common import ValidatorResult
 
@@ -175,9 +176,28 @@ def validate_promotion_plan(plan_path, registry_path, repo_root=None):
             if not isinstance(required_artifacts, list):
                 findings.append(f"Skill '{skill}' has invalid 'evidence_shape.required_artifacts' (Expected list)")
                 failure_modes.append("invalid_config")
-            elif (requested_scope == "workflow" or current_status == "stable") and not required_artifacts:
-                findings.append(f"Skill '{skill}' target scope/status requires evidence but 'evidence_shape.required_artifacts' is empty")
-                failure_modes.append("missing_required_artifacts")
+            else:
+                # ADR 0008: Required artifacts MUST be declared in skills.json canonical_output_paths
+                canonical_outputs = skill_entry.get("canonical_output_paths", [])
+                for artifact in required_artifacts:
+                    # Check for direct match or glob match
+                    if artifact not in canonical_outputs:
+                        # Allow for glob matches (e.g., component-specs/*.md matches component-specs/button.md)
+                        match_found = False
+                        for canon in canonical_outputs:
+                            if "*" in canon:
+                                # Simple glob to regex
+                                pattern = "^" + canon.replace(".", "\\.").replace("*", ".*") + "$"
+                                if re.match(pattern, artifact):
+                                    match_found = True
+                                    break
+                        if not match_found:
+                            findings.append(f"Skill '{skill}' requires artifact '{artifact}' but it is not in canonical_output_paths in skills.json")
+                            failure_modes.append("artifact_registry_mismatch")
+
+                if (requested_scope == "workflow" or current_status == "stable") and not required_artifacts:
+                    findings.append(f"Skill '{skill}' target scope/status requires evidence but 'evidence_shape.required_artifacts' is empty")
+                    failure_modes.append("missing_required_artifacts")
 
             
     if not findings:

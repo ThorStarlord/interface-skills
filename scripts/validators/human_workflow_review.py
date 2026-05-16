@@ -44,7 +44,12 @@ def validate_human_workflow_review(review_path, requested_scope="workflow"):
         failure_modes.append("invalid_format")
     else:
         scope = scope_match.group(1)
-        if scope != requested_scope:
+        
+        # Normalize scopes for workflow authority
+        normalized_found = "workflow_promotion_authorized" if scope == "workflow" else scope
+        normalized_requested = "workflow_promotion_authorized" if requested_scope == "workflow" else requested_scope
+        
+        if normalized_found != normalized_requested:
             findings.append(f"Scope mismatch: found '{scope}', expected '{requested_scope}'.")
             failure_modes.append("scope_mismatch")
         else:
