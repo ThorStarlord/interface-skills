@@ -79,8 +79,17 @@ def classify_run_result(skill_name, fixture_name, skill_config, validators_statu
         rubric_passed = not automated_fail if automated_fail else ("pending" if not all_passed else True)
 
     if is_messy:
-        if rubric_passed is False or bev_result.status == "fail":
-            return "expected_fail", f"Messy fixture defects correctly detected: {bev_result.findings[0] if bev_result.status == 'fail' else 'Rubric failure'}", "valid"
+        # For messy fixtures, a 'pass' is actually a 'fail' (False Positive Pass)
+        # However, a 'fail' is only a successful 'detection' if it's due to the messiness,
+        # not just because the skill is generally under-performing (low_complexity).
+        detection_modes = {"hallucination_detected", "traceability_loss", "low_grounding", "trivial_placeholders"}
+        actual_detections = set(bev_result.failure_modes).intersection(detection_modes)
+        
+        if rubric_passed is False or actual_detections:
+            msg = f"Messy fixture defects correctly detected: {', '.join(actual_detections) if actual_detections else 'Rubric failure'}"
+            return "expected_fail", msg, "valid"
+        elif "low_complexity" in bev_result.failure_modes:
+            return "fail", "Skill failed on messy fixture due to low complexity (Under-performance), not necessarily defect detection.", "under_performance"
         else:
             return "fail", "Messy fixture defects NOT correctly detected (False Positive Pass)", "adversarial_failure"
 

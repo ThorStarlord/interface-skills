@@ -122,6 +122,14 @@ def sync_references():
                 if skill_md.exists():
                     meta["metadata"]["skill_hash"] = hashlib.sha256(skill_md.read_bytes()).hexdigest()
 
+                # Add Validator Ecosystem hashes (Certification Integrity Proof)
+                validators_dir = REPO_ROOT / "scripts" / "validators"
+                if validators_dir.exists():
+                    validator_hashes = {}
+                    for v_file in validators_dir.glob("*.py"):
+                        validator_hashes[v_file.name] = hashlib.sha256(v_file.read_bytes()).hexdigest()
+                    meta["metadata"]["validator_hashes"] = validator_hashes
+
                 ref_meta_path.write_text(json.dumps(meta, indent=2), encoding="utf-8")
                 
                 # Copy the review itself as part of the gold standard evidence

@@ -66,6 +66,20 @@ def check_promotion_lock():
                 current_hash = get_content_hash(skill_md)
                 if current_hash != stored_hash:
                     locked_skills.append(name)
+
+            # Audit Validator Ecosystem (Certification Integrity Check)
+            stored_v_hashes = record.get("metadata", {}).get("validator_hashes")
+            if stored_v_hashes:
+                validators_dir = REPO_ROOT / "scripts" / "validators"
+                v_drift = []
+                for v_name, s_hash in stored_v_hashes.items():
+                    v_file = validators_dir / v_name
+                    if v_file.exists():
+                        c_hash = get_content_hash(v_file)
+                        if c_hash != s_hash:
+                            v_drift.append(v_name)
+                if v_drift:
+                    print(f"  [WARN] Certification Integrity Warning for {name}: Validators have drifted: {', '.join(v_drift)}")
         except Exception as e:
             print(f"  [ERROR] Failed to audit {name}: {e}")
             error_skills.append(name)

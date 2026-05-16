@@ -176,9 +176,16 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
 
     all_results = []
     skill_registry = load_skill_registry()
-    # Get criteria from registry if available, fallback to plan
     registry_skill = next((s for s in skill_registry.get("skills", []) if s["name"] == skill_name), {})
     behavioral_criteria = registry_skill.get("behavioral_criteria") or skill_config.get("behavioral_criteria", {})
+    
+    # Check for Configuration Drift (ADR 0008)
+    plan_criteria = skill_config.get("behavioral_criteria")
+    reg_criteria = registry_skill.get("behavioral_criteria")
+    if plan_criteria and reg_criteria and plan_criteria != reg_criteria:
+        print(f"    [WARN] Configuration Drift: Promotion Plan and Registry disagree on Behavioral Criteria for {skill_name}.")
+        print("           Plan Authority will be used for this run.")
+        behavioral_criteria = plan_criteria # Explicitly prioritize plan for this run
 
     for fixture_rel_path in fixtures:
         fixture_path = REPO_ROOT / fixture_rel_path
@@ -364,33 +371,36 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
             with open(fixture_run_dir / "result.json", "w", encoding="utf-8") as f:
                 json.dump(fixture_result, f, indent=2)
             
-            # Write official certification gate (ADR 0008)
-            review_template_path = fixture_run_dir / "HUMAN-REVIEW.md"
-            with open(review_template_path, "w", encoding="utf-8") as f:
-                f.write(f"# HUMAN REVIEW: {skill_name} on {fixture_name}\n\n")
-                f.write(f"**Run ID:** {run_id}\n")
-                f.write(f"**Skill:** `{skill_name}`\n")
-                f.write(f"**Fixture:** `{fixture_name}`\n")
-                f.write(f"**Date:** {time.strftime('%Y-%m-%d')}\n")
-                f.write(f"**Reviewer:** [NAME]\n")
-                f.write(f"**Decision:** pending  <!-- approved | rejected | needs_revision -->\n")
-                f.write(f"**Scope:** {skill_config.get('promotion_criteria', {}).get('scope', 'stable_promotion_authorized')}\n\n")
-                
-                if fixture_result['classification'] == "needs_human_review" or fixture_result['classification'] == "expected_fail":
-                    f.write("> [!IMPORTANT]\n")
-                    f.write("> **Human Review Required:** This result needs manual verification to confirm the skill's judgment matches reality.\n\n")
+                # Write official certification gate (ADR 0008)
+                review_template_path = fixture_run_dir / "HUMAN-REVIEW.md"
+                with open(review_template_path, "w", encoding="utf-8") as f:
+                    f.write(f"# HUMAN REVIEW: {skill_name} on {fixture_name}\n\n")
+                    f.write(f"**Run ID:** {run_id}\n")
+                    f.write(f"**Skill:** `{skill_name}`\n")
+                    f.write(f"**Fixture:** `{fixture_name}`\n")
+                    f.write(f"**Date:** {time.strftime('%Y-%m-%d')}\n")
+                    f.write(f"**Reviewer:** [NAME]\n")
+                    f.write(f"**Decision:** pending  <!-- approved | rejected | needs_revision -->\n")
+                    f.write(f"**Scope:** {skill_config.get('promotion_criteria', {}).get('scope', 'stable_promotion_authorized')}\n\n")
+                    
+                    if fixture_result['classification'] == "needs_human_review" or fixture_result['classification'] == "expected_fail":
+                        f.write("> [!IMPORTANT]\n")
+                        f.write("> **Human Review Required:** This result needs manual verification to confirm the skill's judgment matches reality.\n\n")
 
-                f.write("### Behavioral Review Checklist\n")
-                f.write(f"- [ ] **Integrity:** {classification_msg}\n")
-                if 'bev_result' in locals() and bev_result.failure_modes:
-                    f.write(f"- [ ] **Failure Modes Found:** {', '.join(bev_result.failure_modes)}\n")
-                f.write("- [ ] **Judgment Fidelity:** Output reflects domain reality without hallucination.\n")
-                f.write("- [ ] **Complexity:** Output meets depth requirements for the target surface.\n")
-                f.write("- [ ] **Zero-Manual-Repair:** Verified that no manual edits were made to this artifact.\n\n")
-                
-                f.write("### Continuity Review\n")
-                f.write("- [ ] **Upstream Handoff:** Input data correctly consumed.\n")
-                f.write("- [ ] **Downstream Compatibility:** Output structure is ready for consumption.\n\n")
+                    f.write("## Narrative Review\n")
+                    f.write("Provide a brief explanation of the skill's performance on this fixture. Focus on **Judgment Fidelity** (did it make the right distinctions?) and **Handoff Utility** (is it ready for downstream use?).\n\n")
+                    f.write("[REPLACE WITH NARRATIVE]\n\n")
+
+                    f.write("### Behavioral Review Checklist\n")
+                    f.write(f"- [ ] **Integrity:** {classification_msg}\n")
+                    # Note: bev_result is not available in the outer scope, but we have fixture_result['classification']
+                    f.write("- [ ] **Judgment Fidelity:** Output reflects domain reality without hallucination.\n")
+                    f.write("- [ ] **Complexity:** Output meets depth requirements for the target surface.\n")
+                    f.write("- [ ] **Zero-Manual-Repair:** Verified that no manual edits were made to this artifact.\n\n")
+                    
+                    f.write("### Continuity Review\n")
+                    f.write("- [ ] **Upstream Handoff:** Input data correctly consumed.\n")
+                    f.write("- [ ] **Downstream Compatibility:** Output structure is ready for consumption.\n\n")
                 
                 f.write("## Automated Findings Summary\n")
                 all_findings = []

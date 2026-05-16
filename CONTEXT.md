@@ -24,6 +24,9 @@ The long-term system for making skill and workflow stability precise, auditable,
 ### Validator Ecosystem
 The modular trust layer inside the Skill Certification System. Validators produce structured findings about structural validation, behavioral evidence, human review, handoff verification, reference evidence, and workflow continuity.
 
+### Certification Kernel
+The central orchestration logic within the **Promotion Harness** that evaluates validator outputs against the **Promotion Plan Authority** to produce a final certification result. It implements heuristic rubric matching and failure classification, serving as the bridge between deterministic validation and human judgment.
+
 ### Spec Package
 The most fundamental unit of work. A folder containing the artifacts for one UI scope.
 _Avoid_: "random docs," "output folder," "spec dump," "docs bundle."
