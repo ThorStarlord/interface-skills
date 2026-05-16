@@ -22,7 +22,12 @@ from pathlib import Path
 import re
 import subprocess
 
+# Add REPO_ROOT to sys.path to allow importing from scripts.validators
 REPO_ROOT = Path(__file__).parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.append(str(REPO_ROOT))
+
+from scripts.validators.human_review import validate_human_review
 PROMOTION_RUNS_DIR = REPO_ROOT / "promotion-runs"
 PLAN_FILE = REPO_ROOT / "promotion-plan.yaml"
 
@@ -569,6 +574,30 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
     return total_failures == 0
 
 
+def validate_run(run_dir, requested_scope="stable"):
+    """
+    Runs all modular validators for a given promotion run directory.
+    """
+    print(f"\n>>> Validating Run Certification: {run_dir.name}")
+    
+    # 1. Human Review Governance Validation
+    review_path = run_dir / "HUMAN-REVIEW.md"
+    # Fallback to review.md if HUMAN-REVIEW.md doesn't exist yet (for transition)
+    if not review_path.exists():
+        review_path = run_dir / "review.md"
+        
+    result = validate_human_review(review_path, requested_scope)
+    
+    if result.status == "pass":
+        print(f"    [OK] {result.validator_name}: {result.findings[0]}")
+    else:
+        print(f"    [FAIL] {result.validator_name}: {', '.join(result.findings)}")
+        for mode in result.failure_modes:
+            print(f"         Failure Mode: {mode}")
+            
+    return result.status == "pass"
+
+
 def run_promotion_for_workflow(workflow_id, plan, registry_path, dry_run=False):
     """
     Runs a full-chain promotion for a workflow.
@@ -697,6 +726,7 @@ def main():
     parser.add_argument("--all", action="store_true", help="Run promotion suite for all skills in plan")
     parser.add_argument("--fresh", action="store_true", help="Mark run as fresh skill output (promotion candidate)")
     parser.add_argument("--dry-run", action="store_true", help="Don't write any files")
+    parser.add_argument("--validate", help="Validate certification for a specific run directory")
     args = parser.parse_args()
 
     if not PLAN_FILE.exists():
@@ -733,6 +763,8 @@ def main():
         skills_to_run = plan.get("skills", {}).keys()
     elif args.skill:
         skills_to_run = [args.skill]
+    elif args.validate:
+        pass # Allow running validation only
     else:
         parser.print_help()
         sys.exit(0)
@@ -741,6 +773,13 @@ def main():
         if not run_promotion_for_skill(skill, plan, dry_run=args.dry_run, fresh=args.fresh):
             success = False
     
+    if args.validate:
+        run_dir = Path(args.validate)
+        if not run_dir.is_absolute():
+            run_dir = REPO_ROOT / run_dir
+        if not validate_run(run_dir):
+            success = False
+
     if not success:
         sys.exit(1)
 
