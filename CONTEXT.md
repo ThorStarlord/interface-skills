@@ -168,6 +168,17 @@ The status of a skill reflects its validation depth and composability.
 | **stable** | Reliable for autonomous composition. | **Stable Promotion Evidence** (Happy path + adversarial + handoff). |
 | **full-chain stable** | Verified end-to-end workflow reliability. | **Workflow Promotion Evidence** (Real handoff + zero-manual-repair). |
 
+### Workflow Certification Policy (ADR 0009)
+
+Every workflow marked as `stable` in `workflow-registry.yaml` must have an authoritative certification record.
+
+| Status | Enforcement | Required Evidence |
+|---|---|---|
+| **draft** | Warn only. | None. |
+| **beta** | Warn only. | 1+ successful run. |
+| **stable** | **FAIL (BLOCKING)** | **Workflow Promotion Evidence** (Real handoff + zero-manual-repair) + `workflow_reference_record.json`. |
+| **test** | Exempt. | None. |
+
 ### Stable Promotion Evidence
 
 The qualitative evidence required to move a skill to **stable**. It must prove the skill is safe to compose with other skills without human "repair" turns. It requires:

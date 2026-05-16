@@ -1,6 +1,7 @@
 workflows:
   - id: setup-sensemaking-repo
     display_name: Setup Sensemaking Repo
+    status: draft
     purpose: Configure repository agent docs, artifact contracts, execution mode defaults, and downstream skill mappings.
     allowed_execution_modes:
       - plan_only
@@ -22,6 +23,7 @@ workflows:
 
   - id: docs-contract-reconciliation
     display_name: Docs & Contract Reconciliation
+    status: beta
     purpose: Resolve drift between documentation, registries, artifact contracts, templates, and validator rules.
     allowed_execution_modes:
       - plan_only
@@ -43,6 +45,7 @@ workflows:
 
   - id: autonomous-sprint-preflight
     display_name: Autonomous Sprint Preflight
+    status: draft
     purpose: Verify that a repository is ready for Autonomous Sprint before selecting the sprint workflow.
     allowed_execution_modes:
       - plan_only
@@ -60,6 +63,7 @@ workflows:
 
   - id: implementation-prompt-chain
     display_name: Implementation Prompt Chain
+    status: draft
     purpose: Turn an approved brief or PRD into copy-paste prompts for external implementation skills.
     allowed_execution_modes:
       - plan_only
@@ -72,6 +76,7 @@ workflows:
 
   - id: product-discovery-sprint
     display_name: Product Discovery Sprint
+    status: draft
     purpose: Move from vague product fog to a validated opportunity and testable hypothesis.
     allowed_execution_modes:
       - plan_only
@@ -101,6 +106,7 @@ workflows:
 
   - id: feature-kickoff-sprint
     display_name: Feature Kickoff Sprint
+    status: draft
     purpose: Turn a validated hypothesis into requirements, stories, and acceptance criteria.
     allowed_execution_modes:
       - plan_only
@@ -126,6 +132,7 @@ workflows:
 
   - id: product-strategy-sprint
     display_name: Product Strategy Sprint
+    status: draft
     purpose: Turn market and product context into strategy, OKRs, roadmap, and stakeholder update.
     allowed_execution_modes:
       - plan_only
@@ -155,6 +162,7 @@ workflows:
 
   - id: product-autonomous-sprint
     display_name: Product Autonomous Sprint (Drafting)
+    status: draft
     purpose: Generate a full proposed product artifact chain from product fog to implementation-ready handoff.
     allowed_execution_modes:
       - plan_only
@@ -200,6 +208,7 @@ workflows:
 
   - id: full-local-sensemaking
     display_name: Full Local Sensemaking
+    status: beta
     purpose: Convert raw fog into a repository diagnosis and downstream handoff using only local executable skills.
     allowed_execution_modes:
       - plan_only
@@ -232,6 +241,7 @@ workflows:
 
   - id: fast-local-diagnostic
     display_name: Fast Local Diagnostic
+    status: beta
     purpose: Quickly identify the weakest boundary and produce a handoff prompt.
     allowed_execution_modes:
       - plan_only
@@ -255,6 +265,7 @@ workflows:
 
   - id: experimental-autonomous-sprint
     display_name: Autonomous Sprint (Experimental)
+    status: beta
     purpose: High-velocity execution using Matt Pocock skills.
     allowed_execution_modes:
       - plan_only
@@ -288,7 +299,8 @@ workflows:
         gate: session_close
 
   - id: spec-recovery
-    display_name: Spec Recovery (Full-Chain Stable)
+    display_name: Spec Recovery
+    status: stable
     purpose: Recover UI specifications from messy existing implementation evidence.
     allowed_execution_modes:
       - plan_only
@@ -323,6 +335,7 @@ workflows:
 
   - id: spec-recovery-negative-missing-handoff
     display_name: Spec Recovery (Negative - Missing Handoff)
+    status: test
     purpose: Test harness failure when handoff artifacts are missing.
     allowed_execution_modes:
       - plan_only

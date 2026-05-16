@@ -105,44 +105,70 @@ def verify_certification():
                 success = False
     # 3. Audit Workflows for Certification
     workflow_registry_path = REPO_ROOT / "skills" / "workflow-orchestrator" / "references" / "workflow-registry.yaml"
+    workflow_ref_path = REPO_ROOT / "skills" / "workflow-orchestrator" / "references" / "workflow_reference_record.json"
+    
     if workflow_registry_path.exists():
         print("\n  - Auditing workflows...")
         try:
             with open(workflow_registry_path, "r", encoding="utf-8") as f:
                 wf_registry = yaml.safe_load(f)
             
+            wf_refs = {}
+            if workflow_ref_path.exists():
+                with open(workflow_ref_path, "r", encoding="utf-8") as f:
+                    wf_refs = json.load(f).get("workflows", {})
+
             for wf in wf_registry.get("workflows", []):
                 wf_id = wf["id"]
-                print(f"    - Workflow: {wf_id}")
+                wf_status = wf.get("status", "draft")
+                print(f"    - Workflow: {wf_id} ({wf_status})")
                 
-                # Find latest approved run for this workflow
-                latest_approved = None
-                if PROMOTION_RUNS_DIR.exists():
-                    wf_runs = []
-                    for run_dir in PROMOTION_RUNS_DIR.iterdir():
-                        if run_dir.is_dir() and wf_id in run_dir.name and "workflow" in run_dir.name:
-                            review_path = run_dir / "HUMAN-WORKFLOW-REVIEW.md"
-                            if review_path.exists():
-                                from scripts.validators.human_workflow_review import validate_human_workflow_review
-                                h_result = validate_human_workflow_review(review_path, requested_scope="workflow")
-                                if h_result.status == "pass":
-                                    wf_runs.append(run_dir)
+                # Mandatory check for stable workflows
+                ref = wf_refs.get(wf_id)
+                if wf_status == "stable":
+                    if not ref:
+                        print(f"      [FAIL] Stable workflow has no entry in workflow_reference_record.json.")
+                        success = False
+                        continue
                     
-                    if wf_runs:
-                        # Sort by name (timestamp prefix)
-                        wf_runs.sort(key=lambda x: x.name, reverse=True)
-                        latest_approved = wf_runs[0]
+                    source_run_id = ref.get("source_run")
+                    if not source_run_id:
+                        print(f"      [FAIL] Workflow reference missing 'source_run'.")
+                        success = False
+                        continue
+                        
+                    run_dir = PROMOTION_RUNS_DIR / source_run_id
+                    if not run_dir.exists():
+                        print(f"      [FAIL] Certified run {source_run_id} missing from promotion-runs/.")
+                        success = False
+                        continue
+                    
+                    review_path = run_dir / "HUMAN-WORKFLOW-REVIEW.md"
+                    if not review_path.exists():
+                        print(f"      [FAIL] Certified run {source_run_id} has no human review.")
+                        success = False
+                    else:
+                        from scripts.validators.human_workflow_review import validate_human_workflow_review
+                        h_result = validate_human_workflow_review(review_path, requested_scope="workflow")
+                        if h_result.status != "pass":
+                            print(f"      [FAIL] Certified run {source_run_id} not approved: {', '.join(h_result.findings)}")
+                            success = False
+                        else:
+                            print(f"      [OK] Certified run found and verified: {source_run_id}")
                 
-                if not latest_approved:
-                    # Workflows don't necessarily HAVE to be certified yet, but we report it
-                    print(f"      [WARN] No approved promotion run found for workflow.")
                 else:
-                    print(f"      [OK] Certified run found: {latest_approved.name}")
+                    # Non-stable workflows: warn if no run found, but don't fail
+                    if not ref:
+                        print(f"      [WARN] No reference record found for {wf_status} workflow.")
+                    else:
+                        print(f"      [OK] Reference record exists for {wf_status} workflow.")
+
         except Exception as e:
             print(f"    [FAIL] Error auditing workflows: {str(e)}")
             success = False
     else:
-        print("\n  - [WARN] Workflow registry not found at expected path.")
+        print("\n  - [FAIL] Workflow registry not found at expected path.")
+        success = False
 
     if success:
         print("\n>>> [CERTIFIED] Repository state adheres to Certification Authority standards.")
