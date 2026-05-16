@@ -46,6 +46,25 @@ def load_skill_registry():
         return {"skills": []}
     return json.loads(SKILLS_FILE.read_text(encoding="utf-8"))
 
+
+def extract_input_content(fixture_path, output_file=None):
+    """
+    Concatenates content from all relevant input files in the fixture.
+    Excludes the expected/ directory and the current output file.
+    """
+    input_texts = []
+    for f in fixture_path.glob("**/*"):
+        if f.is_file() and f.suffix in ('.md', '.json', '.js', '.ts', '.html', '.css'):
+            if "expected" in str(f):
+                continue
+            if output_file and f.resolve() == output_file.resolve():
+                continue
+            try:
+                input_texts.append(f.read_text(encoding="utf-8"))
+            except Exception:
+                pass
+    return "\n\n".join(input_texts)
+
 def resolve_skill_artifact(skill_name, fixture_path, registry):
     """
     Resolves the output artifact for a skill within a fixture using registry mappings.
@@ -219,7 +238,7 @@ def evaluate_output_against_rubric(output_content, rubric_items):
     return results
  
 
-def classify_result(skill_name, fixture_name, skill_config, skill_valid, pkg_valid, rubric_passed, rubric_results, output_content):
+def classify_result(skill_name, fixture_name, skill_config, skill_valid, pkg_valid, rubric_passed, rubric_results, output_content, input_content=None):
     """
     Classifies the result based on whether the fixture was expected to fail.
     Returns (classification, classification_msg, behavioral_status)
@@ -234,7 +253,7 @@ def classify_result(skill_name, fixture_name, skill_config, skill_valid, pkg_val
     behavioral_criteria = skill_config.get("behavioral_criteria", {})
     complexity_thresholds = behavioral_criteria.get("minimum_behavioral_complexity", {})
     
-    bev_result = validate_behavioral_result(output_content, skill_name, complexity_thresholds)
+    bev_result = validate_behavioral_result(output_content, skill_name, complexity_thresholds, input_content=input_content)
     
     if is_messy:
         # For messy fixtures, we EXPECT failure in rubric or behavioral result
@@ -394,8 +413,11 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
         else:
             print(f"    [INFO] No rubric.md found for {fixture_name}")
 
+        # 4.5 Extract Input Content (for behavioral validation)
+        input_content = extract_input_content(fixture_path, output_file)
+
         # 5. Classification
-        classification, classification_msg, behavioral_status = classify_result(skill_name, fixture_name, skill_config, skill_valid, pkg_valid, rubric_passed, rubric_results, output_content)
+        classification, classification_msg, behavioral_status = classify_result(skill_name, fixture_name, skill_config, skill_valid, pkg_valid, rubric_passed, rubric_results, output_content, input_content=input_content)
 
         # 5.5 Evidence Level
         evidence_level = "promotion_candidate_run" if fresh else "harness_validation"

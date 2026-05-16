@@ -1,9 +1,11 @@
 from pathlib import Path
 from .common import ValidatorResult
 
+import json
+
 def validate_reference_evidence(skill_name, reference_dir):
     """
-    Validates the curated Promotion Reference Evidence.
+    Validates the curated Promotion Reference Evidence (Gold Standard).
     """
     path = Path(reference_dir)
     
@@ -11,32 +13,55 @@ def validate_reference_evidence(skill_name, reference_dir):
         return ValidatorResult(
             status="fail",
             validator_name="reference_evidence",
-            findings=[f"Reference directory not found: {path}"],
+            findings=[f"Reference directory not found for {skill_name}"],
             failure_modes=["missing_reference_dir"]
         )
 
     findings = []
     failure_modes = []
     
-    # 1. Rubric Presence (Minimum for any reference)
-    rubric_path = path / "expected" / "rubric.md"
-    if not rubric_path.exists():
-        findings.append(f"Reference for '{skill_name}' is missing expected/rubric.md")
-        failure_modes.append("missing_rubric")
-        
-    # 2. Evidence completeness
-    # (In a real scenario, we'd check for specific files mandated by the skill contract)
-    
-    if not findings:
-        return ValidatorResult(
-            status="pass",
-            validator_name="reference_evidence",
-            findings=[f"Reference evidence for '{skill_name}' verified"]
-        )
+    # 1. Reference Record Presence
+    record_path = path / "reference_record.json"
+    if not record_path.exists():
+        findings.append(f"Reference for '{skill_name}' is missing reference_record.json")
+        failure_modes.append("missing_reference_record")
     else:
-        return ValidatorResult(
-            status="fail",
-            validator_name="reference_evidence",
-            findings=findings,
-            failure_modes=failure_modes
-        )
+        try:
+            record = json.loads(record_path.read_text(encoding="utf-8"))
+            findings.append("Reference record found and parsed.")
+            
+            # 2. Artifact Completeness
+            for artifact_name, meta in record.items():
+                artifact_path = path / artifact_name
+                if not artifact_path.exists():
+                    findings.append(f"Missing referenced artifact: {artifact_name}")
+                    failure_modes.append("incomplete_reference")
+                else:
+                    findings.append(f"Artifact '{artifact_name}' verified (source: {meta.get('source_run', 'unknown')})")
+        except Exception as e:
+            findings.append(f"Failed to parse reference_record.json: {str(e)}")
+            failure_modes.append("corrupt_reference_record")
+
+    # 3. Governance Evidence (HUMAN-REVIEW.md)
+    # Every gold standard should have the authorizing review curated alongside it
+    review_path = path / "HUMAN-REVIEW.md"
+    if not review_path.exists():
+        findings.append(f"Reference for '{skill_name}' is missing authorizing HUMAN-REVIEW.md")
+        failure_modes.append("missing_governance_evidence")
+    else:
+        findings.append("Authorizing HUMAN-REVIEW.md found in reference dir.")
+
+    # 4. Cleanliness (No junk files)
+    allowed_extensions = {'.md', '.json', '.png', '.jpg', '.pdf'}
+    junk_files = [f.name for f in path.glob("*") if f.is_file() and f.suffix not in allowed_extensions]
+    if junk_files:
+        findings.append(f"Dirty reference directory: junk files found: {', '.join(junk_files)}")
+        failure_modes.append("dirty_reference")
+
+    status = "pass" if not failure_modes else "fail"
+    return ValidatorResult(
+        status=status,
+        validator_name="reference_evidence",
+        findings=findings,
+        failure_modes=failure_modes
+    )

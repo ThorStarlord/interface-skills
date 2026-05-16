@@ -1,36 +1,80 @@
 import unittest
-import os
 import tempfile
+import shutil
+from pathlib import Path
+import sys
+import os
+
+# Add repo root to path
+REPO_ROOT = Path(__file__).parent.parent
+sys.path.append(str(REPO_ROOT))
+
 from scripts.validators.fixture_integrity import validate_fixture_integrity
-from scripts.validators.common import ValidatorResult
 
 class TestFixtureIntegrityValidator(unittest.TestCase):
-    def test_missing_rubric(self):
-        """A fixture without a rubric.md should fail integrity check."""
-        with tempfile.TemporaryDirectory() as tmpdir:
-            # Create a fixture dir but no expected/rubric.md
-            fixture_dir = os.path.join(tmpdir, "test-fixture")
-            os.makedirs(fixture_dir)
-            
-            result = validate_fixture_integrity(fixture_dir)
-            
-            self.assertEqual(result.status, "fail")
-            self.assertIn("missing expected/rubric.md", result.findings[0])
-            self.assertIn("missing_rubric", result.failure_modes)
+    def setUp(self):
+        self.test_dir = Path(tempfile.mkdtemp())
 
-    def test_valid_fixture(self):
-        """A valid fixture should pass."""
-        with tempfile.TemporaryDirectory() as tmpdir:
-            fixture_dir = os.path.join(tmpdir, "test-fixture")
-            rubric_dir = os.path.join(fixture_dir, "expected")
-            os.makedirs(rubric_dir)
-            with open(os.path.join(rubric_dir, "rubric.md"), "w") as f:
-                f.write("# Rubric")
-            
-            result = validate_fixture_integrity(fixture_dir)
-            
-            self.assertEqual(result.status, "pass")
-            self.assertIn("integrity verified", result.findings[0])
+    def tearDown(self):
+        shutil.rmtree(self.test_dir)
+
+    def test_missing_directory_fails(self):
+        result = validate_fixture_integrity(self.test_dir / "nonexistent")
+        self.assertEqual(result.status, "fail")
+        self.assertIn("missing_fixture", result.failure_modes)
+
+    def test_missing_rubric_fails(self):
+        # Create empty dir
+        fixture = self.test_dir / "my-fixture"
+        fixture.mkdir()
+        (fixture / "input.md").write_text("# Input\nSome substantial content here to pass triviality.")
+        
+        result = validate_fixture_integrity(fixture)
+        self.assertEqual(result.status, "fail")
+        self.assertIn("missing_rubric", result.failure_modes)
+
+    def test_trivial_content_fails(self):
+        fixture = self.test_dir / "thin-fixture"
+        fixture.mkdir()
+        (fixture / "expected").mkdir()
+        (fixture / "expected" / "rubric.md").write_text("# Rubric")
+        (fixture / "input.md").write_text("too thin")
+        
+        result = validate_fixture_integrity(fixture)
+        self.assertEqual(result.status, "fail")
+        self.assertIn("trivial_content", result.failure_modes)
+
+    def test_no_content_files_fails(self):
+        fixture = self.test_dir / "no-files"
+        fixture.mkdir()
+        (fixture / "expected").mkdir()
+        (fixture / "expected" / "rubric.md").write_text("# Rubric")
+        
+        result = validate_fixture_integrity(fixture)
+        self.assertEqual(result.status, "fail")
+        self.assertIn("trivial_fixture", result.failure_modes)
+
+    def test_valid_fixture_passes(self):
+        fixture = self.test_dir / "good-fixture"
+        fixture.mkdir()
+        (fixture / "expected").mkdir()
+        (fixture / "expected" / "rubric.md").write_text("# Rubric")
+        (fixture / "input.md").write_text("# Substantial Content\n" + "A" * 200)
+        
+        result = validate_fixture_integrity(fixture)
+        self.assertEqual(result.status, "pass")
+        self.assertIn("Content depth verified", result.findings[1])
+
+    def test_adversarial_tagging(self):
+        fixture = self.test_dir / "messy-fixture"
+        fixture.mkdir()
+        (fixture / "expected").mkdir()
+        (fixture / "expected" / "rubric.md").write_text("# Rubric")
+        (fixture / "input.md").write_text("# Messy Content\n" + "B" * 200)
+        
+        result = validate_fixture_integrity(fixture)
+        self.assertEqual(result.status, "pass")
+        self.assertTrue(any("Adversarial intent" in f for f in result.findings))
 
 if __name__ == "__main__":
     unittest.main()
