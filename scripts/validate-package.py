@@ -32,6 +32,27 @@ def validate_package(package_path):
     if not os.path.exists(manifest_md) and not os.path.exists(manifest_json):
         issues.append("- [CRITICAL] Missing `RUN-MANIFEST.md` or `run-manifest.json` (Run History)")
     
+    # 2b. If run-manifest.json exists, validate its schema and artifact outputs
+    if os.path.exists(manifest_json):
+        try:
+            with open(manifest_json, "r", encoding="utf-8") as f:
+                manifest_data = json.load(f)
+            
+            # Check schema required fields
+            required_fields = ["skill_name", "timestamp", "input_hashes", "artifact_outputs"]
+            for field in required_fields:
+                if field not in manifest_data:
+                    issues.append(f"- [ERROR] Manifest missing required field: `{field}`")
+            
+            # Check missing artifacts listed in artifact_outputs
+            if "artifact_outputs" in manifest_data and isinstance(manifest_data["artifact_outputs"], list):
+                for artifact in manifest_data["artifact_outputs"]:
+                    art_path = os.path.join(package_path, artifact)
+                    if not os.path.exists(art_path):
+                        issues.append(f"- [ERROR] `{artifact}` listed in manifest but missing on disk")
+        except Exception as e:
+            issues.append(f"- [ERROR] Failed to parse run-manifest.json: {str(e)}")
+    
     # 3. Check for Report Lifecycle (current vs superseded)
     report_files = [f for f in os.listdir(package_path) if (f.endswith('.md') and 'REPORT' in f.upper()) or f == '09-redlines.md']
     active_reports = {} # type -> filename

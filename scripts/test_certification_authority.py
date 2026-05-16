@@ -130,7 +130,7 @@ class TestCertificationAuthority(unittest.TestCase):
         env = os.environ.copy()
         env["SKIP_AUTHORITY_VALIDATION"] = "1"
         sync_res = subprocess.run([sys.executable, str(self.repo_root / "scripts" / "sync_reference_evidence.py")], 
-                                  capture_output=True, text=True, env=env)
+                                  capture_output=True, text=True, env=env, cwd=str(self.repo_root))
         self.assertEqual(sync_res.returncode, 0, f"Sync should succeed. Output: {sync_res.stdout}\n{sync_res.stderr}")
         
         # Verify reference created
@@ -139,7 +139,7 @@ class TestCertificationAuthority(unittest.TestCase):
         
         # 3. Verify Certification Authority
         audit_res = subprocess.run([sys.executable, str(self.repo_root / "scripts" / "verify_certification_authority.py")], 
-                                   capture_output=True, text=True, env=env)
+                                   capture_output=True, text=True, env=env, cwd=str(self.repo_root))
         self.assertEqual(audit_res.returncode, 0, f"Audit should pass. Output: {audit_res.stdout}\n{audit_res.stderr}")
         self.assertIn("[CERTIFIED]", audit_res.stdout)
 
