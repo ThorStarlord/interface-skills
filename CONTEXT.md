@@ -119,6 +119,9 @@ Deterministic validation that required handoff evidence exists, is complete, and
 ### Promotion Plan Validation
 Deterministic validation that the promotion plan is structurally valid, semantically coherent, and executable before evidence generation begins. It verifies that configured skills, fixtures, behavioral criteria, failure modes, and handoff requirements form a valid promotion contract. It does not itself approve promotion or judge behavioral evidence.
 
+### Promotion Plan Authority
+The principle that the `promotion-plan.yaml` is the **Authoritative Contract** for a specific promotion run. It defines the "Goal State" (e.g. stable), the evidence requirements, and the failure modes that the reviewer must judge. Once a plan passes validation, it becomes the immutable ground truth for that run's certification.
+
 ### Fixture Integrity Validation
 Deterministic pre-flight validation that a fixture is complete, coherent, non-trivial, correctly classified, and compatible with the promotion plan before it is used to generate behavioral evidence. It separates fixture defects from skill behavior defects and should produce fixture repair guidance when evidence material is invalid.
 

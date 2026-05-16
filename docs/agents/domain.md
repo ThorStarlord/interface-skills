@@ -12,6 +12,12 @@ This repository is configured as a single-context repo.
 
 If any of these files don't exist, **proceed silently**. Don't flag their absence; don't suggest creating them upfront. The producer skill (`/grill-with-docs`) creates them lazily when terms or decisions actually get resolved.
 
+## Authority and Certification
+
+The repository enforces a **Skill Certification System** (ADR 0008). 
+- **Promotion Plan Authority**: The `promotion-plan.yaml` is the binding contract for every promotion run.
+- **Promotion Lock**: Promoted skills are locked to their certified state. Any drift in a `stable` skill's logic (via `SKILL.md`) without a corresponding re-certification run will trigger a blocking failure in `enforce_promotion_lock.py`.
+
 ## File structure
 
 Single-context repo (most repos):

@@ -14,6 +14,13 @@ Informed: Registry Maintainers
  
  ### 1. Validator Contract
  Validators will return structured Python result objects (e.g., `HumanReviewValidationResult`) rather than emitting standalone JSON artifacts. This prevents "authority ambiguity" between multiple result files.
+
+### 2. Promotion Plan as Authority
+The `promotion-plan.yaml` file is the **authoritative contract** for every promotion run. 
+- It must pass **Structural and Semantic Validation** before execution.
+- It must explicitly declare the **Blocking Failure Modes** relevant to the skill's domain.
+- It defines the **Handoff Mode** required for the target status (e.g., Real Handoff for Workflow Stability).
+- The validator MUST enforce **Canonical Defaults** from `CONTEXT.md` to prevent "authority watering down" where a plan defines too few failure modes or trivial complexity thresholds.
  
  ### 3. Extraction Roadmap
  To manage risk and preserve existing promotion behavior, we will extract validators in the following sequence:

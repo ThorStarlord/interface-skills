@@ -4,6 +4,20 @@ import re
 from pathlib import Path
 from .common import ValidatorResult
 
+# ADR 0008 Canonical Defaults
+CANONICAL_BLOCKING_MODES = [
+    "hallucination", "scope_drift", "label_friction", 
+    "incomplete_context", "handoff_failure", "evidence_gap"
+]
+
+MANDATORY_STABLE_MODES = ["hallucination", "scope_drift"]
+
+COMPLEXITY_DEFAULTS = {
+    "inventory": {"min_surface_candidates": 3},
+    "audit": {"min_findings": 5},
+    "issue": {"min_findings": 5}
+}
+
 def validate_promotion_plan(plan_path, registry_path, repo_root=None):
     """
     Validates a promotion plan against the skill registry and filesystem.
@@ -77,6 +91,10 @@ def validate_promotion_plan(plan_path, registry_path, repo_root=None):
                 findings.append(f"Fixture path '{fixture_rel}' for skill '{skill}' not found on disk")
                 failure_modes.append("missing_fixture")
 
+        # 4. Validate downstream coherence & Boundary Rules (ADR 0006/0007)
+        prom_crit = skill_cfg.get("promotion_criteria", {})
+        requested_scope = prom_crit.get("scope", "stable")
+
         # 3. Validate behavioral_criteria (Mandatory for stable promotion)
         beh_crit = skill_cfg.get("behavioral_criteria")
         if not beh_crit:
@@ -120,11 +138,41 @@ def validate_promotion_plan(plan_path, registry_path, repo_root=None):
             if not blocking or not isinstance(blocking, list):
                 findings.append(f"Skill '{skill}' is missing or has invalid 'blocking_failure_modes'")
                 failure_modes.append("missing_blocking_failure_modes")
+            else:
+                # ADR 0008: Validate against canonical list
+                for mode in blocking:
+                    if mode not in CANONICAL_BLOCKING_MODES:
+                        # Allow custom modes but warn/fail if they are obviously non-canonical
+                        findings.append(f"Skill '{skill}' uses non-canonical failure mode: '{mode}'")
+                        failure_modes.append("non_canonical_failure_mode")
+                
+                # ADR 0008: Mandatory modes for stable promotion
+                if requested_scope in ("stable", "workflow"):
+                    for mandatory in MANDATORY_STABLE_MODES:
+                        if mandatory not in blocking:
+                            findings.append(f"Skill '{skill}' missing mandatory blocking mode '{mandatory}' for {requested_scope} promotion")
+                            failure_modes.append("missing_mandatory_blocking_mode")
+
+            # Complexity Enforcement (ADR 0008)
+            complexity = beh_crit.get("minimum_behavioral_complexity", {})
+            if not complexity:
+                findings.append(f"Skill '{skill}' is missing 'minimum_behavioral_complexity'")
+                failure_modes.append("missing_complexity_metrics")
+            else:
+                # Heuristic mapping for complexity defaults
+                category = "general"
+                if "inventory" in skill: category = "inventory"
+                elif "audit" in skill or "inspector" in skill: category = "audit"
+                elif "issue" in skill: category = "issue"
+                
+                if category in COMPLEXITY_DEFAULTS:
+                    defaults = COMPLEXITY_DEFAULTS[category]
+                    for metric, min_val in defaults.items():
+                        if complexity.get(metric, 0) < min_val:
+                            findings.append(f"Skill '{skill}' complexity metric '{metric}' ({complexity.get(metric, 0)}) is below canonical default ({min_val})")
+                            failure_modes.append("insufficient_complexity")
 
         # 4. Validate downstream coherence & Boundary Rules (ADR 0006/0007)
-        prom_crit = skill_cfg.get("promotion_criteria", {})
-        requested_scope = prom_crit.get("scope", "stable")
-        
         downstream = skill_cfg.get("downstream")
         # Workflow scope OR explicit require_downstream MUST have downstream verification
         require_downstream = prom_crit.get("require_downstream", False)
