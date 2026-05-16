@@ -1,77 +1,101 @@
 # Skill Certification System
 
-The **Skill Certification System** is the formal architecture for promoting AI skills from `draft` to `stable`. It serves as the **Trust Layer** of the repository, ensuring that every skill meets deterministic structural requirements, behavioral quality standards, and human-approved governance before it is authorized for production use.
+The **Skill Certification System** is the formal architecture for making skill and workflow stability precise, auditable, and repeatable. Its **Validator Ecosystem** serves as the modular trust layer of the repository, ensuring that every skill meets deterministic structural requirements, behavioral evidence requirements, handoff readiness checks, and human-approved governance.
 
-## 1. Overview
+## 1. Purpose
 
-The system is designed to prevent "Skill Drift"—where a skill passes automated tests but produces misleading, trivial, or unconsumable artifacts. It separates the **execution** of tests from the **judgment** of results.
+The system is designed to prevent "Skill Drift"—where a skill passes automated tests but produces misleading, trivial, or unconsumable artifacts. It separates the **execution** of tests from the **judgment** of results, providing a clear path from a `draft` candidate to a `stable` authorized skill.
 
-| Layer | Responsibility | Component |
+## 2. Trust Model
+
+Certification is achieved through a multi-stage validation pipeline that prioritizes deterministic evidence before human authorization.
+
+| Stage | Goal | Deterministic Validator |
 | :--- | :--- | :--- |
-| **Orchestration** | Running skills against fixtures | **Promotion Harness** |
-| **Trust** | Evaluating results against contracts | **Validator Ecosystem** |
-| **Authority** | Final human sign-off and promotion | **Governance Gate** |
+| **1. Fixture Integrity** | "Is this a legitimate test object?" | `fixture_integrity.py` |
+| **2. Behavioral Evidence** | "Did the skill produce useful, non-trivial, and sufficiently complex output?" | `behavioral_result.py` |
+| **3. Handoff Verification** | "Does the output satisfy the contract required by the next skill?" | `handoff_verification.py` |
+| **4. Governance Approval** | "Does a human expert authorize the promotion?" | `human_review.py` |
+| **5. Reference Curation** | "Is the successful evidence preserved as a gold-standard snapshot?" | `reference_evidence.py` |
 
-## 2. Component Architecture
+## 3. Architecture: Harness, Validators, Governance
 
-### The Promotion Harness (`scripts/run_promotion_suite.py`)
-The harness is the execution engine. It parses the `promotion-plan.yaml`, identifies the necessary fixtures, orchestrates skill invocations, and collects evidence into the `promotion-runs/` directory.
+The system maintains a strict separation of roles to prevent logic creep and preserve auditability.
 
-### The Validator Ecosystem (`scripts/validators/`)
-The ecosystem is a modular collection of "Judges" that evaluate different aspects of a promotion run. Every validator returns a standardized `ValidatorResult`.
-
-| Validator | Phase | Responsibility |
+| Role | Component | Responsibility |
 | :--- | :--- | :--- |
-| **Configuration Authority** | Pre-flight | Ensures the skill exists in the registry and fixtures are correctly mapped. |
-| **Input Integrity** | Pre-flight | Validates that the test fixture is well-formed (e.g., contains a `rubric.md`). |
-| **Behavioral Result** | Post-execution | Checks for trivial placeholders (TBD/TODO) and enforces complexity thresholds. |
-| **Contract Enforcement** | Post-execution | Verifies that downstream skills can correctly consume the output (Handoff check). |
-| **Governance Validation** | Audit | Verifies that a `HUMAN-REVIEW.md` exists with explicit approval and correct scope. |
-| **Reference Snapshot** | Audit | Ensures the curated "Gold Standard" evidence in `examples/promotion/` is complete. |
+| **Executor / Orchestrator** | **Promotion Harness** | Executes skills against fixtures and collects evidence. |
+| **Deterministic Judges** | **Validator Ecosystem** | Evaluates results against hard contracts and schemas. |
+| **Authority / Approval** | **Human Review Governance** | Final judgment on usefulness and domain adequacy. |
 
-## 3. The Trust Model
+## 4. Validator Ecosystem
 
-Certification is achieved through a multi-stage validation pipeline:
+The ecosystem is a modular collection of deterministic validators located in `scripts/validators/`. Every validator returns a standardized `ValidatorResult`.
 
-1.  **Fixture Integrity**: "Is this a legitimate test object?"
-2.  **Behavioral Evidence**: "Did the skill produce useful, non-trivial, and sufficiently complex output?"
-3.  **Handoff Verification**: "Does the output satisfy the contract required by the next skill in the chain?"
-4.  **Human Review**: "Does a human expert agree the result is useful and not misleading?"
-5.  **Reference Curation**: "Is the successful evidence preserved as a gold-standard snapshot?"
+*   **Configuration Authority** (`promotion_plan.py`): Ensures the skill exists in the registry and fixtures are correctly mapped.
+*   **Input Integrity** (`fixture_integrity.py`): Validates that the test fixture is well-formed (e.g., contains a `rubric.md`).
+*   **Behavioral Result** (`behavioral_result.py`): Checks for trivial placeholders and enforces complexity thresholds.
+*   **Contract Enforcement** (`handoff_verification.py`): Verifies that downstream skills can correctly consume the output.
+*   **Governance Validation** (`human_review.py`): Verifies that a `HUMAN-REVIEW.md` exists with explicit approval.
+*   **Reference Snapshot** (`reference_evidence.py`): Ensures the curated "Gold Standard" evidence is complete and traceable.
 
-## 4. Evidence Management
+## 5. Evidence Lifecycle
 
-The system maintains a strict boundary between historical records and curated standards.
+The system distinguishes between chronological run logs and curated reference standards.
 
 ### Promotion Runs (`promotion-runs/`)
-Ephemeral directories containing the full context of a single validation run.
+**Historical run directories** containing the full context of a single promotion or validation run. They preserve chronology and debugging context.
 - `result.json`: The machine-readable summary of all validator findings.
 - `review.md`: The initial automated review and checklist for humans.
 - `output/`: The actual artifacts produced by the skill during the run.
 
 ### Promotion Reference Evidence (`examples/promotion/<skill>/reference/`)
-Curated snapshots of **successful, human-approved runs**. This is the "Gold Standard" used to validate future versions of the skill and to onboard new agents. It is only updated after a formal stable promotion.
+**Curated snapshots** of human-approved, successful evidence. This is the "Gold Standard" used to onboard agents and validate future iterations.
+*   Reference evidence is only updated after an explicit, human-approved stable promotion.
+*   The system must never select reference evidence solely because it is the latest passing run.
 
-## 5. Implementation Roadmap
+## 6. Stability Levels
 
-### Phase 1: Individual Skill Certification (Complete)
-- [x] Extraction of modular Validator Ecosystem.
-- [x] Standardized Result Contract (`ValidatorResult`).
-- [x] Pre-flight Integrity and Behavioral Shape enforcement.
-- [x] Governance integration for human approval gates.
+| Level | Meaning | Criteria |
+| :--- | :--- | :--- |
+| **Draft** | Experimental | In development, output format may change, no stable evidence. |
+| **Stable** | Production-ready | 3+ human-approved runs, failure modes tested, handoff verified. |
+| **Verified** | Full-Chain Stable | All workflow steps are individually stable and pass a continuous handoff audit. |
 
-### Phase 2: Workflow Stability & Full-Chain Validation (Active)
-- [ ] Implementation of the **Workflow-Link Validator**.
-- [ ] Formalizing "Full-Chain Stability" where multiple stable skills must pass a combined handoff test.
-- [ ] Automated regression detection across the `workflow-registry.yaml`.
+## 7. Failure Ownership
+
+To ensure rapid remediation, every validation failure has a clear owner.
+
+| Failure Type | Root Cause | Remediation |
+| :--- | :--- | :--- |
+| **Plan/Config** | Missing registry entry or mismapped fixture | `promotion_plan.py` repair |
+| **Fixture Integrity** | Fixture is missing required files or rubrics | Fixture repair brief |
+| **Behavioral Weakness** | Skill output is trivial, missing, or malformed | Skill improvement brief |
+| **Handoff Broken** | Downstream skill cannot parse or find output | Handoff/contract repair |
+| **Governance Gap** | `HUMAN-REVIEW.md` is missing or unauthorized | Governance correction |
+| **Dirty Reference** | Reference snapshot is incomplete or contains junk | Reference curation repair |
+
+## 8. Roadmap
+
+### Phase 1: Validator Ecosystem Extraction
+**Status: Complete as of 2026-05-16, pending audit confirmation.**
+- [x] Extraction of modular Validator Ecosystem from the harness.
+- [x] Standardized `ValidatorResult` contract.
+- [x] Integration of Governance gates and Behavioral shape enforcement.
+
+### Phase 2: Workflow Stability Generalization (Active)
+**Status: Following established ADR 0007 / spec-recovery precedents.**
+- [ ] Extend full-chain validation beyond the certified `spec-recovery` workflow.
+- [ ] Implement reusable workflow-level validators for zero-manual-repair handoffs.
+- [ ] Expand regression coverage across `workflow-registry.yaml`.
 
 ### Phase 3: Automated Evidence Lifecycle (Future)
-- [ ] Automated syncing of `promotion-runs/` to `reference/` upon approval.
-- [ ] "Dirty Reference" detection (detecting loose artifacts in curated snapshots).
-- [ ] Continuous Certification: Running the suite against main on every PR.
+- [ ] Traceable reference evidence sync after explicit human-approved stable promotion.
+- [ ] "Dirty Reference" detection for curated snapshots.
+- [ ] Continuous Certification: Automated runs on repository pull requests.
 
-## 6. Relationships
+## 9. Related ADRs and Documents
 
-- **ADR 0006**: Defines the requirement for Individual Stable Promotion.
-- **ADR 0007**: Defines the requirement for Workflow Promotion and Handoff Stability.
-- **CONTEXT.md**: Defines the canonical vocabulary used by the validators.
+- **ADR 0006**: Individual Stable Promotion with Simulated Handoff.
+- **ADR 0007**: Workflow Promotion / Full-Chain Stability.
+- **CONTEXT.md**: Canonical vocabulary for the Skill Certification System.
