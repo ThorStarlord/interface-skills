@@ -18,6 +18,12 @@ When an AI-built UI misses the mark, improve the contract:
 
 ## Core vocabulary
 
+### Skill Certification System
+The long-term system for making skill and workflow stability precise, auditable, and repeatable.
+
+### Validator Ecosystem
+The modular trust layer inside the Skill Certification System. Validators produce structured findings about structural validation, behavioral evidence, human review, handoff verification, reference evidence, and workflow continuity.
+
 ### Spec Package
 The most fundamental unit of work. A folder containing the artifacts for one UI scope.
 _Avoid_: "random docs," "output folder," "spec dump," "docs bundle."
@@ -98,6 +104,27 @@ The ability of a skill to correctly apply domain heuristics and interpret messy 
 ### Handoff Utility
 A dimension of Behavioral Evidence confirming that an artifact contains enough discrete, actionable detail for a downstream human or skill to perform the next step without re-reading source evidence.
 
+### Promotion Harness
+The orchestration layer that runs promotion checks, collects evidence, and delegates validation logic to validators. Current entrypoints include `scripts/run_promotion_suite.py` and `scripts/run-promotion-suite.py`.
+
+### Promotion Evidence
+The generated artifacts used to support a promotion decision, including behavioral result records, narrative reviews, invocation records, human review artifacts, reference evidence, workflow manifests, continuity audits, and regression outputs.
+
+### Human Review Governance Validation
+Deterministic validation that a required human review artifact exists and contains complete, explicit, scope-compatible approval metadata. It verifies that the Human Review gate was completed and authorized for the requested promotion scope, but does not judge behavioral evidence itself.
+
+### Handoff Verification Validation
+Deterministic validation that required handoff evidence exists, is complete, and matches the configured handoff mode. Simulated handoff may support individual skill promotion but must not claim workflow full-chain stability. Real handoff and zero-manual-repair evidence are required for workflow-level stability.
+
+### Promotion Plan Validation
+Deterministic validation that the promotion plan is structurally valid, semantically coherent, and executable before evidence generation begins. It verifies that configured skills, fixtures, behavioral criteria, failure modes, and handoff requirements form a valid promotion contract. It does not itself approve promotion or judge behavioral evidence.
+
+### Fixture Integrity Validation
+Deterministic pre-flight validation that a fixture is complete, coherent, non-trivial, correctly classified, and compatible with the promotion plan before it is used to generate behavioral evidence. It separates fixture defects from skill behavior defects and should produce fixture repair guidance when evidence material is invalid.
+
+### Reference Evidence Validation
+Deterministic validation that curated Promotion Reference Evidence is authorized, traceable to an approved promotion run, complete for the skill contract, and free of loose or unrelated artifacts. It validates reference evidence curation but does not itself approve promotion.
+
 ## Relationships
 
 - A **UI Scope** is the target for one **Spec Package**.
@@ -108,7 +135,12 @@ A dimension of Behavioral Evidence confirming that an artifact contains enough d
 - A **Fixture** freezes a real **Spec Package** so draft skills can be validated.
 - A **Validator** performs **Structural Validation**.
 - **Human Review** evaluates **Behavioral Evidence** to confirm **Judgment Fidelity** and **Handoff Utility**.
-- **Promotion** moves a **Skill** from draft to stable after both structural and behavioral gates are passed.
+- **Promotion** moves a **Skill** from draft to stable only after required structural validation, behavioral evidence, handoff verification, and explicit human review are complete.
+- The **Skill Certification System** uses the **Promotion Harness** to execute the **Validator Ecosystem**.
+- A **Promotion Harness** run produces **Promotion Evidence**.
+- **Promotion Plan Validation** validates the configured promotion contract before the **Promotion Harness** generates or evaluates evidence.
+- **Fixture Integrity Validation** must pass before a fixture can be treated as valid Behavioral Evidence.
+- **Promotion Reference Evidence** is curated from approved historical **Promotion Evidence** only after explicit human-approved stable promotion.
 
 ## Repository roles
 
@@ -218,3 +250,17 @@ A behavioral verification where a reviewer evaluates whether the skill output sa
 ### Real Handoff
 
 A behavioral verification where a downstream skill actually consumes the output of an upstream skill in a live run. Real handoff is required for **Workflow Promotion** and **Full-Chain Stability**.
+
+
+## Common Artifact Types
+
+| Artifact | Purpose | Required File | Promotion Evidence | Stability Support | Common Neighbors |
+|------|---------|---------------|--------------------|-------------------|------------------|
+| **Plan** | Defines the work to be done. | `PLAN.md` | No | No | `ui-brief` |
+| **Spec Package** | Defines expected behavior/structure. | `SPEC-PACKAGE.md` | Yes (structural) | Partial | All downstream skills |
+| **Inventory** | Enumerates UI surfaces. | `INVENTORY.md` | No | No | `ui-surface-inventory` |
+| **Blueprint** | Generates a new Spec Package. | `BLUEPRINT.md` | No | No | `ui-blueprint`, `ui-brief` |
+| **Brief** | High-level summary + direction. | `BRIEF.md` | No | Partial | `ui-brief`, `ui-redline` |
+| **Reference** | Canonical implementation sample. | `REFERENCE.md` | Yes (behavioral) | Yes (for baseline) | All skills |
+| **Artifact** | Output of a single skill. | varies (e.g. `REDLINE.md`) | Yes (if approved) | Depends | Any skill |
+| **Fixture** | Frozen example of inputs+outputs. | varies | No | No | All skills |
