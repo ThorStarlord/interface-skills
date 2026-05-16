@@ -36,6 +36,9 @@ If an AI-built UI misses the mark, the fix is not to blame the model or the deve
 - Evidence-based inspection and redlines.
 - Routed documentation that agents actually discover.
 
+### Skill Promotion & Stability
+Interface Skills uses a formal **[Skill Certification System](docs/promotion/SKILL-CERTIFICATION-SYSTEM.md)** to promote skills from `draft` to `stable`. This system provides a modular trust layer that validates structural integrity, behavioral judgment, and handoff stability through a deterministic validator ecosystem and human-review gates.
+
 ## What you can do with it
 
 - **Design a UI from vague intent** → Start with `ui-brief`

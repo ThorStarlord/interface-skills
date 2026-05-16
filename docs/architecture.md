@@ -39,7 +39,7 @@ flowchart LR
   HumanReview --> Routing[Agent Routing]
   Routing --> Implementation[Implementation Work]
   Package --> Fixtures[Fixtures]
-  Fixtures --> Promotion[Skill Promotion]
+  Fixtures --> Promotion[Skill Certification System]
 ```
 
 A **UI Scope** is the surface being specified or inspected, such as `/kanban`, app shell navigation, a modal, a route, or a component.
@@ -377,30 +377,7 @@ Validators should live as deterministic scripts where possible.
 
 Model-driven skills can recommend fixes, but they should not be the only authority for structure.
 
-## 9. Promotion criteria
-
-Do not run draft skills forever.
-
-A draft skill can move toward stable when it has:
-
-```text
-3 good fixture runs
-+ 1 intentionally messy/failing fixture
-+ 1 downstream consumption test
-+ human approval
-```
-
-A good fixture run means:
-
-* real input, not toy input
-* output satisfies rubric
-* validator passes
-* human reviewer says output is useful and not misleading
-* no major output-format changes needed afterward
-
-A draft skill is ready for stable when the last three realistic runs produce useful outputs without changing the skill’s output format.
-
-Detailed rubrics belong in `docs/skill-promotion.md`.
+Detailed architecture and criteria belong in [SKILL-CERTIFICATION-SYSTEM.md](docs/promotion/SKILL-CERTIFICATION-SYSTEM.md).
 
 ## 10. Agent Routing
 

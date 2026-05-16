@@ -2,6 +2,8 @@
 
 This document tracks the evidence required to promote Interface Skills from `draft` to `stable`.
 
+For the formal architecture and trust model, see [SKILL-CERTIFICATION-SYSTEM.md](docs/promotion/SKILL-CERTIFICATION-SYSTEM.md).
+
 ## Promotion Criteria
 
 A draft skill is ready for stable when it has:
