@@ -26,15 +26,15 @@ Focus: Turn shallow "path-check" validators into "semantic-authority" validators
 - [ ] **Family Validation**: Ensure `fixture_family` matches the actual fixture directory structure.
 
 ### 1.3 Fixture Integrity (`fixture_integrity.py`)
-- [ ] **Non-Triviality Check**: Enforce minimum file size/content depth for clean fixtures.
+- [x] **Non-Triviality Check**: Enforce minimum file size/content depth for clean fixtures.
 - [ ] **Input Artifact Verification**: Verify that all required inputs for the skill exist in the fixture.
-- [ ] **Adversarial Intent**: Tag messy fixtures and verify they trigger expected failure modes.
+- [x] **Adversarial Intent**: Tag messy fixtures and verify they trigger expected failure modes.
 - [ ] **Repair Ownership**: Trace fixture repairs back to the failing promotion run.
 
 ### 1.4 Behavioral Depth (`behavioral_result.py`)
-- [ ] **Traceability**: Verify that output artifacts link back to specific input identifiers.
-- [ ] **Boundedness**: Detect "hallucinated" findings outside the fixture's domain.
-- [ ] **Skill-Specific Metrics**: Expand complexity thresholds for all skills in `promotion-plan.yaml`.
+- [x] **Traceability**: Verify that output artifacts link back to specific input identifiers.
+- [x] **Boundedness**: Detect "hallucinated" findings outside the fixture's domain.
+- [x] **Skill-Specific Metrics**: Expand complexity thresholds for all skills in `promotion-plan.yaml`.
 - [ ] **Zero-Manual-Repair Integration**: Verify output hashes match the `.zero-repair` contract.
 
 ---
@@ -63,8 +63,8 @@ Focus: Ensuring that workflow certification is as rigorous as individual skill c
 Focus: Automating the lifecycle of "Gold Standard" evidence.
 
 ### 3.1 Reference Evidence Authority (`reference_evidence.py`)
-- [ ] **Authorization Traceability**: Verify the reference snapshot is cited by a signed `HUMAN-REVIEW.md`.
-- [ ] **Dirty Snapshot Detection**: Prevent unrelated or temporary files from entering `reference/` dirs.
+- [x] **Authorization Traceability**: Verify the reference snapshot is cited by a signed `HUMAN-REVIEW.md`.
+- [x] **Dirty Snapshot Detection**: Prevent unrelated or temporary files from entering `reference/` dirs.
 - [ ] **Promotion Lock**: Block registry updates if reference evidence is out of sync with the latest approved run.
 
 ### 3.2 Automated Evidence Lifecycle
@@ -80,11 +80,11 @@ Focus: Automating the lifecycle of "Gold Standard" evidence.
 | :--- | :---: | :--- |
 | **Governance Gate** | 🟡 | Phase 1 |
 | **Config Authority** | 🟡 | Phase 1 |
-| **Fixture Integrity** | 🔴 | Phase 1 |
+| **Fixture Integrity** | 🟡 | Phase 1 |
 | **Behavioral Depth** | 🟡 | Phase 1 |
 | **Handoff Proof** | 🟡 | Phase 2 |
 | **Workflow Continuity**| 🟡 | Phase 2 |
-| **Reference Authority** | 🔴 | Phase 3 |
+| **Reference Authority** | 🟡 | Phase 3 |
 
 ---
 
