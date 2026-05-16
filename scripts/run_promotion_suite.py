@@ -32,6 +32,7 @@ from scripts.validators.human_review import validate_human_review
 from scripts.validators.promotion_plan import validate_promotion_plan
 from scripts.validators.handoff_verification import validate_handoff
 from scripts.validators.fixture_integrity import validate_fixture_integrity
+from scripts.validators.behavioral_result import validate_behavioral_result
 PROMOTION_RUNS_DIR = REPO_ROOT / "promotion-runs"
 PLAN_FILE = REPO_ROOT / "promotion-plan.yaml"
 
@@ -179,28 +180,6 @@ def evaluate_output_against_rubric(output_content, rubric_items):
         })
     return results
  
-def check_complexity(skill_name, output_content, thresholds):
-    """
-    Checks if the output content meets the minimum behavioral complexity.
-    """
-    if not thresholds:
-        return True, "No complexity thresholds defined"
-        
-    if skill_name == "ui-surface-inventory":
-        min_surfaces = thresholds.get("min_surface_candidates", 0)
-        # Count headers like "## Surface", "### Surface", or "Surface 1:"
-        surface_count = len(re.findall(r"(?:##|###|####)\s+Surface|Surface\s+\d+", output_content, re.IGNORECASE))
-        if surface_count < min_surfaces:
-            return False, f"Low behavioral complexity: {surface_count} surfaces found, need {min_surfaces}"
-            
-    if skill_name == "ui-to-issues":
-        min_findings = thresholds.get("min_findings", 0)
-        # Count list items or headers that look like issues
-        finding_count = len(re.findall(r"^\s*-\s+\[ \]|(?:##|###)\s+Issue|Finding\s+\d+", output_content, re.MULTILINE | re.IGNORECASE))
-        if finding_count < min_findings:
-            return False, f"Low behavioral complexity: {finding_count} findings found, need {min_findings}"
-            
-    return True, "Complexity thresholds met"
 
 def classify_result(skill_name, fixture_name, skill_config, skill_valid, pkg_valid, rubric_passed, rubric_results, output_content):
     """
@@ -213,36 +192,28 @@ def classify_result(skill_name, fixture_name, skill_config, skill_valid, pkg_val
     if not skill_valid:
         return "fail", "Skill structural validation failed unexpectedly", "invalid_structure"
         
-    # Complexity Check
-    behavioral_criteria = skill_config.get("behavioral_criteria")
-    comp_valid = True
-    comp_msg = ""
-    behavioral_status = "valid"
+    # Behavioral Check via modular validator
+    behavioral_criteria = skill_config.get("behavioral_criteria", {})
+    complexity_thresholds = behavioral_criteria.get("minimum_behavioral_complexity", {})
     
-    if behavioral_criteria:
-        complexity_thresholds = behavioral_criteria.get("minimum_behavioral_complexity")
-        comp_valid, comp_msg = check_complexity(skill_name, output_content, complexity_thresholds)
-        if not comp_valid:
-            behavioral_status = "low_complexity"
-
-    # Placeholder Check
-    placeholders = [r"\bTBD\b", r"\bTODO\b", r"\[insert", r"INSERT HERE", r"\[PLACEHOLDER\]"]
-    has_placeholders = any(re.search(p, output_content, re.IGNORECASE) for p in placeholders)
-    if has_placeholders:
-        behavioral_status = "trivial"
-
+    bev_result = validate_behavioral_result(output_content, skill_name, complexity_thresholds)
+    
     if is_messy:
-        # For messy fixtures, we EXPECT failure in rubric, complexity, or placeholders
-        if rubric_passed is False or not comp_valid or has_placeholders:
-            return "expected_fail", f"Messy fixture defects correctly detected: {comp_msg if not comp_valid else 'Trivial placeholders' if has_placeholders else 'Rubric failure'}", "valid"
+        # For messy fixtures, we EXPECT failure in rubric or behavioral result
+        if rubric_passed is False or bev_result.status == "fail":
+            return "expected_fail", f"Messy fixture defects correctly detected: {bev_result.findings[0] if bev_result.status == 'fail' else 'Rubric failure'}", "valid"
         else:
             return "fail", "Messy fixture defects NOT correctly detected (False Positive Pass)", "adversarial_failure"
+
+    if bev_result.status == "fail":
+        # Map failure modes to legacy behavioral_status if needed
+        status = "valid"
+        if "trivial_placeholders" in bev_result.failure_modes:
+            status = "trivial"
+        elif "low_complexity" in bev_result.failure_modes:
+            status = "low_complexity"
             
-    if has_placeholders:
-        return "fail", "Output contains trivial placeholders (TBD/TODO)", "trivial"
-        
-    if not comp_valid:
-        return "fail", comp_msg, "low_complexity"
+        return "fail", bev_result.findings[0], status
             
     if not pkg_valid:
         return "fail", "Clean fixture package validation failed", "invalid_package"
