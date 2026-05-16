@@ -74,12 +74,17 @@ def sync_references():
                 print(f"  - Syncing {skill_name}: {dest_name}")
                 shutil.copy2(artifact_path, dest_path)
                 
-                # Update reference metadata
+                # Update reference metadata (ADR 0008 Schema)
                 ref_meta_path = skill_ref_dir / "reference_record.json"
-                meta = {}
+                meta = {"artifacts": {}, "approval_metadata": {}, "metadata": {}}
                 if ref_meta_path.exists():
                     try:
-                        meta = json.loads(ref_meta_path.read_text(encoding="utf-8"))
+                        old_meta = json.loads(ref_meta_path.read_text(encoding="utf-8"))
+                        if "artifacts" in old_meta:
+                            meta = old_meta
+                        else:
+                            # Migrate legacy schema
+                            meta["artifacts"] = old_meta
                     except: pass
                 
                 # Calculate hash for integrity check
@@ -87,14 +92,29 @@ def sync_references():
                 import hashlib
                 artifact_hash = hashlib.sha256(content.encode("utf-8")).hexdigest()
 
-                meta[dest_name] = {
+                meta["artifacts"][dest_name] = {
                     "last_synced": manifest.get("timestamp"),
                     "source_run": manifest.get("run_id"),
                     "status": "verified_gold_standard",
                     "sha256": artifact_hash
                 }
                 
+                meta["approval_metadata"] = {
+                    "authorizing_run_id": manifest.get("run_id"),
+                    "approval_type": "human_review" if review_path.name == "HUMAN-REVIEW.md" else "human_workflow_review",
+                    "sync_date": manifest.get("timestamp")
+                }
+                
+                # Add skill hash for staleness detection (ADR 0008)
+                skill_md = REPO_ROOT / "skills" / skill_name / "SKILL.md"
+                if skill_md.exists():
+                    meta["metadata"]["skill_hash"] = hashlib.sha256(skill_md.read_bytes()).hexdigest()
+
                 ref_meta_path.write_text(json.dumps(meta, indent=2), encoding="utf-8")
+                
+                # Copy the review itself as part of the gold standard evidence
+                shutil.copy2(review_path, skill_ref_dir / review_path.name)
+
 
         # After syncing the latest verified run, we stop (idempotency/safety)
         break

@@ -8,12 +8,18 @@ REPO_ROOT = Path(__file__).parent.parent
 PROMOTION_RUNS_DIR = REPO_ROOT / "promotion-runs"
 REGISTRY_PATH = REPO_ROOT / "skills.json"
 
+from enforce_promotion_lock import check_promotion_lock
+
 def verify_certification():
     """
     CI Enforcement script for Certification Authority.
     Checks that the repository is in a certified state.
     """
     print(">>> Certification Authority Audit...")
+    
+    # 0. Enforce Promotion Lock (ADR 0008)
+    if not check_promotion_lock():
+        return False
     
     # 1. Load Registry
     if not REGISTRY_PATH.exists():

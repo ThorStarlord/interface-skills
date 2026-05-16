@@ -1,0 +1,35 @@
+name: Skill Certification Gate
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  certification-audit:
+    name: Certification Authority Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          
+      - name: Install dependencies
+        run: |
+          pip install pyyaml
+          
+      - name: Run Certification Audit
+        run: python scripts/verify_certification_authority.py
+        
+      - name: Validate Promotion Plan
+        run: python scripts/run_promotion_suite.py --validate-plan
+        
+      - name: Verify Promotion Runs
+        run: |
+          if [ -d "promotion-runs" ]; then
+            python scripts/run_promotion_suite.py --validate-all-runs
+          fi

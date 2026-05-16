@@ -13,7 +13,7 @@ def get_file_hash(file_path):
             sha256_hash.update(byte_block)
     return sha256_hash.hexdigest()
 
-def validate_zero_repair(fixture_path, artifact_path, run_manifest=None):
+def validate_zero_repair(fixture_path, artifact_path, run_manifest=None, requested_scope="stable"):
     """
     Verifies that the artifact has not been manually repaired.
     Mechanical proof:
@@ -29,7 +29,16 @@ def validate_zero_repair(fixture_path, artifact_path, run_manifest=None):
         import json
         try:
             hashes = json.loads(hash_manifest_path.read_text(encoding="utf-8"))
-            rel_path = str(artifact_path.relative_to(fixture_path))
+            # Try both relative to fixture and relative to run_dir if possible
+            # For simplicity, we check if artifact_path ends with any key in hashes
+            rel_path = None
+            try:
+                rel_path = str(artifact_path.relative_to(fixture_path))
+            except ValueError:
+                # Artifact might be outside fixture (e.g. in run directory)
+                # Check for filename match
+                rel_path = artifact_path.name
+            
             expected_hash = hashes.get(rel_path)
             
             if expected_hash:
@@ -46,13 +55,18 @@ def validate_zero_repair(fixture_path, artifact_path, run_manifest=None):
             findings.append(f"Error reading hash manifest: {str(e)}")
             failure_modes.append("manifest_error")
     else:
-        # Fallback: Check for a simple .zero-repair marker file
+        # Fallback: Check for a simple .zero-repair marker file (ADR 0008 Hardening)
         marker_path = fixture_path / ".zero-repair"
-        if not marker_path.exists():
-            findings.append("No zero-repair proof found (.zero-repair or .zero-repair-hashes.json missing).")
-            failure_modes.append("missing_zero_repair_proof")
+        if marker_path.exists():
+            if requested_scope in ["stable", "workflow"]:
+                findings.append("Soft Proof Violation: Marker-based proof (.zero-repair) is insufficient for stable/workflow promotion. Hash proof required.")
+                failure_modes.append("insufficient_proof_type")
+            else:
+                findings.append("Zero-repair marker found (soft verification - allowed for draft scope).")
         else:
-            findings.append("Zero-repair marker found (soft verification).")
+            findings.append("No zero-repair proof found (.zero-repair-hashes.json missing).")
+            failure_modes.append("missing_zero_repair_proof")
+
 
     status = "fail" if failure_modes else "pass"
     

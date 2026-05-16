@@ -51,7 +51,7 @@ def validate_workflow_link(run_dir, current_step, previous_step=None, workflow_i
             findings.append(f"Physical Continuity Break: Current input '{curr_input}' does not match previous output '{prev_output}'")
             failure_modes.append("mismatched_paths")
     
-    # 2. Semantic Continuity & Thread Audit
+    # 2. Semantic Continuity & Thread Audit (ADR 0008 Hardening)
     curr_artifact_rel = current_step.get("artifact")
     if not curr_artifact_rel:
         return ValidatorResult(
@@ -61,16 +61,28 @@ def validate_workflow_link(run_dir, current_step, previous_step=None, workflow_i
             failure_modes=failure_modes + ["missing_manifest_entry"]
         )
         
-    curr_artifact_path = Path(run_dir).parent.parent / curr_artifact_rel 
-    if not curr_artifact_path.exists():
-        curr_artifact_path = Path(run_dir) / curr_artifact_rel
-        if not curr_artifact_path.exists():
-            return ValidatorResult(
-                status="fail",
-                validator_name="workflow_link",
-                findings=findings + [f"Output artifact not found: {curr_artifact_rel}"],
-                failure_modes=failure_modes + ["missing_artifact"]
-            )
+    # Improved Path Resolution
+    def resolve_path(base, rel):
+        if not rel: return None
+        candidates = [
+            Path(base) / rel,
+            Path(base).parent / rel,
+            Path(base).parent.parent / rel,
+            Path(rel)
+        ]
+        for p in candidates:
+            if p.exists() and p.is_file():
+                return p
+        return None
+
+    curr_artifact_path = resolve_path(run_dir, curr_artifact_rel)
+    if not curr_artifact_path:
+        return ValidatorResult(
+            status="fail",
+            validator_name="workflow_link",
+            findings=findings + [f"Output artifact not found: {curr_artifact_rel}"],
+            failure_modes=failure_modes + ["missing_artifact"]
+        )
 
     content = curr_artifact_path.read_text(encoding="utf-8")
     
@@ -85,15 +97,15 @@ def validate_workflow_link(run_dir, current_step, previous_step=None, workflow_i
             failure_modes.append("malformed_metadata")
 
     # Traceability Audit: Intent ID / Run ID / Spec ID propagation
-    # We look for ANY identifier that links the steps.
-    identifiers = ["spec_id", "run_id", "intent_id", "workflow_run_id"]
+    identifiers = ["spec_id", "run_id", "intent_id", "workflow_run_id", "parent_run_id"]
     
     prev_artifact_rel = previous_step.get("artifact")
-    prev_artifact_path = Path(run_dir).parent.parent / prev_artifact_rel if prev_artifact_rel else None
+    prev_artifact_path = resolve_path(run_dir, prev_artifact_rel)
     
-    if prev_artifact_path and prev_artifact_path.exists():
+    if prev_artifact_path:
         prev_content = prev_artifact_path.read_text(encoding="utf-8")
         
+        matches = []
         for id_key in identifiers:
             # Try to find ID in current frontmatter vs previous content/frontmatter
             curr_id = frontmatter.get(id_key)
@@ -103,13 +115,31 @@ def validate_workflow_link(run_dir, current_step, previous_step=None, workflow_i
                 if id_match:
                     curr_id = id_match.group(1)
             
-            if curr_id:
-                if curr_id in prev_content:
-                    findings.append(f"Semantic Thread Verified: Identifier '{id_key}={curr_id}' propagated from previous step.")
-                    break # One valid link is enough for base continuity
+            if curr_id and curr_id in prev_content:
+                matches.append(f"{id_key}={curr_id}")
+        
+        if len(matches) >= 2:
+            findings.append(f"Semantic Thread Hardened: Multiple identifiers propagated: {', '.join(matches)}")
+        elif len(matches) == 1:
+            findings.append(f"Semantic Thread Verified: Single identifier link '{matches[0]}'.")
         else:
             findings.append("Semantic Thread BREAK: No shared identifiers (spec_id, run_id, etc.) found between steps.")
             failure_modes.append("missing_semantic_thread")
+
+        # Semantic Preservation Check (ADR 0008)
+        prev_title = re.search(r"^# (.*)", prev_content, re.MULTILINE)
+        curr_title = re.search(r"^# (.*)", content, re.MULTILINE)
+        if prev_title and curr_title:
+            p_t = prev_title.group(1).lower()
+            c_t = curr_title.group(1).lower()
+            p_words = {w for w in re.findall(r"\w{5,}", p_t)}
+            c_words = {w for w in re.findall(r"\w{5,}", c_t)}
+            shared = p_words.intersection(c_words)
+            if not shared and p_words:
+                findings.append("Semantic Drift Warning: Title changed significantly and shares no common vertical keywords.")
+            elif shared:
+                findings.append(f"Semantic Preservation: Vertical keywords '{', '.join(list(shared)[:3])}' preserved in titles.")
+
 
     status = "pass" if not failure_modes else "fail"
     return ValidatorResult(

@@ -3,13 +3,14 @@ from pathlib import Path
 import json
 from scripts.validators.common import ValidatorResult
 
-def validate_final_artifact(run_dir):
+def validate_final_artifact(run_dir, requested_scope="workflow"):
     """
     Verifies the final artifact of a workflow promotion run.
     Checks:
     - MANIFEST.json exists.
     - The last step in MANIFEST.json is successful.
     - The final artifact file exists and is non-empty.
+    - Semantic integrity against zero-repair contracts.
     """
     manifest_path = run_dir / "MANIFEST.json"
     if not manifest_path.exists():
@@ -59,11 +60,11 @@ def validate_final_artifact(run_dir):
                 failure_modes=["missing_artifact"]
             )
             
-        if artifact_path.stat().st_size == 0:
+        if artifact_path.stat().st_size < 100:
              return ValidatorResult(
                 validator_name="final_artifact",
                 status="fail",
-                findings=[f"Final artifact file is empty."],
+                findings=[f"Final artifact file is too small ({artifact_path.stat().st_size} bytes), likely a placeholder or failure."],
                 failure_modes=["invalid_artifact"]
             )
 

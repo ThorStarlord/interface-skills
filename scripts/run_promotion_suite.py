@@ -653,7 +653,7 @@ def run_promotion_for_workflow(workflow_id, plan, registry_path, dry_run=False):
                     step_msg = "Package validation failed"
                 
                 # 4. Zero-Manual-Repair Verification
-                zero_repair_result = validate_zero_repair(fixture_path, output_file)
+                zero_repair_result = validate_zero_repair(fixture_path, output_file, requested_scope="workflow")
                 validator_findings["zero_repair"] = zero_repair_result.findings
                 if zero_repair_result.status != "pass":
                     step_success = False
@@ -756,7 +756,7 @@ def validate_run(run_dir, requested_scope="stable"):
     
     if is_workflow:
         review_path = run_dir / "HUMAN-WORKFLOW-REVIEW.md"
-        result = validate_human_workflow_review(review_path, requested_scope="workflow_promotion_authorized")
+        result = validate_human_workflow_review(review_path, requested_scope="workflow")
     else:
         result = validate_human_review(review_path, requested_scope)
 
@@ -804,7 +804,7 @@ def validate_run(run_dir, requested_scope="stable"):
             
         ref_dir = REPO_ROOT / "skills" / skill_name / "references"
         if ref_dir.exists():
-            ref_result = validate_reference_evidence(skill_name, ref_dir)
+            ref_result = validate_reference_evidence(skill_name, ref_dir, requested_scope=requested_scope)
             if ref_result.status != "pass":
                 print(f"    [FAIL] {ref_result.validator_name}: Reference integrity compromised.")
                 success = False
@@ -823,7 +823,8 @@ def validate_run(run_dir, requested_scope="stable"):
                     fixture_rel = m.get("fixture")
                     if fixture_rel:
                         fixture_path = REPO_ROOT / fixture_rel
-                        zr_result = validate_zero_repair(fixture_path, artifact_path)
+                        requested_scope = m.get("scope", "stable")
+                        zr_result = validate_zero_repair(fixture_path, artifact_path, requested_scope=requested_scope)
                         if zr_result.status != "pass":
                             print(f"    [FAIL] zero_repair: {', '.join(zr_result.findings)}")
                             success = False
@@ -842,6 +843,8 @@ def main():
     parser.add_argument("--fresh", action="store_true", help="Mark run as fresh skill output (promotion candidate)")
     parser.add_argument("--dry-run", action="store_true", help="Don't write any files")
     parser.add_argument("--validate", help="Validate certification for a specific run directory")
+    parser.add_argument("--validate-plan", action="store_true", help="Validate the promotion-plan.yaml")
+    parser.add_argument("--validate-all-runs", action="store_true", help="Validate all promotion-runs")
     args = parser.parse_args()
 
     if not PLAN_FILE.exists():
@@ -903,6 +906,19 @@ def main():
         if not skill_success:
             success = False
     
+    if args.validate_plan:
+        # Validation already happened at the start of main()
+        pass
+
+    if args.validate_all_runs:
+        if PROMOTION_RUNS_DIR.exists():
+            for run_dir in sorted(PROMOTION_RUNS_DIR.iterdir(), key=lambda x: x.name, reverse=True):
+                if run_dir.is_dir() and (run_dir / "MANIFEST.json").exists():
+                    if not validate_run(run_dir):
+                        success = False
+        else:
+            print("No promotion runs found to validate.")
+
     if args.validate:
         run_dir = Path(args.validate)
         if not run_dir.is_absolute():

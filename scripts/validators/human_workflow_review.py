@@ -3,12 +3,13 @@ import re
 from pathlib import Path
 from scripts.validators.common import ValidatorResult
 
-def validate_human_workflow_review(review_path, requested_scope="workflow_promotion_authorized"):
+def validate_human_workflow_review(review_path, requested_scope="workflow"):
     """
     Validates a HUMAN-WORKFLOW-REVIEW.md file.
     Expects:
     - Decision: approved
     - Scope: matches requested_scope
+    - Run ID: matches directory and is not a placeholder
     - All criteria checkboxes [x] checked.
     """
     if not review_path.exists():
@@ -56,6 +57,23 @@ def validate_human_workflow_review(review_path, requested_scope="workflow_promot
         failure_modes.append("incomplete_review")
     else:
         findings.append("All review criteria checkboxes are checked.")
+
+    # 4. Traceability Check (ADR 0008)
+    run_id_match = re.search(r"\*\*Run ID:\*\*\s*(\S+)", content)
+    run_id = run_id_match.group(1) if run_id_match else None
+    
+    if not run_id or run_id.lower() in ("tbd", "[run-id]"):
+        findings.append("Traceability failure: Run ID is missing or placeholder.")
+        failure_modes.append("missing_traceability")
+    elif run_id not in str(review_path):
+        # Allow case-insensitive comparison for Windows paths
+        if run_id.lower() not in str(review_path).lower():
+            findings.append(f"Traceability mismatch: Run ID '{run_id}' does not match directory.")
+            failure_modes.append("traceability_mismatch")
+        else:
+            findings.append(f"Traceability verified: Run ID {run_id} matches.")
+    else:
+        findings.append(f"Traceability verified: Run ID {run_id} matches.")
 
     status = "fail" if failure_modes else "pass"
     

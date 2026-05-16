@@ -84,10 +84,18 @@ def validate_promotion_plan(plan_path, registry_path, repo_root=None):
                 findings.append(f"Skill '{skill}' is missing 'fixture_family' in behavioral_criteria")
                 failure_modes.append("missing_fixture_family")
             else:
-                # Family Validation: Check if family directory exists
-                family_path = Path(repo_root) / "fixtures" / family if repo_root else Path("fixtures") / family
-                if not family_path.exists() or not family_path.is_dir():
-                    findings.append(f"Skill '{skill}' fixture_family '{family}' not found or not a directory (Expected: {family_path})")
+                # Family Validation: Support flexible layouts (ADR 0008)
+                family_candidates = [
+                    Path("fixtures") / family,
+                    Path(family)
+                ]
+                if repo_root:
+                    root = Path(repo_root)
+                    family_candidates = [root / "fixtures" / family, root / family]
+                
+                found_family = any(p.exists() and p.is_dir() for p in family_candidates)
+                if not found_family:
+                    findings.append(f"Skill '{skill}' fixture_family '{family}' not found in candidates: {[str(p) for p in family_candidates]}")
                     failure_modes.append("invalid_fixture_family")
             
             if not beh_crit.get("minimum_behavioral_complexity"):
@@ -103,20 +111,51 @@ def validate_promotion_plan(plan_path, registry_path, repo_root=None):
         prom_crit = skill_cfg.get("promotion_criteria", {})
         requested_scope = prom_crit.get("scope", "stable")
         
+        downstream = skill_cfg.get("downstream")
         if requested_scope == "workflow":
             # Workflow scope MUST have downstream verification
             if not prom_crit.get("require_downstream"):
                 findings.append(f"Skill '{skill}' has 'workflow' scope but 'require_downstream' is false (ADR 0007 violation)")
                 failure_modes.append("boundary_violation")
             
-            downstream = skill_cfg.get("downstream")
-            if not downstream or not downstream.get("fixture") or not downstream.get("next_skill"):
-                findings.append(f"Skill '{skill}' requires downstream but has incomplete 'downstream' config")
+            if not downstream:
+                findings.append(f"Skill '{skill}' has 'workflow' scope but is missing 'downstream' configuration")
                 failure_modes.append("incomplete_downstream_config")
         
-        elif requested_scope == "stable":
-            # Stable scope can exist without downstream, but MUST have behavioral criteria (checked above)
-            pass
+        if downstream:
+            next_skill = downstream.get("next_skill")
+            if not next_skill:
+                findings.append(f"Skill '{skill}' downstream config is missing 'next_skill'")
+                failure_modes.append("incomplete_downstream_config")
+            elif next_skill not in reg_skills:
+                findings.append(f"Skill '{skill}' downstream 'next_skill' '{next_skill}' not found in registry")
+                failure_modes.append("missing_skill")
+            
+            if not downstream.get("fixture"):
+                findings.append(f"Skill '{skill}' downstream config is missing 'fixture'")
+                failure_modes.append("incomplete_downstream_config")
+            
+            # Validate handoff_mode (Mandatory for workflow, optional but validated for stable)
+            mode = downstream.get("handoff_mode")
+            if requested_scope == "workflow" and not mode:
+                findings.append(f"Skill '{skill}' has 'workflow' scope but 'handoff_mode' is missing")
+                failure_modes.append("missing_handoff_mode")
+            if mode and mode not in ["real", "simulated"]:
+                findings.append(f"Skill '{skill}' has invalid 'handoff_mode' '{mode}' (Expected: 'real' or 'simulated')")
+                failure_modes.append("invalid_config_value")
+
+        # 5. Evidence Shape Requirements (ADR 0008)
+        # Verify required artifacts are defined if evidence_shape is specified
+        shape = skill_cfg.get("evidence_shape")
+        if shape:
+            required_artifacts = shape.get("required_artifacts", [])
+            if not isinstance(required_artifacts, list):
+                findings.append(f"Skill '{skill}' has invalid 'evidence_shape.required_artifacts' (Expected list)")
+                failure_modes.append("invalid_config")
+            elif requested_scope == "workflow" and not required_artifacts:
+                findings.append(f"Skill '{skill}' has 'workflow' scope but 'evidence_shape.required_artifacts' is empty")
+                failure_modes.append("missing_required_artifacts")
+
             
     if not findings:
         return ValidatorResult(

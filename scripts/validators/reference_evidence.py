@@ -3,7 +3,7 @@ from .common import ValidatorResult
 
 import json
 
-def validate_reference_evidence(skill_name, reference_dir):
+def validate_reference_evidence(skill_name, reference_dir, requested_scope="stable"):
     """
     Validates the curated Promotion Reference Evidence (Gold Standard).
     """
@@ -22,6 +22,7 @@ def validate_reference_evidence(skill_name, reference_dir):
     
     # 1. Reference Record Presence & Approval Traceability
     record_path = path / "reference_record.json"
+    authorizing_run_id = None
     if not record_path.exists():
         findings.append(f"Reference for '{skill_name}' is missing reference_record.json")
         failure_modes.append("missing_reference_record")
@@ -32,16 +33,17 @@ def validate_reference_evidence(skill_name, reference_dir):
             
             # 1.1 Approval Traceability (ADR 0008)
             approval_meta = record.get("approval_metadata", {})
-            if not approval_meta.get("authorizing_run_id"):
+            authorizing_run_id = approval_meta.get("authorizing_run_id")
+            if not authorizing_run_id:
                 findings.append("Traceability failure: reference_record.json is missing 'authorizing_run_id'")
                 failure_modes.append("missing_approval_traceability")
             else:
-                findings.append(f"Approval Traceability Verified: Authorizing Run ID: {approval_meta['authorizing_run_id']}")
+                findings.append(f"Approval Traceability Verified: Authorizing Run ID: {authorizing_run_id}")
 
             # 2. Artifact Completeness
-            artifacts = record.get("artifacts", {}) if "artifacts" in record else record # Handle both legacy and new schema
+            artifacts = record.get("artifacts", {}) if "artifacts" in record else record
             for artifact_name, meta in artifacts.items():
-                if artifact_name == "approval_metadata" or artifact_name == "metadata": continue
+                if artifact_name in ("approval_metadata", "metadata"): continue
                 
                 artifact_path = path / artifact_name
                 if not artifact_path.exists():
@@ -54,20 +56,35 @@ def validate_reference_evidence(skill_name, reference_dir):
             failure_modes.append("corrupt_reference_record")
 
     # 3. Governance Evidence (HUMAN-REVIEW.md)
-    # Every gold standard should have the authorizing review curated alongside it
     review_path = path / "HUMAN-REVIEW.md"
+    if not review_path.exists():
+        review_path = path / "HUMAN-WORKFLOW-REVIEW.md"
+        
     if not review_path.exists():
         findings.append(f"Reference for '{skill_name}' is missing authorizing HUMAN-REVIEW.md")
         failure_modes.append("missing_governance_evidence")
     else:
-        findings.append("Authorizing HUMAN-REVIEW.md found in reference dir.")
-        # Verify the review file itself is valid
-        # (We can't easily call validate_human_review here without circular imports or refactoring, 
-        # but we can do a quick check)
-        review_content = review_path.read_text(encoding="utf-8")
-        if "approved" not in review_content.lower():
-            findings.append("Governance failure: Curated HUMAN-REVIEW.md does not contain 'approved' decision.")
-            failure_modes.append("invalid_governance_evidence")
+        findings.append(f"Authorizing governance artifact found: {review_path.name}")
+        # Call full delegated validator (ADR 0008)
+        from .human_review import validate_human_review
+        from .human_workflow_review import validate_human_workflow_review
+        
+        if review_path.name == "HUMAN-WORKFLOW-REVIEW.md":
+            h_result = validate_human_workflow_review(review_path, requested_scope)
+        else:
+            h_result = validate_human_review(review_path, requested_scope)
+            
+        if h_result.status != "pass":
+            findings.extend(h_result.findings)
+            failure_modes.extend(h_result.failure_modes)
+        
+        # Verify Traceability (Run ID Match)
+        if authorizing_run_id:
+            content = review_path.read_text(encoding="utf-8")
+            if authorizing_run_id not in content:
+                findings.append(f"Traceability failure: Authorizing Run ID '{authorizing_run_id}' not mentioned in {review_path.name}")
+                failure_modes.append("traceability_mismatch")
+
 
     # 4. Cleanliness (Strict Dirty-Reference Detection)
     allowed_files = {"reference_record.json", "HUMAN-REVIEW.md", "SOURCE.md", "source-run.txt"}
