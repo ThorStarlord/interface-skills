@@ -1,0 +1,22 @@
+{
+  "fixture": "ui-brief-messy",
+  "classification": "fail",
+  "classification_msg": "Output contains trivial placeholders (TBD/TODO)",
+  "behavioral_status": "trivial",
+  "evidence_level": "harness_validation",
+  "generated_fresh_output": false,
+  "skill_structural_valid": true,
+  "package_structural_valid": true,
+  "rubric_passed": "N/A",
+  "rubric_details": [],
+  "pointers": {
+    "fixture_input": "examples/promotion/ui-brief-messy",
+    "output_artifact": "examples\\promotion\\ui-brief-messy\\02-brief.md",
+    "narrative_review": "promotion-runs\\2026-05-16-08-07-22-ui-brief\\ui-brief-messy\\review.md",
+    "invocation_file": null
+  },
+  "logs": {
+    "skill_validation": "[shared/references/accessibility-baseline.md] [OK] Valid\n[shared/references/full-chain-continuity-audit.md] [OK] Valid\n[shared/references/responsive-patterns.md] [OK] Valid\n[shared/references/severity-scale.md] [OK] Valid\n[shared/references/spec-package-format.md] [OK] Valid\n[shared/references/state-taxonomy.md] [OK] Valid\n[shared/references/token-schema.md] [OK] Valid\n[shared/references/vague-language-translator.md] [OK] Valid\n[shared/references/visual-vocabulary.md] [OK] Valid\n[skills.json] [OK] distribution registry valid\n[ui-brief] [OK] Valid\n\nValidation passed! [SUCCESS]\n",
+    "package_validation": "# Spec Package Validation: SUCCESS\n"
+  }
+}

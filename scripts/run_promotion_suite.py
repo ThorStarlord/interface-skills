@@ -204,27 +204,36 @@ def classify_result(skill_name, fixture_name, skill_config, skill_valid, pkg_val
     if not skill_valid:
         return "fail", "Skill structural validation failed unexpectedly", "invalid_structure"
         
-    # Placeholder Guard: Check for TBD, TODO, [insert], etc.
-    # We use word boundaries \b to avoid matching "placeholder avatar" as a template placeholder.
-    # We require brackets for [PLACEHOLDER] to avoid domain collisions.
-    placeholders = [r"\bTBD\b", r"\bTODO\b", r"\[insert", r"INSERT HERE", r"\[PLACEHOLDER\]"]
-    if any(re.search(p, output_content, re.IGNORECASE) for p in placeholders):
-        return "fail", "Output contains trivial placeholders (TBD/TODO)", "trivial"
-    
     # Complexity Check
     behavioral_criteria = skill_config.get("behavioral_criteria")
+    comp_valid = True
+    comp_msg = ""
+    behavioral_status = "valid"
+    
     if behavioral_criteria:
         complexity_thresholds = behavioral_criteria.get("minimum_behavioral_complexity")
         comp_valid, comp_msg = check_complexity(skill_name, output_content, complexity_thresholds)
         if not comp_valid:
-            return "fail", comp_msg, "low_complexity"
+            behavioral_status = "low_complexity"
+
+    # Placeholder Check
+    placeholders = [r"\bTBD\b", r"\bTODO\b", r"\[insert", r"INSERT HERE", r"\[PLACEHOLDER\]"]
+    has_placeholders = any(re.search(p, output_content, re.IGNORECASE) for p in placeholders)
+    if has_placeholders:
+        behavioral_status = "trivial"
 
     if is_messy:
-        # For messy fixtures, we EXPECT the package to be invalid or rubric to fail
-        if rubric_passed is True:
-            return "expected_fail", "Messy fixture defects correctly detected", "valid"
+        # For messy fixtures, we EXPECT failure in rubric, complexity, or placeholders
+        if rubric_passed is False or not comp_valid or has_placeholders:
+            return "expected_fail", f"Messy fixture defects correctly detected: {comp_msg if not comp_valid else 'Trivial placeholders' if has_placeholders else 'Rubric failure'}", "valid"
         else:
-            return "fail", "Messy fixture defects NOT correctly detected", "adversarial_failure"
+            return "fail", "Messy fixture defects NOT correctly detected (False Positive Pass)", "adversarial_failure"
+            
+    if has_placeholders:
+        return "fail", "Output contains trivial placeholders (TBD/TODO)", "trivial"
+        
+    if not comp_valid:
+        return "fail", comp_msg, "low_complexity"
             
     if not pkg_valid:
         return "fail", "Clean fixture package validation failed", "invalid_package"

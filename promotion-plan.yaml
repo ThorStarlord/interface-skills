@@ -33,11 +33,27 @@ skills:
 
   ui-brief:
     fixtures:
-      - examples/promotion/ui-blueprint # Brief is often inside blueprint fixture
+      - examples/promotion/ui-blueprint
+    messy_fixture: examples/promotion/ui-brief-messy
     promotion_criteria:
       min_good_runs: 3
-      require_messy_fail: false
+      require_messy_fail: true
       require_downstream: true
+    downstream:
+      fixture: examples/promotion/ui-blueprint
+      next_skill: ui-visual-calibration
+    behavioral_criteria:
+      fixture_family: brief_generation
+      minimum_behavioral_complexity:
+        require_intent_alignment: true
+        require_scope_bounding: true
+      blocking_failure_modes:
+        - hallucination
+        - scope_drift
+        - label_friction
+        - incomplete_context
+        - handoff_failure
+        - evidence_gap
 
   ui-flow:
     fixtures:
@@ -76,7 +92,7 @@ skills:
       - examples/promotion/ui-microcopy
     promotion_criteria:
       min_good_runs: 3
-      require_messy_fail: false
+      require_mess_fail: false
       require_downstream: true
 
   ui-acceptance:
