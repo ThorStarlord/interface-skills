@@ -9,8 +9,8 @@ This roadmap tracks the active queue, phased progress, and sequential waves requ
 | Phase | Description | Focus Areas | Status |
 | :--- | :--- | :--- | :--- |
 | **Phase 1** | **Validator Ecosystem Extraction** | Decomposing monolithic logic into isolated, contract-based Python validators. | **100% Complete** |
-| **Phase 2** | **Workflow Stability Generalization** | Implementing workflow-level validators, [Zero-Manual-Repair](file:///h:/GithubRepositories/interface-skills/scripts/validators/zero_repair.py) criteria, and multi-skill chain execution. | **Active Target** |
-| **Phase 3** | **Hardening & Governance Gating** | Formalizing CI/CD gates, registry promotion locks, and reference evidence synchronization. | **In Progress (90%)** |
+| **Phase 2** | **Workflow Stability Generalization** | Implementing workflow-level validators, [Zero-Manual-Repair](file:///h:/GithubRepositories/interface-skills/scripts/validators/zero_repair.py) criteria, and multi-skill chain execution. | **100% Complete** |
+| **Phase 3** | **Hardening & Governance Gating** | Formalizing CI/CD gates, registry promotion locks, and reference evidence synchronization. | **100% Complete** |
 
 ---
 
@@ -60,7 +60,7 @@ graph TD
 
 ### Wave 1: Core Specification Chain
 Focuses on locking in the static, upstream spec-generation skills.
-- [ ] Promote **`ui-visual-calibration`** to `stable`
+- [x] Promote **`ui-visual-calibration`** to `stable`
   - *Prerequisites*: Approved structural promotion plan with calibrated failure modes; human-reviewed gold standard execution.
 - [ ] Promote **`ui-screen-spec`** to `stable`
   - *Prerequisites*: Enforce regional layout mappings and state-dependency rubrics.
@@ -76,7 +76,7 @@ Focuses on downstream code generation and feedback loop auditing.
 
 ### Wave 3: Full-Chain Workflow Certifications
 Certifying multi-skill chains using real handoff evidence and zero-manual-repair gates.
-- [ ] Certify **Core Spec Workflow** (Brief -> Calibration -> Blueprint -> System -> Component)
+- [x] Certify **Core Spec Workflow** (Brief -> Calibration -> Blueprint -> System -> Component)
 - [ ] Certify **Audit & Refactor Workflow** (Inspector -> Redline -> Reconcile -> Docs-Sync)
 - [ ] Certify **Full Agent-Routing Workflow** (Sync -> Agent-Routing)
 
@@ -90,6 +90,6 @@ Certifying multi-skill chains using real handoff evidence and zero-manual-repair
 - [x] Ensure 100% success across the 68 tests of the global validator verification suite.
 
 ### Next Execution Goals
-- [ ] Draft the `promotion-plan.yaml` for `ui-visual-calibration` (initiating Wave 1).
-- [ ] Run the promotion suite for `ui-visual-calibration` using simulated evidence.
-- [ ] Perform a continuity audit check to certify the first multi-skill sequence.
+- [x] Draft the `promotion-plan.yaml` for `ui-visual-calibration` (initiating Wave 1).
+- [x] Run the promotion suite for `ui-visual-calibration` using simulated evidence.
+- [x] Perform a continuity audit check to certify the first multi-skill sequence.
