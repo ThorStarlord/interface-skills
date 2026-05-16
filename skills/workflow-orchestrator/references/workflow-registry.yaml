@@ -286,3 +286,29 @@ workflows:
         skill: handoff
         step_type: local_execution
         gate: session_close
+
+  - id: spec-recovery
+    display_name: Spec Recovery
+    purpose: Recover UI specifications from messy existing implementation evidence.
+    allowed_execution_modes:
+      - plan_only
+      - prompt_chain
+      - guided_execution
+      - autonomous_execution
+    steps:
+      - id: 1
+        skill: ui-surface-inventory
+        step_type: local_execution
+        gate: review_inventory
+      - id: 2
+        skill: ui-orchestrator
+        step_type: local_execution
+        gate: review_orchestration
+      - id: 3
+        skill: ui-brief
+        step_type: local_execution
+        gate: review_brief
+      - id: 4
+        skill: ui-to-issues
+        step_type: local_execution
+        gate: review_issues

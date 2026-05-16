@@ -78,7 +78,13 @@ _Avoid_: "canonical spec package" unless referring to a Spec Package that confor
 The process of wiring spec packages into agent discovery files (e.g., `CLAUDE.md`).
 
 ### Promotion
-The process of moving a skill from draft to stable after enough fixture evidence confirms the output format is locked and behavioral judgment is verified.
+The process of moving a skill or workflow from draft to stable after enough fixture evidence confirms the output format is locked and behavioral judgment is verified.
+
+### Individual Skill Promotion
+The process defined in ADR 0006 where a skill is promoted based on its own output contract and simulated handoff.
+
+### Workflow Promotion
+The process defined in ADR 0007 where an entire sequence of skills is promoted based on real handoff evidence and zero-manual-repair criteria.
 
 ### Structural Validation
 The automated verification of **Contract Adherence**. Confirms that required files exist, metadata is valid, schemas pass, paths are repo-relative, and the output has the expected shape.
@@ -128,6 +134,7 @@ The status of a skill reflects its validation depth and composability.
 | **restoration baseline** | Environment-stable. | **Structural Validation** passes. |
 | **beta / candidate** | Behaviorally promising but unproven in chains. | Happy path runs + **Human Review** + known caveats. |
 | **stable** | Reliable for autonomous composition. | **Stable Promotion Evidence** (Happy path + adversarial + handoff). |
+| **full-chain stable** | Verified end-to-end workflow reliability. | **Workflow Promotion Evidence** (Real handoff + zero-manual-repair). |
 
 ### Stable Promotion Evidence
 
@@ -207,3 +214,7 @@ A document (improvement-brief.md) required when a skill passes structural valida
 ### Simulated Handoff
 
 A behavioral verification where a reviewer evaluates whether the skill output satisfies the documented input contract of a downstream skill, without requiring the downstream skill itself to be stable. Simulated handoff supports **individual stable promotion** for a skill's own output contract but does not claim full-chain stability.
+
+### Real Handoff
+
+A behavioral verification where a downstream skill actually consumes the output of an upstream skill in a live run. Real handoff is required for **Workflow Promotion** and **Full-Chain Stability**.
