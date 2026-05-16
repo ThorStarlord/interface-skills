@@ -599,24 +599,60 @@ def run_promotion_for_workflow(workflow_id, plan, registry_path, dry_run=False):
     print(f"  - Testing with fixture: {fixture_path.name}")
     
     workflow_results = []
+    total_failures = 0
     
     # Loop through steps
     for step in workflow.get("steps", []):
         skill_name = step["skill"]
-        print(f"    [Step {step['id']}] Running skill: {skill_name}")
+        print(f"    [Step {step['id']}] Verifying skill: {skill_name}")
         
-        # In a real run, we would execute the skill here.
-        # For the harness, we validate existing output in the fixture.
-        # (This logic is similar to run_promotion_for_skill but specialized for the chain)
+        # 1. Structural Validation of the skill itself
+        skill_valid, skill_log = run_validator("validate-skill.py", REPO_ROOT / "skills" / skill_name, skill_name=skill_name)
         
-        # [Simplified for draft: reuse run_promotion_for_skill logic or call it]
-        # For now, we'll just simulate the success if artifacts exist
-        success = True # Placeholder
+        # 2. Find the output artifact for this step in the fixture
+        output_file = None
+        if skill_name == "ui-surface-inventory":
+            output_file = fixture_path / "reports" / "surface-inventory.md"
+            if not output_file.exists(): output_file = fixture_path / "surface-inventory.md"
+        elif skill_name == "ui-orchestrator":
+            output_file = fixture_path / "reports" / "ORCHESTRATOR-RECOMMENDATION.md"
+        elif skill_name == "ui-brief":
+            for candidate in [fixture_path / "specs" / "02-brief.md", fixture_path / "brief.md", fixture_path / "02-brief.md"]:
+                if candidate.exists():
+                    output_file = candidate
+                    break
+        elif skill_name == "ui-to-issues":
+            for candidate in [fixture_path / "reports" / "issues.md", fixture_path / "issues.md"]:
+                if candidate.exists():
+                    output_file = candidate
+                    break
+
+        step_success = True
+        step_msg = "Artifact found and valid"
+        
+        if not output_file or not output_file.exists():
+            step_success = False
+            step_msg = f"Missing artifact for {skill_name}"
+        else:
+            # 3. Validate the artifact
+            pkg_valid, pkg_log = run_validator("validate-spec-package.py", fixture_path)
+            if not pkg_valid:
+                step_success = False
+                step_msg = "Package validation failed"
+
         workflow_results.append({
             "step": step["id"],
             "skill": skill_name,
-            "status": "pass" if success else "fail"
+            "status": "pass" if step_success else "fail",
+            "message": step_msg,
+            "artifact": str(output_file.relative_to(REPO_ROOT)) if output_file and output_file.exists() else None
         })
+        
+        if not step_success:
+            print(f"      [FAIL] {step_msg}")
+            total_failures += 1
+        else:
+            print(f"      [OK] {step_msg}")
 
     # Record workflow manifest
     if not dry_run:
@@ -643,7 +679,7 @@ def run_promotion_for_workflow(workflow_id, plan, registry_path, dry_run=False):
             f.write("- [ ] Traceability maintained?\n")
 
     print(f"\n>>> Workflow run complete. ID: {run_id}")
-    return True
+    return total_failures == 0
 
 def main():
     parser = argparse.ArgumentParser(description="Skill Promotion Harness Runner")

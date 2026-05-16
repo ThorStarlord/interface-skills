@@ -312,3 +312,18 @@ workflows:
         skill: ui-to-issues
         step_type: local_execution
         gate: review_issues
+
+  - id: spec-recovery-negative-missing-handoff
+    display_name: Spec Recovery (Negative - Missing Handoff)
+    purpose: Test harness failure when handoff artifacts are missing.
+    allowed_execution_modes:
+      - plan_only
+    steps:
+      - id: 1
+        skill: ui-surface-inventory
+        step_type: local_execution
+        gate: review_inventory
+      - id: 2
+        skill: ui-orchestrator
+        step_type: local_execution
+        gate: review_orchestration
