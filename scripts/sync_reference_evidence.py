@@ -135,6 +135,29 @@ def sync_references():
                 # Copy the review itself as part of the gold standard evidence
                 shutil.copy2(review_path, skill_ref_dir / review_path.name)
 
+        # 2. Workflow Reference Sync (ADR 0009)
+        workflow_id = manifest.get("workflow_id")
+        if workflow_id and requested_scope == "workflow":
+            wf_ref_dir = REPO_ROOT / "skills" / "workflow-orchestrator" / "references"
+            wf_ref_dir.mkdir(parents=True, exist_ok=True)
+            wf_record_path = wf_ref_dir / "workflow_reference_record.json"
+            
+            wf_data = {"workflows": {}}
+            if wf_record_path.exists():
+                try:
+                    wf_data = json.loads(wf_record_path.read_text(encoding="utf-8"))
+                except: pass
+            
+            # Update workflow entry
+            wf_data["workflows"][workflow_id] = {
+                "source_run": manifest.get("run_id"),
+                "status": "verified_gold_standard",
+                "certified_date": manifest.get("timestamp", "").split("T")[0] if "T" in manifest.get("timestamp", "") else manifest.get("timestamp"),
+                "certified_by": "Certification Authority Sync"
+            }
+            
+            print(f"  - Syncing Workflow: {workflow_id}")
+            wf_record_path.write_text(json.dumps(wf_data, indent=2), encoding="utf-8")
 
         # After syncing the latest verified run, we stop (idempotency/safety)
         break
