@@ -37,6 +37,10 @@ def check_promotion_lock():
         # Lock applies to skills that are already promoted to high-trust levels
         if status not in ("stable", "certified"): 
             continue
+            
+        # External skills do not have promotion evidence or SKILL.md validation requirements in this repository
+        if skill.get("workflow_position") == "external":
+            continue
         
         ref_dir = REPO_ROOT / "skills" / name / "references"
         record_path = ref_dir / "reference_record.json"

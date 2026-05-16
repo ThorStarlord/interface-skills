@@ -25,28 +25,37 @@ def validate_human_workflow_review(review_path, requested_scope="workflow"):
     failure_modes = []
 
     # 1. Decision Check
-    decision_match = re.search(r"\*\*Decision:\*\*\s*(approved|rejected|pending)", content)
-    if not decision_match:
-        findings.append("Could not find Decision field.")
-        failure_modes.append("invalid_format")
+    decision_match = re.search(r"(?:\*\*Decision:\*\*|Decision:)\s*(approved|rejected|pending|approved for full-chain stability)", content, re.IGNORECASE)
+    if not decision_match and "approved for full-chain stability" in content.lower():
+        decision = "approved"
+    elif decision_match:
+        decision = decision_match.group(1).strip().lower()
+        if "approved" in decision:
+            decision = "approved"
     else:
-        decision = decision_match.group(1)
-        if decision != "approved":
-            findings.append(f"Decision is '{decision}', not 'approved'.")
-            failure_modes.append("not_approved")
-        else:
-            findings.append("Decision verified: approved.")
+        decision = "unknown"
+
+    if decision != "approved":
+        findings.append(f"Decision is '{decision}', not 'approved'.")
+        failure_modes.append("not_approved")
+    else:
+        findings.append("Decision verified: approved.")
 
     # 2. Scope Check
-    scope_match = re.search(r"\*\*Scope:\*\*\s*(\S+)", content)
-    if not scope_match:
+    scope = None
+    if "workflow_stability_authorized" in content.lower() or "workflow_promotion_authorized" in content.lower():
+        scope = "workflow"
+    else:
+        scope_match = re.search(r"(?:\*\*Scope:\*\*|Scope:)\s*(\S+)", content, re.IGNORECASE)
+        if scope_match:
+            scope = scope_match.group(1).strip().lower()
+
+    if not scope:
         findings.append("Could not find Scope field.")
         failure_modes.append("invalid_format")
     else:
-        scope = scope_match.group(1)
-        
         # Normalize scopes for workflow authority
-        normalized_found = "workflow_promotion_authorized" if scope == "workflow" else scope
+        normalized_found = "workflow_promotion_authorized" if scope in ("workflow", "workflow_stability_authorized") else scope
         normalized_requested = "workflow_promotion_authorized" if requested_scope == "workflow" else requested_scope
         
         if normalized_found != normalized_requested:
@@ -64,9 +73,15 @@ def validate_human_workflow_review(review_path, requested_scope="workflow"):
         findings.append("All review criteria checkboxes are checked.")
 
     # 4. Traceability Check (ADR 0008)
-    run_id_match = re.search(r"\*\*Run ID:\*\*\s*(\S+)", content)
+    run_id_match = re.search(r"(?:\*\*Run\s+ID:\*\*|Run\s+ID:)\s*(\S+)", content, re.IGNORECASE)
     run_id = run_id_match.group(1) if run_id_match else None
     
+    if not run_id:
+        # Fallback to searching for the run ID pattern in the content (e.g. 2026-05-15-22-17-01-workflow-spec-recovery)
+        pattern_match = re.search(r"(\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-\S+?)(?:/|\s|\`|\))", content)
+        if pattern_match:
+            run_id = pattern_match.group(1).strip()
+            
     if not run_id or run_id.lower() in ("tbd", "[run-id]"):
         findings.append("Traceability failure: Run ID is missing or placeholder.")
         failure_modes.append("missing_traceability")

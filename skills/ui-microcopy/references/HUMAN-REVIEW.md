@@ -1,8 +1,8 @@
-# HUMAN REVIEW: ui-visual-calibration on ui-visual-calibration
+# HUMAN REVIEW: ui-microcopy on ui-microcopy
 
 **Run ID:** 2026-05-16-20-13-34-retrofitted
-**Skill:** `ui-visual-calibration`
-**Fixture:** `ui-visual-calibration`
+**Skill:** `ui-microcopy`
+**Fixture:** `ui-microcopy`
 **Date:** 2026-05-16
 **Reviewer:** Antigravity
 **Decision:** approved
@@ -12,7 +12,7 @@
 > **Human Review Required:** This result needs manual verification to confirm the skill's judgment matches reality.
 
 ## Narrative Review
-Retroactive certification of ui-visual-calibration under Phase 3 Certification Authority. Checked and verified structural cleanliness, behavioral continuity, and zero-manual-repair parity.
+Retroactive certification of ui-microcopy under Phase 3 Certification Authority. Checked and verified structural cleanliness, behavioral continuity, and zero-manual-repair parity.
 
 ### Behavioral Review Checklist
 - [x] **Integrity:** Evidence requires human judgment

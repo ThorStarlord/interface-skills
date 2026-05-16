@@ -129,6 +129,7 @@ class TestCertificationAuthority(unittest.TestCase):
         # 2. Sync Reference Evidence
         env = os.environ.copy()
         env["SKIP_AUTHORITY_VALIDATION"] = "1"
+        env["PYTHONPATH"] = str(self.repo_root)
         sync_res = subprocess.run([sys.executable, str(self.repo_root / "scripts" / "sync_reference_evidence.py")], 
                                   capture_output=True, text=True, env=env, cwd=str(self.repo_root))
         self.assertEqual(sync_res.returncode, 0, f"Sync should succeed. Output: {sync_res.stdout}\n{sync_res.stderr}")

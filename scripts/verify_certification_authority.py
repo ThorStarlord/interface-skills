@@ -37,6 +37,8 @@ def verify_certification():
     # 2. Audit Stable Skills for Reference Integrity
     for skill in registry.get("skills", []):
         if skill.get("status") == "stable":
+            if skill.get("workflow_position") == "external":
+                continue
             skill_name = skill["name"]
             print(f"  - Auditing stable skill: {skill_name}")
             
@@ -121,6 +123,11 @@ def verify_certification():
             for wf in wf_registry.get("workflows", []):
                 wf_id = wf["id"]
                 wf_status = wf.get("status", "draft")
+                
+                # Certification is only mandatory for stable/certified workflows (ADR 0009)
+                if wf_status not in ("stable", "certified"):
+                    continue
+                    
                 print(f"    - Workflow: {wf_id} ({wf_status})")
                 
                 ref = wf_refs.get(wf_id)

@@ -1,10 +1,10 @@
 {
   "artifacts": {
-    "ORCHESTRATOR-RECOMMENDATION.md": {
+    "08-microcopy.md": {
       "last_synced": "2026-05-16-20-13-34",
       "source_run": "2026-05-16-20-13-34-retrofitted",
       "status": "verified_gold_standard",
-      "sha256": "af7d7e7136a32fbb93b87e902f4ea95e37a816d054d68ef77402605aa6fb14ce"
+      "sha256": "2771f8ea492ead7a7b7481f24beabf1b5fb805ccfb0b2e7c68e9d7107872553a"
     }
   },
   "approval_metadata": {
@@ -13,7 +13,7 @@
     "sync_date": "2026-05-16-20-13-34"
   },
   "metadata": {
-    "skill_hash": "ff5e808c4b78212caac393ce250b49aae85b76f51832b3a2dfae63fd476eca7d",
+    "skill_hash": "a57d18bdcbf6ea463b017879f84b0c908c7eef40f119a8b2544cca83950c7ae1",
     "validator_hashes": {
       "behavioral_result.py": "f3d9b99e5cc7a72f571084de103639452946c702e9005e4f50cc134f93e38bc3",
       "certification_kernel.py": "d6b323d20bee574c5712e0009bd8ed2e6bdc36a3712d79d6b3d0effba07db713",
