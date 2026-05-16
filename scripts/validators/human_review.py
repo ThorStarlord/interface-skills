@@ -87,6 +87,8 @@ def validate_human_review(review_path, requested_scope):
         # Verify it's in the current path if we are in a promotion-run directory
         if "promotion-runs" in str(path):
             current_run_id = path.parent.name
+            if not re.match(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}", current_run_id):
+                current_run_id = path.parent.parent.name
             if run_id != current_run_id:
                 findings.append(f"Traceability mismatch: Review Run ID '{run_id}' does not match directory '{current_run_id}'")
                 failure_modes.append("traceability_mismatch")

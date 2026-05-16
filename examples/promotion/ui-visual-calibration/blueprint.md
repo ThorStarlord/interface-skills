@@ -1,6 +1,8 @@
 ---
 spec_type: blueprint
 spec_id: settings-account
+based_on:
+  - visual-calibration.md
 created: 2026-05-06
 status: draft
 ---

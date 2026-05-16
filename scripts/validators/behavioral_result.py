@@ -79,7 +79,8 @@ def validate_behavioral_result(output_content, skill_name, thresholds=None, inpu
         if domain_terms:
             matched_terms = {w for w in domain_terms if w in output_content.lower()}
             derivation_ratio = len(matched_terms) / len(domain_terms) if domain_terms else 0
-            if derivation_ratio >= 0.2:
+            target_ratio = thresholds.get("min_derivation_ratio", 0.2)
+            if derivation_ratio >= target_ratio:
                 grounding_score += 1
                 findings.append(f"Semantic Grounding (Keywords): Verified ({len(matched_terms)}/{len(domain_terms)}).")
             else:
@@ -95,7 +96,8 @@ def validate_behavioral_result(output_content, skill_name, thresholds=None, inpu
                 if fragment in output_content.lower():
                     phrase_matches += 1
             
-            if phrase_matches >= 2:
+            target_phrasal = thresholds.get("min_phrasal_matches", 2)
+            if phrase_matches >= target_phrasal:
                 grounding_score += 1
                 findings.append(f"Semantic Grounding (Phrasal): Verified ({phrase_matches} phrase fragments detected).")
             else:

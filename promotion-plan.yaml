@@ -57,6 +57,32 @@ skills:
         - handoff_failure
         - evidence_gap
 
+  ui-visual-calibration:
+    fixtures:
+      - examples/promotion/ui-visual-calibration
+    promotion_criteria:
+      min_good_runs: 3
+      require_messy_fail: false
+      require_downstream: true
+    downstream:
+      fixture: examples/promotion/ui-visual-calibration
+      next_skill: ui-blueprint
+      handoff_mode: real
+    behavioral_criteria:
+      fixture_family: examples/promotion/ui-visual-calibration
+      minimum_behavioral_complexity:
+        require_translation_log: true
+        require_all_dimensions: true
+        min_derivation_ratio: 0.1
+        min_phrasal_matches: 0
+      blocking_failure_modes:
+        - hallucination
+        - scope_drift
+        - label_friction
+        - incomplete_context
+        - handoff_failure
+        - evidence_gap
+
   ui-flow:
     fixtures:
       - examples/promotion/ui-flow

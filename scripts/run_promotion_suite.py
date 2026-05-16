@@ -313,6 +313,15 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
                     if candidate.exists():
                         downstream_output_file = candidate
                         break
+            elif next_skill == "ui-blueprint":
+                for candidate in [
+                    fixture_path / "blueprint.md",
+                    fixture_path / "specs" / "02-blueprint.md",
+                    fixture_path / "02-blueprint.md",
+                ]:
+                    if candidate.exists():
+                        downstream_output_file = candidate
+                        break
             
             if downstream_output_file and downstream_output_file.exists():
                 next_skill_output = downstream_output_file.read_text(encoding="utf-8")
@@ -368,41 +377,41 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
                 print(f"      [WARN] No downstream output found at {downstream_output_file}")
         
         if not dry_run:
-            with open(fixture_run_dir / "result.json", "w", encoding="utf-8") as f:
-                json.dump(fixture_result, f, indent=2)
+            with open(fixture_run_dir / "result.json", "w", encoding="utf-8") as res_f:
+                json.dump(fixture_result, res_f, indent=2)
             
-                # Write official certification gate (ADR 0008)
-                review_template_path = fixture_run_dir / "HUMAN-REVIEW.md"
-                with open(review_template_path, "w", encoding="utf-8") as f:
-                    f.write(f"# HUMAN REVIEW: {skill_name} on {fixture_name}\n\n")
-                    f.write(f"**Run ID:** {run_id}\n")
-                    f.write(f"**Skill:** `{skill_name}`\n")
-                    f.write(f"**Fixture:** `{fixture_name}`\n")
-                    f.write(f"**Date:** {time.strftime('%Y-%m-%d')}\n")
-                    f.write(f"**Reviewer:** [NAME]\n")
-                    f.write(f"**Decision:** pending  <!-- approved | rejected | needs_revision -->\n")
-                    f.write(f"**Scope:** {skill_config.get('promotion_criteria', {}).get('scope', 'stable_promotion_authorized')}\n\n")
-                    
-                    if fixture_result['classification'] == "needs_human_review" or fixture_result['classification'] == "expected_fail":
-                        f.write("> [!IMPORTANT]\n")
-                        f.write("> **Human Review Required:** This result needs manual verification to confirm the skill's judgment matches reality.\n\n")
-
-                    f.write("## Narrative Review\n")
-                    f.write("Provide a brief explanation of the skill's performance on this fixture. Focus on **Judgment Fidelity** (did it make the right distinctions?) and **Handoff Utility** (is it ready for downstream use?).\n\n")
-                    f.write("[REPLACE WITH NARRATIVE]\n\n")
-
-                    f.write("### Behavioral Review Checklist\n")
-                    f.write(f"- [ ] **Integrity:** {classification_msg}\n")
-                    # Note: bev_result is not available in the outer scope, but we have fixture_result['classification']
-                    f.write("- [ ] **Judgment Fidelity:** Output reflects domain reality without hallucination.\n")
-                    f.write("- [ ] **Complexity:** Output meets depth requirements for the target surface.\n")
-                    f.write("- [ ] **Zero-Manual-Repair:** Verified that no manual edits were made to this artifact.\n\n")
-                    
-                    f.write("### Continuity Review\n")
-                    f.write("- [ ] **Upstream Handoff:** Input data correctly consumed.\n")
-                    f.write("- [ ] **Downstream Compatibility:** Output structure is ready for consumption.\n\n")
+            # Write official certification gate (ADR 0008)
+            review_template_path = fixture_run_dir / "HUMAN-REVIEW.md"
+            with open(review_template_path, "w", encoding="utf-8") as rev_f:
+                rev_f.write(f"# HUMAN REVIEW: {skill_name} on {fixture_name}\n\n")
+                rev_f.write(f"**Run ID:** {run_id}\n")
+                rev_f.write(f"**Skill:** `{skill_name}`\n")
+                rev_f.write(f"**Fixture:** `{fixture_name}`\n")
+                rev_f.write(f"**Date:** {time.strftime('%Y-%m-%d')}\n")
+                rev_f.write(f"**Reviewer:** [NAME]\n")
+                rev_f.write(f"**Decision:** pending  <!-- approved | rejected | needs_revision -->\n")
+                rev_f.write(f"**Scope:** {skill_config.get('promotion_criteria', {}).get('scope', 'stable_promotion_authorized')}\n\n")
                 
-                f.write("## Automated Findings Summary\n")
+                if fixture_result['classification'] == "needs_human_review" or fixture_result['classification'] == "expected_fail":
+                    rev_f.write("> [!IMPORTANT]\n")
+                    rev_f.write("> **Human Review Required:** This result needs manual verification to confirm the skill's judgment matches reality.\n\n")
+
+                rev_f.write("## Narrative Review\n")
+                rev_f.write("Provide a brief explanation of the skill's performance on this fixture. Focus on **Judgment Fidelity** (did it make the right distinctions?) and **Handoff Utility** (is it ready for downstream use?).\n\n")
+                rev_f.write("[REPLACE WITH NARRATIVE]\n\n")
+
+                rev_f.write("### Behavioral Review Checklist\n")
+                rev_f.write(f"- [ ] **Integrity:** {classification_msg}\n")
+                # Note: bev_result is not available in the outer scope, but we have fixture_result['classification']
+                rev_f.write("- [ ] **Judgment Fidelity:** Output reflects domain reality without hallucination.\n")
+                rev_f.write("- [ ] **Complexity:** Output meets depth requirements for the target surface.\n")
+                rev_f.write("- [ ] **Zero-Manual-Repair:** Verified that no manual edits were made to this artifact.\n\n")
+                
+                rev_f.write("### Continuity Review\n")
+                rev_f.write("- [ ] **Upstream Handoff:** Input data correctly consumed.\n")
+                rev_f.write("- [ ] **Downstream Compatibility:** Output structure is ready for consumption.\n\n")
+            
+                rev_f.write("## Automated Findings Summary\n")
                 all_findings = []
                 if 'bev_result' in locals():
                     all_findings.extend(bev_result.findings)
@@ -411,15 +420,15 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
                 
                 if all_findings:
                     for finding in all_findings:
-                        f.write(f"- {finding}\n")
+                        rev_f.write(f"- {finding}\n")
                 else:
-                    f.write("No automated findings.\n")
+                    rev_f.write("No automated findings.\n")
                 
                 if rubric_results:
-                    f.write("\n### Rubric Evaluation\n")
+                    rev_f.write("\n### Rubric Evaluation\n")
                     for r in rubric_results:
-                        f.write(f"- [{'x' if r['passed'] else ' '}] {r['item']} ({r['automation']})\n")
-                f.write("\n")
+                        rev_f.write(f"- [{'x' if r['passed'] else ' '}] {r['item']} ({r['automation']})\n")
+                rev_f.write("\n")
 
     # 6. Generate Improvement or Fixture Repair Brief if needed
     total_failures = sum(1 for r in all_results if r.get("classification") == "fail")
@@ -635,6 +644,11 @@ def validate_run(run_dir, requested_scope="stable"):
     # 1. Human Review Governance Validation
     is_workflow = (run_dir / "CONTINUITY-AUDIT.md").exists()
     review_path = run_dir / "HUMAN-REVIEW.md"
+    if not is_workflow and not review_path.exists():
+        for sub in run_dir.iterdir():
+            if sub.is_dir() and (sub / "HUMAN-REVIEW.md").exists():
+                review_path = sub / "HUMAN-REVIEW.md"
+                break
     
     if is_workflow:
         review_path = run_dir / "HUMAN-WORKFLOW-REVIEW.md"

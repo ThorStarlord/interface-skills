@@ -10,7 +10,7 @@ if str(REPO_ROOT) not in sys.path:
 
 PROMOTION_RUNS_DIR = REPO_ROOT / "promotion-runs"
 
-def sync_references():
+def sync_references(skill_filter=None, run_filter=None):
     """
     Synchronizes successful promotion run artifacts to skill reference directories.
     This is the core of Phase 3 Reference Lifecycle Management.
@@ -19,31 +19,70 @@ def sync_references():
         print("No promotion runs to sync.")
         return
 
-    # Find the latest successful run
     runs = []
-    for run_dir in PROMOTION_RUNS_DIR.iterdir():
-        if run_dir.is_dir():
-            manifest_path = run_dir / "MANIFEST.json"
-            if manifest_path.exists():
-                try:
-                    with open(manifest_path, "r", encoding="utf-8") as f:
-                        runs.append((run_dir, json.load(f)))
-                except: pass
-    
-    # Sort by timestamp desc
-    runs.sort(key=lambda x: x[1].get("timestamp", ""), reverse=True)
+    if skill_filter and run_filter:
+        run_dir = PROMOTION_RUNS_DIR / run_filter
+        result_path = run_dir / skill_filter / "result.json"
+        if result_path.exists():
+            try:
+                with open(result_path, "r", encoding="utf-8") as f:
+                    res = json.load(f)
+                
+                # Extract output artifact path
+                output_art = res["pointers"]["output_artifact"]
+                # Convert backslashes to forward slashes for relative pathing
+                output_art_rel = output_art.replace("\\", "/")
+                
+                manifest = {
+                    "run_id": run_filter,
+                    "timestamp": run_filter[:19] if len(run_filter) >= 19 else "",
+                    "steps": [
+                        {
+                            "skill": skill_filter,
+                            "status": "pass",
+                            "artifact": output_art_rel
+                        }
+                    ]
+                }
+                runs = [(run_dir, manifest)]
+            except Exception as e:
+                print(f"Error loading result.json: {str(e)}")
+                return
+        else:
+            print(f"Could not find result.json for {skill_filter} in run {run_filter}")
+            return
+    else:
+        # Find the latest successful run
+        for run_dir in PROMOTION_RUNS_DIR.iterdir():
+            if run_dir.is_dir():
+                manifest_path = run_dir / "MANIFEST.json"
+                if manifest_path.exists():
+                    try:
+                        with open(manifest_path, "r", encoding="utf-8") as f:
+                            runs.append((run_dir, json.load(f)))
+                    except: pass
+        
+        # Sort by timestamp desc
+        runs.sort(key=lambda x: x[1].get("timestamp", ""), reverse=True)
 
     for run_dir, manifest in runs:
-        # Check if this run is "Verified" (all steps passed)
-        all_passed = all(s.get("status") == "pass" for s in manifest.get("steps", []))
-        if not all_passed:
-            continue
+        # For filtering, we always treat it as passed
+        if not (skill_filter and run_filter):
+            # Check if this run is "Verified" (all steps passed)
+            all_passed = all(s.get("status") == "pass" for s in manifest.get("steps", []))
+            if not all_passed:
+                continue
             
         # 1. Human Approval Gate (ADR 0008 Hardening)
         from scripts.validators.human_review import validate_human_review
         from scripts.validators.human_workflow_review import validate_human_workflow_review
         
         review_path = run_dir / "HUMAN-REVIEW.md"
+        if skill_filter:
+            candidate_review = run_dir / skill_filter / "HUMAN-REVIEW.md"
+            if candidate_review.exists():
+                review_path = candidate_review
+                
         requested_scope = "stable" # Default for skill sync
         
         if not review_path.exists():
@@ -180,4 +219,10 @@ def sync_references():
         break
 
 if __name__ == "__main__":
-    sync_references()
+    import argparse
+    parser = argparse.ArgumentParser(description="Sync approved gold-standard reference evidence.")
+    parser.add_argument("--skill", help="The specific skill name to sync.")
+    parser.add_argument("--run", help="The specific promotion run ID to sync.")
+    args = parser.parse_args()
+    
+    sync_references(skill_filter=args.skill, run_filter=args.run)

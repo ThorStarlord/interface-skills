@@ -1,7 +1,7 @@
 ---
 name: ui-visual-calibration
 description: Translate fuzzy visual taste ("clean", "modern", "like Notion") into concrete structural decisions — Layout Archetype, Density, Shape Language, Surface Style, Palette Guidance — before any blueprint work begins. Use this skill whenever a user describes aesthetic preferences in vague terms, references a product they admire, or starts layout work without an agreed visual language. The output is a visual-calibration.md file that all downstream blueprint and component work references.
-status: draft
+status: stable
 ---
 
 # UI Visual Calibration

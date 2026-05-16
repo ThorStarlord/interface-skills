@@ -70,7 +70,7 @@
     },
     {
       "name": "ui-visual-calibration",
-      "status": "draft",
+      "status": "stable",
       "description": "Translate vague visual preferences into concrete layout and visual language decisions.",
       "input": "approved brief + visual references or aesthetic preferences",
       "output": "visual-calibration.md \u2014 density, shape, surface style, palette guidance, typography",
@@ -84,7 +84,21 @@
       "canonical_output_paths": [
         "specs/03-visual-calibration.md",
         "visual-calibration.md"
-      ]
+      ],
+      "behavioral_criteria": {
+        "minimum_behavioral_complexity": {
+          "require_translation_log": true,
+          "require_all_dimensions": true
+        },
+        "blocking_failure_modes": [
+          "hallucination",
+          "scope_drift",
+          "label_friction",
+          "incomplete_context",
+          "handoff_failure",
+          "evidence_gap"
+        ]
+      }
     },
     {
       "name": "ui-flow",
