@@ -236,6 +236,7 @@ def run_promotion_for_skill(skill_name, plan, dry_run=False, fresh=False):
 
     print(f"\n>>> Running Promotion Suite for: {skill_name} {'[FRESH RUN]' if fresh else ''}")
     
+    total_failures = 0
     timestamp = time.strftime("%Y-%m-%d-%H-%M-%S")
     run_id = f"{timestamp}-{skill_name}{'-fresh' if fresh else ''}"
     run_dir = PROMOTION_RUNS_DIR / run_id
