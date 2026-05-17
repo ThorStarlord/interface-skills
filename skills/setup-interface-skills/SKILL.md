@@ -1,7 +1,7 @@
 ---
 name: setup-interface-skills
 description: Configure a repository for Interface Skills. This skill sets up the UI specification layer, including folders, agent routing files (CLAUDE.md, AGENTS.md), and a repository-wide INTERFACE_SKILLS.md policy. Use this once per repository or when routing conventions change.
-status: draft
+status: stable
 ---
 
 # Setup Interface Skills

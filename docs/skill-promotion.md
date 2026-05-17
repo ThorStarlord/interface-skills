@@ -22,7 +22,7 @@ A skill is ready for stable when the last three realistic runs produce useful ou
 | `ui-screen-spec` | `/kanban`, `admin-nav`, `/create` | `failing-spec-package` | `/create` -> `ui-acceptance` | Pending | Draft |
 | `ui-spec-linter` | `/kanban`, `admin-nav`, `/create` | `failing-spec-package` | `/kanban` (V1->V2) | Pending | Draft |
 | `ui-inspector` | `/kanban`, `admin-nav`, `/create` | `no-source` (TBD) | `/kanban` -> `ui-redline` | Pending | Draft |
-| `setup-interface-skills` | `setup-interface-skills-example` | `unsafe-overwrite` (TBD) | `clean-repo` -> `ui-brief` | Pending | Draft |
+| `setup-interface-skills` | `setup-interface-skills-example` | `unsafe-overwrite` (TBD) | `clean-repo` -> `ui-brief` | Approved | **Stable** |
 | `ui-spec-reconcile` | `/kanban`, `admin-nav`, `/create` | `drift-not-canonized` (TBD) | `/kanban` -> `ui-docs-sync` | Pending | Draft |
 | `ui-to-issues` | `/kanban`, `admin-nav`, `/create` | `coverage-gap` (TBD) | `admin-nav` -> implementation | Pending | Draft |
 | `ui-visual-calibration`| `/create`, `settings-page` | `vague-ref` (TBD) | `/create` -> `ui-blueprint` | Pending | Draft |
@@ -59,4 +59,4 @@ A skill is ready for stable when the last three realistic runs produce useful ou
 
 ### `setup-interface-skills`
 - **Fixtures**: `setup-interface-skills-example`.
-- **Status**: Needs more variety (monorepo, nested AGENTS.md).
+- **Status**: Promoted to Stable with approved human review and zero-repair cryptographic proof.

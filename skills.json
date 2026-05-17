@@ -378,7 +378,7 @@
     },
     {
       "name": "setup-interface-skills",
-      "status": "draft",
+      "status": "stable",
       "description": "Configure a repository for Interface Skills, including folders, agent routing, and root policy.",
       "input": "new or existing repository",
       "output": "INTERFACE_SKILLS.md, spec folders, and patched agent routing files (CLAUDE.md, AGENTS.md, etc.)",
@@ -387,7 +387,20 @@
       "next": [
         "ui-surface-inventory",
         "ui-brief"
-      ]
+      ],
+      "canonical_output_paths": [
+        "INTERFACE_SKILLS.md",
+        ".interface-skills.yaml"
+      ],
+      "behavioral_criteria": {
+        "minimum_behavioral_complexity": {
+          "min_findings": 0
+        },
+        "blocking_failure_modes": [
+          "hallucination",
+          "scope_drift"
+        ]
+      }
     },
     {
       "name": "ui-spec-reconcile",

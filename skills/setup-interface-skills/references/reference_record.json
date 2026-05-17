@@ -1,19 +1,19 @@
 {
   "artifacts": {
-    "docs-sync-report.md": {
-      "last_synced": "2026-05-16-20-13-34",
-      "source_run": "2026-05-16-20-13-34-retrofitted",
+    "INTERFACE_SKILLS.md": {
+      "last_synced": "2026-05-16-20-56-31",
+      "source_run": "2026-05-16-20-56-31-setup-interface-skills",
       "status": "verified_gold_standard",
-      "sha256": "2771f8ea492ead7a7b7481f24beabf1b5fb805ccfb0b2e7c68e9d7107872553a"
+      "sha256": "b24e6194d5e13e2e1b62cbed0e5011efc7967ed8a851d43ca41b06a5029fa304"
     }
   },
   "approval_metadata": {
-    "authorizing_run_id": "2026-05-16-20-13-34-retrofitted",
+    "authorizing_run_id": "2026-05-16-20-56-31-setup-interface-skills",
     "approval_type": "human_review",
-    "sync_date": "2026-05-16-20-13-34"
+    "sync_date": "2026-05-16-20-56-31"
   },
   "metadata": {
-    "skill_hash": "1d356bda97fd611faaed3ec80e8c412086b7ab0669323ac030fa34b4828e7e5c",
+    "skill_hash": "b6d6458e30427f43644c45f6d6157936f1ba6d02020e740eb74e2e4c6cd07722",
     "validator_hashes": {
       "behavioral_result.py": "f3d9b99e5cc7a72f571084de103639452946c702e9005e4f50cc134f93e38bc3",
       "certification_kernel.py": "d6b323d20bee574c5712e0009bd8ed2e6bdc36a3712d79d6b3d0effba07db713",

@@ -80,6 +80,11 @@ Certifying multi-skill chains using real handoff evidence and zero-manual-repair
 - [x] Certify **Audit & Refactor Workflow** (Inspector -> Redline -> Reconcile -> Docs-Sync)
 - [x] Certify **Full Agent-Routing Workflow** (Sync -> Agent-Routing)
 
+### Wave 4: Repository-Wide Stability Certification
+Achieving 100% stable repository mandate.
+- [x] Promote final draft skill **`setup-interface-skills`** to `stable`
+- [x] Certify repository-wide **100% Certification Compliance** (confirmed by `verify_certification_authority.py` audit success)
+
 ---
 
 ## 3. Active Task Checklist

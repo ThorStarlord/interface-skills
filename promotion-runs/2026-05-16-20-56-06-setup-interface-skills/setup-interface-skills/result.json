@@ -1,0 +1,53 @@
+{
+  "fixture": "setup-interface-skills",
+  "classification": "fail",
+  "classification_msg": "STRICT PROOF FAILURE: No zero-repair proof found for 'stable' promotion.",
+  "behavioral_status": "valid",
+  "evidence_level": "harness_validation",
+  "generated_fresh_output": false,
+  "skill_structural_valid": true,
+  "package_structural_valid": true,
+  "rubric_passed": "pending",
+  "rubric_details": [
+    {
+      "item": "Establishes interface-skills directory mapping",
+      "section": "General",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Configures required agent entry points",
+      "section": "General",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Establishes the INTERFACE_SKILLS.md policy",
+      "section": "setup-interface-skills",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Configures required and optional agent entrypoints in yaml configuration",
+      "section": "setup-interface-skills",
+      "passed": false,
+      "automation": "pending_manual"
+    },
+    {
+      "item": "Patches agent files with bounded interface-skills markers",
+      "section": "setup-interface-skills",
+      "passed": false,
+      "automation": "pending_manual"
+    }
+  ],
+  "pointers": {
+    "fixture_input": "examples/promotion/setup-interface-skills",
+    "output_artifact": "examples\\promotion\\setup-interface-skills\\INTERFACE_SKILLS.md",
+    "narrative_review": "promotion-runs\\2026-05-16-20-56-06-setup-interface-skills\\setup-interface-skills\\review.md",
+    "invocation_file": null
+  },
+  "logs": {
+    "skill_validation": "[shared/references/accessibility-baseline.md] [OK] Valid\n[shared/references/full-chain-continuity-audit.md] [OK] Valid\n[shared/references/responsive-patterns.md] [OK] Valid\n[shared/references/severity-scale.md] [OK] Valid\n[shared/references/spec-package-format.md] [OK] Valid\n[shared/references/state-taxonomy.md] [OK] Valid\n[shared/references/token-schema.md] [OK] Valid\n[shared/references/vague-language-translator.md] [OK] Valid\n[shared/references/visual-vocabulary.md] [OK] Valid\n[skills.json] [OK] distribution registry valid\n[setup-interface-skills] [WARN] Registry status=stable but README row has '[DRAFT]' marker\n[setup-interface-skills] [OK] Valid\n\nValidation passed! [SUCCESS]\n",
+    "package_validation": "# Spec Package Validation: SUCCESS\n"
+  }
+}

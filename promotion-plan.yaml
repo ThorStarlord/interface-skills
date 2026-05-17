@@ -390,6 +390,20 @@ skills:
         - incomplete_context
         - handoff_failure
         - evidence_gap
+  setup-interface-skills:
+    fixtures:
+      - examples/promotion/setup-interface-skills
+    promotion_criteria:
+      min_good_runs: 1
+      require_messy_fail: false
+      require_downstream: false
+    behavioral_criteria:
+      fixture_family: examples/promotion/setup-interface-skills
+      minimum_behavioral_complexity:
+        min_findings: 0
+      blocking_failure_modes:
+        - hallucination
+        - scope_drift
 
 workflows:
   spec-recovery:
