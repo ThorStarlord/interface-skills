@@ -43,8 +43,8 @@ Interface Skills uses a formal **[Skill Certification System](docs/promotion/SKI
 
 - **Design a UI from vague intent** → Start with `ui-brief`
 - **Recover specs from an existing UI** → Use the [Retrospective Specification workflow](#retrospective-specification-workflow)
-- **Compare implementation to spec** → Use `ui-inspector` ⚠️ + `ui-redline`
-- **Reconcile specs after fixes** → Use `ui-spec-reconcile` ⚠️
+- **Compare implementation to spec** → Use `ui-inspector` + `ui-redline`
+- **Reconcile specs after fixes** → Use `ui-spec-reconcile`
 - **Route agents to the right docs** → Use `ui-docs-sync` + `ui-agent-routing`
 - **Turn redlines into work** → Use `ui-to-issues`
 
@@ -53,21 +53,21 @@ Interface Skills uses a formal **[Skill Certification System](docs/promotion/SKI
 ### New UI feature
 Ask your agent to run:
 1. `ui-brief`
-2. `ui-visual-calibration` ⚠️
+2. `ui-visual-calibration`
 3. `ui-blueprint`
-4. `ui-screen-spec` ⚠️
+4. `ui-screen-spec`
 5. `ui-acceptance`
 
 ### Existing UI with no spec
 Ask your agent to run:
 1. `ui-surface-inventory`
-2. `ui-inspector` ⚠️
+2. `ui-inspector`
 3. `ui-brief`
 4. `ui-blueprint`
 
 ### Repo setup
 Run once to prepare your repository for Interface Skills:
-`setup-interface-skills` ⚠️
+`setup-interface-skills`
 
 *Note: If installed in Claude Code or another slash-command environment, these may appear as slash commands. Otherwise, invoke them by name in your agent.*
 
@@ -76,7 +76,7 @@ Run once to prepare your repository for Interface Skills:
 | Situation | Start here |
 |---|---|
 | I have a vague UI idea | `ui-brief` |
-| I have an existing UI but no spec | `ui-surface-inventory` ⚠️ |
+| I have an existing UI but no spec | `ui-surface-inventory` |
 | I have a spec and code, but they differ | `ui-redline` |
 | I fixed code and need to update specs | `ui-spec-reconcile` |
 | I created specs but agents cannot find them | `ui-agent-routing` |
@@ -121,7 +121,7 @@ Grouped by the UI lifecycle. For a detailed technical reference with inputs and 
 | Skill                   | Use when                      | Produces                  |
 | ----------------------- | ----------------------------- | ------------------------- |
 | `ui-brief`              | Vague product/design idea     | Product/design brief      |
-| `ui-visual-calibration` ⚠️ | Visual taste is unclear       | Visual language decisions |
+| `ui-visual-calibration` | Visual taste is unclear       | Visual language decisions |
 | `ui-flow`               | Multiple screens are involved | Journey graph             |
 
 ### Specification
@@ -129,7 +129,7 @@ Grouped by the UI lifecycle. For a detailed technical reference with inputs and 
 | ------------------- | -------------------------------- | ------------------------- |
 | `ui-blueprint`      | Layout needs structure           | Wireframe/layout contract |
 | `ui-system`         | Tokens/rules are needed          | Design system rules       |
-| `ui-screen-spec` ⚠️    | Screen behavior must be explicit | Screen contract           |
+| `ui-screen-spec`     | Screen behavior must be explicit | Screen contract           |
 | `ui-component-spec` | Component behavior matters       | Component state/a11y spec |
 | `ui-microcopy`      | Copy must be approved            | Copy contract             |
 | `ui-acceptance`     | Ready for QA                     | Checklist                 |
@@ -138,20 +138,20 @@ Grouped by the UI lifecycle. For a detailed technical reference with inputs and 
 | Skill               | Use when                  | Produces                          |
 | ------------------- | ------------------------- | --------------------------------- |
 | `ui-generate-code`  | Ready to build            | React/CSS/HTML implementation     |
-| `ui-inspector` ⚠️      | Inspect implementation    | DOM/a11y evidence report          |
+| `ui-inspector`      | Inspect implementation    | DOM/a11y evidence report          |
 | `ui-redline`        | Compare code to spec      | Mismatch report + refactor prompt |
 
 ### Maintenance & Planning
 | Skill               | Use when                  | Produces               |
 | ------------------- | ------------------------- | ---------------------- |
 | `ui-spec-linter`         | Validate Spec Package     | Lint report            |
-| `ui-spec-reconcile` ⚠️ | Code/spec changed         | Reconciled spec        |
+| `ui-spec-reconcile`  | Code/spec changed         | Reconciled spec        |
 | `ui-docs-sync`         | Docs may be stale         | Sync report            |
 | `ui-agent-routing`     | Agents cannot find specs  | Routing report/patches |
 | `ui-to-issues`         | Need implementation tasks | Markdown issues        |
-| `ui-storybook-docs` ⚠️ | Component spec exists     | MDX docs and stories   |
+| `ui-storybook-docs`  | Component spec exists     | MDX docs and stories   |
 
-> ⚠️ = currently a **draft** skill.
+> All 21 UI lifecycle skills are fully promoted and stable.
 
 ---
 
@@ -164,7 +164,7 @@ For small, well-scoped features where visual tone is already agreed:
 3. Run `ui-component-spec`
 4. Run `ui-acceptance`
 5. Run `ui-generate-code`
-6. Run `ui-inspector` ⚠️
+6. Run `ui-inspector`
 7. Run `ui-redline`
 
 ### Full documentation-first workflow
