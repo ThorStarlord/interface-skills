@@ -82,3 +82,156 @@ artifacts:
       - expected_output
       - stop_condition
       - ready_to_copy_prompt
+
+  - id: brief
+    produced_by: ui-brief
+    consumed_by:
+      - ui-visual-calibration
+      - ui-blueprint
+      - ui-redline
+      - ui-to-issues
+      - ui-spec-reconcile
+    required_sections:
+      - goal
+      - primary_user
+      - success_criteria
+      - constraints
+      - non_goals
+
+  - id: visual_calibration
+    produced_by: ui-visual-calibration
+    consumed_by:
+      - ui-blueprint
+      - ui-system
+    required_sections:
+      - density
+      - shape
+      - surface_style
+      - palette_guidance
+      - typography
+
+  - id: blueprint
+    produced_by: ui-blueprint
+    consumed_by:
+      - ui-system
+      - ui-screen-spec
+    required_sections:
+      - layout_archetype
+      - information_hierarchy
+      - text_wireframe
+      - responsive_behaviour
+
+  - id: design_system
+    produced_by: ui-system
+    consumed_by:
+      - ui-screen-spec
+      - ui-component-spec
+    required_sections:
+      - tokens
+      - color_palette
+      - typography_scale
+      - spacing_system
+
+  - id: screen_spec
+    produced_by: ui-screen-spec
+    consumed_by:
+      - ui-component-spec
+      - ui-microcopy
+    required_sections:
+      - region_map
+      - component_assignments
+      - data_dependencies
+      - state_ownership
+
+  - id: component_spec
+    produced_by: ui-component-spec
+    consumed_by:
+      - ui-microcopy
+      - ui-acceptance
+      - ui-storybook-docs
+    required_sections:
+      - anatomy
+      - props
+      - states
+      - validation
+      - accessibility
+
+  - id: microcopy
+    produced_by: ui-microcopy
+    consumed_by:
+      - ui-acceptance
+    required_sections:
+      - copy_catalog
+      - interactive_elements
+      - state_copy
+
+  - id: acceptance_criteria
+    produced_by: ui-acceptance
+    consumed_by:
+      - ui-spec-linter
+      - ui-generate-code
+      - ui-to-issues
+    required_sections:
+      - acceptance_scenarios
+      - behavior_rules
+
+  - id: spec_linter_report
+    produced_by: ui-spec-linter
+    consumed_by:
+      - ui-generate-code
+    required_sections:
+      - lint_findings
+      - remediation_steps
+
+  - id: component_code
+    produced_by: ui-generate-code
+    consumed_by:
+      - ui-inspector
+      - ui-storybook-docs
+    required_sections:
+      - source_code
+      - unit_tests
+      - storybook_stories
+
+  - id: inspector_report
+    produced_by: ui-inspector
+    consumed_by:
+      - ui-redline
+    required_sections:
+      - dom_inventory
+      - computed_styles
+      - accessibility_findings
+
+  - id: redline_audit
+    produced_by: ui-redline
+    consumed_by:
+      - ui-spec-reconcile
+      - ui-to-issues
+    required_sections:
+      - mismatches
+      - prescribed_fixes
+
+  - id: reconciliation_report
+    produced_by: ui-spec-reconcile
+    consumed_by:
+      - ui-docs-sync
+      - ui-to-issues
+    required_sections:
+      - reconciliation_status
+      - updated_specs
+
+  - id: docs_sync_report
+    produced_by: ui-docs-sync
+    consumed_by:
+      - ui-agent-routing
+    required_sections:
+      - sync_status
+      - doc_links
+
+  - id: agent_routing_report
+    produced_by: ui-agent-routing
+    consumed_by:
+      - downstream_skill
+    required_sections:
+      - updated_files
+      - discovery_records

@@ -348,3 +348,91 @@ workflows:
         skill: ui-orchestrator
         step_type: local_execution
         gate: review_orchestration
+
+  - id: core-spec-workflow
+    display_name: Core Spec Workflow
+    status: draft
+    purpose: Formally define and generate the upstream user interface specification from a brief.
+    allowed_execution_modes:
+      - plan_only
+      - prompt_chain
+      - guided_execution
+      - autonomous_execution
+    steps:
+      - id: 1
+        skill: ui-brief
+        step_type: local_execution
+        gate: review_brief
+      - id: 2
+        skill: ui-visual-calibration
+        step_type: local_execution
+        gate: review_visual_calibration
+      - id: 3
+        skill: ui-blueprint
+        step_type: local_execution
+        gate: review_blueprint
+      - id: 4
+        skill: ui-system
+        step_type: local_execution
+        gate: review_design_system
+      - id: 5
+        skill: ui-screen-spec
+        step_type: local_execution
+        gate: review_screen_spec
+      - id: 6
+        skill: ui-component-spec
+        step_type: local_execution
+        gate: review_component_spec
+      - id: 7
+        skill: ui-microcopy
+        step_type: local_execution
+        gate: review_microcopy
+      - id: 8
+        skill: ui-acceptance
+        step_type: local_execution
+        gate: review_acceptance
+
+  - id: audit-refactor-workflow
+    display_name: Audit & Refactor Workflow
+    status: draft
+    purpose: Audit an existing UI implementation against the spec package and apply structural/semantic corrections.
+    allowed_execution_modes:
+      - plan_only
+      - prompt_chain
+      - guided_execution
+      - autonomous_execution
+    steps:
+      - id: 1
+        skill: ui-inspector
+        step_type: local_execution
+        gate: review_inspector_findings
+      - id: 2
+        skill: ui-redline
+        step_type: local_execution
+        gate: review_redline_audit
+      - id: 3
+        skill: ui-spec-reconcile
+        step_type: local_execution
+        gate: review_reconciliation
+      - id: 4
+        skill: ui-docs-sync
+        step_type: local_execution
+        gate: review_docs_sync
+
+  - id: agent-routing-workflow
+    display_name: Full Agent-Routing Workflow
+    status: draft
+    purpose: Synchronize repository documentation and publish verified specifications to AI agent routing paths.
+    allowed_execution_modes:
+      - plan_only
+      - prompt_chain
+      - guided_execution
+    steps:
+      - id: 1
+        skill: ui-docs-sync
+        step_type: local_execution
+        gate: review_docs_sync
+      - id: 2
+        skill: ui-agent-routing
+        step_type: local_execution
+        gate: review_agent_routing
