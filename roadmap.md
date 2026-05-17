@@ -99,4 +99,5 @@ Achieving 100% stable repository mandate.
 - [x] Run the promotion suite for `ui-screen-spec`, `ui-inspector`, `ui-spec-reconcile`, and `ui-storybook-docs` with exit code `0`.
 - [x] Approve and sign off on all 6 human reviews.
 - [x] Execute workflow-level certified runs for `spec-recovery` and `spec-recovery-negative-missing-handoff`.
-- [x] Verify global certification compliance: `verify_certification_authority.py` returns SUCCESS.
+- [x] Promote and certify final draft skill `setup-interface-skills` to stable.
+- [x] Verify global certification compliance: `verify_certification_authority.py` returns SUCCESS (100% repository-wide stable certification!).
